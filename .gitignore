@@ -10,3 +10,6 @@ pom.xml.asc
 .lein-plugins/
 .lein-failures
 .nrepl-port
+/clj_fakes.iml
+/.idea
+.DS_Store
