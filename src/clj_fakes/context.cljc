@@ -468,7 +468,7 @@
 
 #?(:clj
    (defn -reflect-interface-or-object
-     "Raises an excpetion if cannot reflect on specified symbol."
+     "Raises an exception if cannot reflect on specified symbol."
      [env interface-sym]
      (assert (not (-cljs-env? env)) "Works only in Clojure for reflection on Java interfaces and Object class.")
      (if (-resolves-to-Object? env interface-sym)
