@@ -6,12 +6,12 @@ clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating
 ## Features
 * Works in Clojure and ClojureScript
 * Test runner agnostic
+* Arrange-Act-Assert style testing
 * All test doubles are named "fakes" to simplify terminology
 * Fakes can be created for:
   * protocol instances
   * functions
-* Supports "nice" protocol fakes
-* Supports Arrange-Act-Assert style testing
+* "Nice" protocol fakes
 * Monkey patching is supported to fake implicit dependencies
 * Self-testing: automatically checks for unused fakes
 
@@ -59,17 +59,19 @@ Patch a function:
 ```
 
 Self-test for unused fake: fake is created but never called:
-```clj
-(f/with-fakes
-  (f/recorded-fake [f/any? nil]))
-; will raise "Self-test: no check performed on: recorded fake ..."
-```
 
-Self-test for unchecked fake: recorded fake was not checked:
 ```clj
 (f/with-fakes
   (f/fake [f/any? nil]))
 ; will raise "Self-test: no call detected for: non-optional fake ..."
+```
+
+Self-test for unchecked fake: recorded fake was not checked:
+
+```clj
+(f/with-fakes
+  (f/recorded-fake [f/any? nil]))
+; will raise "Self-test: no check performed on: recorded fake ..."
 ```
 
 ## Installation
