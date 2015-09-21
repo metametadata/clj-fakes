@@ -1,6 +1,8 @@
 # clj-fakes
 clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.
 
+[![Clojars Project](http://clojars.org/clj-fakes/latest-version.svg)](http://clojars.org/clj-fakes)
+
 ## Features
 * Works in Clojure and ClojureScript
 * Test runner agnostic
@@ -14,7 +16,61 @@ clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating
 * Self-testing: automatically checks for unused fakes
 
 ## Status
-A work in progress. Not even published to Clojars yet. Please look at the tests to see what lib can do.
+A work in progress.
+
+## Examples
+Fake function:
+
+```clj
+(f/with-fakes
+  (let [foo (f/fake [[1 2 3] "hey!"])]
+    (println (foo 1 2 3))))
+```
+
+Fake protocol instance with recorded method (aka mock object):
+
+```clj
+(defprotocol AnimalProtocol
+  (speak [this name]))
+
+(f/with-fakes
+  ; create fake instance of specified protocol
+  (let [cow (f/reify-fake p/AnimalProtocol
+                          ; ask framework to record method calls
+                          (speak :recorded-fake))]
+    ; call method on fake object
+    (p/speak cow "Bob")
+    
+    ; assert that method was called with specified args
+    (is (f/was-called-on cow p/speak ["Bob"]))))
+```
+
+Patch a function:
+
+```clj
+(f/with-fakes
+  (f/patch! #'funcs/sum (f/fake [[1 2] "foo"
+                                 [3 4] "bar"]))
+  (is (= "foo" (funcs/sum 1 2)))
+  (is (= "bar" (funcs/sum 3 4))))
+
+; patching is reverted on exiting with-fakes block
+(is (= 3 (funcs/sum 1 2)))
+```
+
+Self-test for unused fake: fake is created but never called:
+```clj
+(f/with-fakes
+  (f/recorded-fake [f/any? nil]))
+; will raise "Self-test: no check performed on: recorded fake ..."
+```
+
+Self-test for unchecked fake: recorded fake was not checked:
+```clj
+(f/with-fakes
+  (f/fake [f/any? nil]))
+; will raise "Self-test: no call detected for: non-optional fake ..."
+```
 
 ## Installation
 Add this to your dependencies in project.clj:
@@ -38,23 +94,6 @@ Require in the namespace:
     ; ...
     [clj-fakes.core :as f :include-macros true]))
 ```
-
-## Examples
-Fake function:
-
-```clj
-(f/with-fakes
-  (let [foo (f/fake [[1 2 3] "hey!"])]
-    (println (foo 1 2 3))))
-```
-
-Fake protocol instance with recorded method (aka mock object): ...
-
-Patching implicit function dependency: ...
-
-Self-test: fake is created but never called: ...
-
-Self-test: recorded fake was not checked: ...
 
 ## Development notes
 Run Clojure tests:

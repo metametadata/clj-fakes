@@ -25,7 +25,7 @@
       (f/recorded-fake [f/any? nil]))))
 
 (f/-deftest
-  "user is not warned if fake was never called"
+  "user is not warned if fake was never called if it's explicitly marked as checked"
   (f/with-fakes
     (f/mark-checked (f/recorded-fake [f/any? nil]))))
 
