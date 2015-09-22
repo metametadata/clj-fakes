@@ -96,6 +96,9 @@ Require in the namespace:
     [clj-fakes.core :as f :include-macros true]))
 ```
 
+## Documentation
+More documentation can be found at [at project site](http://metametadata.github.io/clj-fakes/).
+
 ## Development notes
 Run Clojure tests: `$ lein test-refresh`
 
