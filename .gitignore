@@ -12,4 +12,5 @@ pom.xml.asc
 .nrepl-port
 /clj_fakes.iml
 /.idea
+/site
 .DS_Store
