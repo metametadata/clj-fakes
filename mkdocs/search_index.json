@@ -2,23 +2,18 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Welcome to MkDocs\n\n\nFor full documentation visit \nmkdocs.org\n.\n\n\nCommands\n\n\n\n\nmkdocs new [dir-name]\n - Create a new project.\n\n\nmkdocs serve\n - Start the live-reloading docs server.\n\n\nmkdocs build\n - Build the documentation site.\n\n\nmkdocs help\n - Print this help message.\n\n\n\n\nProject layout\n\n\nmkdocs.yml    # The configuration file.\ndocs/\n    index.md  # The documentation homepage.\n    ...       # Other markdown pages, images and other files.", 
+            "text": "Guide\n\n\n...\n\n\nDevelopment notes\n\n\nRun Clojure tests: \nlein test-refresh\n\n\nRun ClojureScript tests: \nlein clean \n lein doo phantom test once\n\n(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)\n\n\nAutorun ClojureScript tests: \nfswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait.... \n lein clean \n lein doo rhino test once'\n\n\nDocumentation: \nmkdocs --help", 
             "title": "Home"
         }, 
         {
-            "location": "/#welcome-to-mkdocs", 
-            "text": "For full documentation visit  mkdocs.org .", 
-            "title": "Welcome to MkDocs"
+            "location": "/#guide", 
+            "text": "...", 
+            "title": "Guide"
         }, 
         {
-            "location": "/#commands", 
-            "text": "mkdocs new [dir-name]  - Create a new project.  mkdocs serve  - Start the live-reloading docs server.  mkdocs build  - Build the documentation site.  mkdocs help  - Print this help message.", 
-            "title": "Commands"
-        }, 
-        {
-            "location": "/#project-layout", 
-            "text": "mkdocs.yml    # The configuration file.\ndocs/\n    index.md  # The documentation homepage.\n    ...       # Other markdown pages, images and other files.", 
-            "title": "Project layout"
+            "location": "/#development-notes", 
+            "text": "Run Clojure tests:  lein test-refresh  Run ClojureScript tests:  lein clean   lein doo phantom test once \n(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)  Autorun ClojureScript tests:  fswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait....   lein clean   lein doo rhino test once'  Documentation:  mkdocs --help", 
+            "title": "Development notes"
         }
     ]
 }
