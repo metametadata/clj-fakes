@@ -1,1 +1,6 @@
-site_name: My Docs
+site_name: clj-fakes
+site_description: Project documentation for clj-fakes framework.
+
+repo_url: https://github.com/metametadata/clj-fakes/
+
+theme: flatly

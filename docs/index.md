@@ -1,17 +1,14 @@
-# Welcome to MkDocs
+# Guide
 
-For full documentation visit [mkdocs.org](http://mkdocs.org).
+...
 
-## Commands
+# Development notes
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs help` - Print this help message.
+Run Clojure tests: `lein test-refresh`
 
-## Project layout
+Run ClojureScript tests: `lein clean && lein doo phantom test once`
+(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+Autorun ClojureScript tests: `fswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait.... && lein clean && lein doo rhino test once'`
+
+Documentation: `mkdocs --help`
