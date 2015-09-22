@@ -58,7 +58,7 @@ Patch a function:
 (is (= 3 (funcs/sum 1 2)))
 ```
 
-Self-test for unused fake: fake is created but never called:
+Self-test for unused fake:
 
 ```clj
 (f/with-fakes
@@ -66,7 +66,7 @@ Self-test for unused fake: fake is created but never called:
 ; will raise "Self-test: no call detected for: non-optional fake ..."
 ```
 
-Self-test for unchecked fake: recorded fake was not checked:
+Self-test for unchecked fake:
 
 ```clj
 (f/with-fakes
