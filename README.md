@@ -97,7 +97,7 @@ Require in the namespace:
 ```
 
 ## Documentation
-More documentation can be found at [at project site](http://metametadata.github.io/clj-fakes/).
+More documentation can be found at [the project site](http://metametadata.github.io/clj-fakes/).
 
 ## Development notes
 Run Clojure tests: `$ lein test-refresh`
