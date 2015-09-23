@@ -4,3 +4,7 @@ site_description: Project documentation for clj-fakes framework.
 repo_url: https://github.com/metametadata/clj-fakes/
 
 theme: flatly
+
+pages:
+- User Guide: 'index.md'
+- Developer Guide: 'dev.md'

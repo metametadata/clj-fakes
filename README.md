@@ -17,6 +17,13 @@ clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating
 ## Status
 Core functionality is ready. Documentation and more features are on the way.
 
+## Installation
+Add this to your dependencies in project.clj:
+
+```
+[clj-fakes 0.1.1-SNAPSHOT]
+```
+
 ## Examples
 ### Fake function
 
@@ -71,29 +78,6 @@ Core functionality is ready. Documentation and more features are on the way.
 (f/with-fakes
   (f/recorded-fake [f/any? nil]))
 ; will raise "Self-test: no check performed on: recorded fake ..."
-```
-
-## Installation
-Add this to your dependencies in project.clj:
-
-```
-[clj-fakes 0.1.1-SNAPSHOT]
-```
-
-Require in the namespace:
-
-```clj
-; Clojure
-(ns unit.example
-  (:require
-    ; ...
-    [clj-fakes.core :as f]))
-
-; ClojureScript
-(ns unit.example
-  (:require
-    ; ...
-    [clj-fakes.core :as f :include-macros true]))
 ```
 
 ## Documentation
