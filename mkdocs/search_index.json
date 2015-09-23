@@ -2,18 +2,58 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Guide\n\n\n...\n\n\nDevelopment notes\n\n\nRun Clojure tests: \nlein test-refresh\n\n\nRun ClojureScript tests: \nlein clean \n lein doo phantom test once\n\n(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)\n\n\nAutorun ClojureScript tests: \nfswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait.... \n lein clean \n lein doo rhino test once'\n\n\nDocumentation: \nmkdocs --help", 
-            "title": "Home"
+            "text": "Introduction\n\n\nclj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.\nOne of the unique features of the framework is the ability to find unused fakes in order to help users write more concise test cases.\n\n\nReferences\n\n\nThe API was mainly inspired by \njMock\n and \nunittest.mock\n frameworks with\ndesign decisions loosely based on the \n\"Fifteen things I look for in an Isolation framework\" by Roy Osherove\n.\n\n\nSome alternative frameworks with isolation capabilities:\n\n\n\n\nclj-mock\n\n\nMidje\n\n\nspeclj\n\n\n\n\nAlso take at look at the article \n\"Isolating External Dependencies in Clojure\" by Joseph Wilk\n\nwhich discusses different approaches to mocking in Clojure.\n\n\nFor more detailed information about unit testing, TDD and test double patterns I'd recommend the books below:\n\n\n\n\n\"Test Driven Development: By Example\" by Kent Beck\n\n\n\"Growing Object-Oriented Software, Guided by Tests\" by Steve Freeman and Nat Pryce [\nsite\n]\n\n\n\"xUnit Test Patterns: Refactoring Test Code\" by Gerard Meszaros [\nsite\n]\n\n\n\n\nFeatures\n\n\n\n\nAll test doubles are named \"fakes\" to simplify terminology\n\n\nFakes can be created for:\n\n\nprotocol instances\n\n\nfunctions\n\n\n\n\n\n\n\"Nice\" and \"strict\" protocol fakes are supported\n\n\nMonkey patching is supported to fake implicit dependencies\n\n\nSelf-testing: automatically checks for unused fakes\n\n\nTest runner agnostic\n\n\nArrange-Act-Assert style testing\n\n\n\n\nInstallation\n\n\nAdd this to your dependencies in project.clj:\n\n\n[clj-fakes 0.1.1-SNAPSHOT]\n\n\n\n\nRequire in the namespace:\n\n\n; Clojure\n(ns unit.example\n  (:require\n    ; ...\n    [clj-fakes.core :as f]))\n\n; ClojureScript\n(ns unit.example\n  (:require\n    ; ...\n    [clj-fakes.core :as f :include-macros true]))\n\n\n\n\nQuickstart\n\n\nGuide", 
+            "title": "User Guide"
+        }, 
+        {
+            "location": "/#introduction", 
+            "text": "clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.\nOne of the unique features of the framework is the ability to find unused fakes in order to help users write more concise test cases.", 
+            "title": "Introduction"
+        }, 
+        {
+            "location": "/#references", 
+            "text": "The API was mainly inspired by  jMock  and  unittest.mock  frameworks with\ndesign decisions loosely based on the  \"Fifteen things I look for in an Isolation framework\" by Roy Osherove .  Some alternative frameworks with isolation capabilities:   clj-mock  Midje  speclj   Also take at look at the article  \"Isolating External Dependencies in Clojure\" by Joseph Wilk \nwhich discusses different approaches to mocking in Clojure.  For more detailed information about unit testing, TDD and test double patterns I'd recommend the books below:   \"Test Driven Development: By Example\" by Kent Beck  \"Growing Object-Oriented Software, Guided by Tests\" by Steve Freeman and Nat Pryce [ site ]  \"xUnit Test Patterns: Refactoring Test Code\" by Gerard Meszaros [ site ]", 
+            "title": "References"
+        }, 
+        {
+            "location": "/#features", 
+            "text": "All test doubles are named \"fakes\" to simplify terminology  Fakes can be created for:  protocol instances  functions    \"Nice\" and \"strict\" protocol fakes are supported  Monkey patching is supported to fake implicit dependencies  Self-testing: automatically checks for unused fakes  Test runner agnostic  Arrange-Act-Assert style testing", 
+            "title": "Features"
+        }, 
+        {
+            "location": "/#installation", 
+            "text": "Add this to your dependencies in project.clj:  [clj-fakes 0.1.1-SNAPSHOT]  Require in the namespace:  ; Clojure\n(ns unit.example\n  (:require\n    ; ...\n    [clj-fakes.core :as f]))\n\n; ClojureScript\n(ns unit.example\n  (:require\n    ; ...\n    [clj-fakes.core :as f :include-macros true]))", 
+            "title": "Installation"
+        }, 
+        {
+            "location": "/#quickstart", 
+            "text": "", 
+            "title": "Quickstart"
         }, 
         {
             "location": "/#guide", 
-            "text": "...", 
+            "text": "", 
             "title": "Guide"
         }, 
         {
-            "location": "/#development-notes", 
-            "text": "Run Clojure tests:  lein test-refresh  Run ClojureScript tests:  lein clean   lein doo phantom test once \n(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)  Autorun ClojureScript tests:  fswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait....   lein clean   lein doo rhino test once'  Documentation:  mkdocs --help", 
-            "title": "Development notes"
+            "location": "/dev/", 
+            "text": "Developer Guide\n\n\nSome notes for framework developers.\n\n\nTests\n\n\nAutorun Clojure tests: \nlein test-refresh\n\n\nRun ClojureScript tests: \nlein clean \n lein doo phantom test once\n\n(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)\n\n\nAutorun ClojureScript tests: \nfswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait.... \n lein clean \n lein doo rhino test once'\n\n\nDocumentation\n\n\nProject uses \nMkDocs\n to generate documentation static site.\n\n\nBuild: \nmkdocs build\n\n\nServe locally with automatic build: \nmkdocs serve\n\n\nDeploy docs to gh-pages branch: \nmkdocs gh-deploy --clean", 
+            "title": "Developer Guide"
+        }, 
+        {
+            "location": "/dev/#developer-guide", 
+            "text": "Some notes for framework developers.", 
+            "title": "Developer Guide"
+        }, 
+        {
+            "location": "/dev/#tests", 
+            "text": "Autorun Clojure tests:  lein test-refresh  Run ClojureScript tests:  lein clean   lein doo phantom test once \n(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)  Autorun ClojureScript tests:  fswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait....   lein clean   lein doo rhino test once'", 
+            "title": "Tests"
+        }, 
+        {
+            "location": "/dev/#documentation", 
+            "text": "Project uses  MkDocs  to generate documentation static site.  Build:  mkdocs build  Serve locally with automatic build:  mkdocs serve  Deploy docs to gh-pages branch:  mkdocs gh-deploy --clean", 
+            "title": "Documentation"
         }
     ]
 }
