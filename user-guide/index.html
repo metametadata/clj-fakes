@@ -160,8 +160,9 @@
 </code></pre>
 
 <p>These namespaces contain almost the same set of members. The difference 
-is that <code>core</code> uses the implicit context and the <code>context</code> namespace
-functions require explicit context argument.</p>
+is that <code>core</code> uses an implicit context and the <code>context</code> namespace
+functions require an explicit context argument.</p>
+<p>For your convenience functions which don't rely on a context can also be sometimes found in both namespaces (e.g. <code>f/any?</code> is the same as <code>fc/any?</code>).</p>
 <p>The private/internal API uses a <code>-</code> prefix and should not be used (e.g. <code>-this-is-some-private-thing</code>).</p>
 <h1 id="context">Context</h1>
 <p>Context is an object which stores all the information about
