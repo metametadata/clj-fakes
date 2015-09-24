@@ -108,23 +108,34 @@
     
         <li class="main "><a href="#function-fakes">Function Fakes</a></li>
         
-            <li><a href="#fake">fake</a></li>
+            <li><a href="#fake">Fake</a></li>
         
-            <li><a href="#optional-fake">optional-fake</a></li>
+            <li><a href="#optional-fake">Optional Fake</a></li>
         
-            <li><a href="#recorded-fake">recorded-fake</a></li>
+            <li><a href="#recorded-fake">Recorded Fake</a></li>
+        
+    
+        <li class="main "><a href="#fake-configuration">Fake Configuration</a></li>
         
     
         <li class="main "><a href="#argument-matching">Argument Matching</a></li>
         
     
-        <li class="main "><a href="#self-tests">Self-tests</a></li>
-        
-    
-        <li class="main "><a href="#asserts">Asserts</a></li>
+        <li class="main "><a href="#assertions">Assertions</a></li>
         
     
         <li class="main "><a href="#protocol-fakes">Protocol Fakes</a></li>
+        
+            <li><a href="#strict">Strict</a></li>
+        
+            <li><a href="#nice">Nice</a></li>
+        
+    
+        <li class="main "><a href="#self-tests">Self-tests</a></li>
+        
+            <li><a href="#unused-fakes">Unused Fakes</a></li>
+        
+            <li><a href="#unchecked-fakes">Unchecked Fakes</a></li>
         
     
         <li class="main "><a href="#monkey-patching">Monkey Patching</a></li>
@@ -189,29 +200,84 @@ All fakes have to be created inside some context.</p>
 <p>This approach is preferable since it requires less typing, automatically 
 unpatches all patched vars and executes self-tests.</p>
 <p>Internally <code>with-fakes</code> relies on a public dynamic var <code>*context*</code> which can be 
-used to in your own helper functions.</p>
+used in your own helper functions.</p>
 <h1 id="function-fakes">Function Fakes</h1>
+<p>Fake is a function which returns canned values on matched arguments and can optionally record its calls. It 
+can be used to define and assert a behavior of an explicit functional dependency of an SUT (system under test).</p>
+<h2 id="fake">Fake</h2>
+<p>A regular fake function can be created using a macro:</p>
+<p><code>(fake [ctx] config)</code></p>
+<p><a href="#fake-configuration">Config</a> is a vector which defines which values to return on different argument values:</p>
+<pre><code class="clj">(let [foo (f/fake [[1 2] &quot;foo&quot;
+                   [3 4 5] &quot;bar&quot;])]
+  (foo 1 2) ; =&gt; &quot;foo&quot;
+  (foo 3 4 5)) ; =&gt; &quot;bar&quot;
+</code></pre>
+
+<p>If passed arguments cannot be <a href="#argument-matching">matched</a> using specified config then the exception will be raised:</p>
+<pre><code class="clj">(foo 100 200) ; =&gt; raises &quot;Unexpected args are passed into fake: (100 200)&quot;
+</code></pre>
+
+<p>A fake is assumed to be called at least once inside the context. Otherwise <a href="#self-tests">self-test</a> exception 
+will be raised. In such case user should either modify a test, an SUT 
+or consider using an <a href="#optional-fake">optional fake</a>:</p>
+<pre><code class="clj">(f/with-fakes
+  (f/fake [[] nil])) ; =&gt; raises &quot;Self-test: no call detected for: non-optional fake ...&quot;
+</code></pre>
+
+<p>If you want to test a behavior (as in "assert that foo was called by an SUT") then do not rely on self-tests, 
+instead use <a href="#recorded-fake">recorded fakes</a> with explicit assertions.</p>
+<h2 id="optional-fake">Optional Fake</h2>
+<p><code>(optional-fake [ctx] config)</code></p>
+<p>It works the same as a regular fake but is not expected to be called in the context:</p>
+<pre><code class="clj">(f/with-fakes
+  (f/optional-fake [[] nil])) ; =&gt; ok, self-test will pass
+</code></pre>
+
+<p>Such fakes should be used to express the intent of the test writer, 
+for example when you have to provide a dependency to an SUT
+but this dependency is not related to the test case:</p>
+<pre><code class="clj">(defn process-payments
+  &quot;Does something with payments data but also requires a logger.&quot;
+  [data logger]
+  (assert (fn? logger))
+  ; ...
+  )
+
+(deftest good-payments-are-processed-without-error
+  (f/with-fakes
+    (let [; ...
+          ; we are not interested in how logger is going to be used, just stub it and forget
+          fake-logger (f/optional-fake [f/any? nil])]
+      (is (= :success (process-payments good-payments fake-logger))))))
+</code></pre>
+
+<h2 id="recorded-fake">Recorded Fake</h2>
 <p>-</p>
-<h2 id="fake"><code>fake</code></h2>
-<p>-</p>
-<h2 id="optional-fake"><code>optional-fake</code></h2>
-<p>-</p>
-<h2 id="recorded-fake"><code>recorded-fake</code></h2>
-<p>-</p>
+<h1 id="fake-configuration">Fake Configuration</h1>
+<p>Fake function config should contain pairs of args-matcher &amp; return-value. On fake invocation 
+argument matchers will be tested from top to bottom and on the first match the specified value will be returned.</p>
 <h1 id="argument-matching">Argument Matching</h1>
+<p>-</p>
+<h1 id="assertions">Assertions</h1>
+<p>-</p>
+<h1 id="protocol-fakes">Protocol Fakes</h1>
+<p>-</p>
+<h2 id="strict">Strict</h2>
+<p>-</p>
+<h2 id="nice">Nice</h2>
 <p>-</p>
 <h1 id="self-tests">Self-tests</h1>
 <p>-</p>
-<h1 id="asserts">Asserts</h1>
+<h2 id="unused-fakes">Unused Fakes</h2>
 <p>-</p>
-<h1 id="protocol-fakes">Protocol Fakes</h1>
+<h2 id="unchecked-fakes">Unchecked Fakes</h2>
 <p>-</p>
 <h1 id="monkey-patching">Monkey Patching</h1>
 <p>-</p>
 <h2 id="function-spy">Function Spy</h2>
 <p>Example:</p>
-<pre><code class="clj">(f/patch! #'funcs/sum
-              (f/recorded-fake [f/any? funcs/sum]))
+<pre><code class="clj">(f/patch! #'funcs/sum (f/recorded-fake [f/any? funcs/sum]))
 </code></pre>
 
 <h1 id="references">References</h1>
