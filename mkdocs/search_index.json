@@ -2,18 +2,13 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Introduction\n\n\nclj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.\nOne of the unique features of the framework is the ability to find unused fakes in order to help users write more concise test cases.\n\n\nReferences\n\n\nThe API was mainly inspired by \njMock\n and \nunittest.mock\n frameworks with\ndesign decisions loosely based on the \n\"Fifteen things I look for in an Isolation framework\" by Roy Osherove\n.\n\n\nSome alternative frameworks with isolation capabilities:\n\n\n\n\nclj-mock\n\n\nMidje\n\n\nspeclj\n\n\n\n\nAlso take at look at the article \n\"Isolating External Dependencies in Clojure\" by Joseph Wilk\n\nwhich discusses different approaches to mocking in Clojure.\n\n\nFor more detailed information about unit testing, TDD and test double patterns I'd recommend the books below:\n\n\n\n\n\"Test Driven Development: By Example\" by Kent Beck\n\n\n\"Growing Object-Oriented Software, Guided by Tests\" by Steve Freeman and Nat Pryce [\nsite\n]\n\n\n\"xUnit Test Patterns: Refactoring Test Code\" by Gerard Meszaros [\nsite\n]\n\n\n\n\nFeatures\n\n\n\n\nAll test doubles are named \"fakes\" to simplify terminology\n\n\nFakes can be created for:\n\n\nprotocol instances\n\n\nfunctions\n\n\n\n\n\n\n\"Nice\" and \"strict\" protocol fakes are supported\n\n\nMonkey patching is supported to fake implicit dependencies\n\n\nSelf-testing: automatically checks for unused fakes\n\n\nTest runner agnostic\n\n\nArrange-Act-Assert style testing\n\n\n\n\nInstallation\n\n\nAdd this to your dependencies in project.clj:\n\n\n[clj-fakes 0.1.1-SNAPSHOT]\n\n\n\n\nRequire in the namespace:\n\n\n; Clojure\n(ns unit.example\n  (:require\n    ; ...\n    [clj-fakes.core :as f]))\n\n; ClojureScript\n(ns unit.example\n  (:require\n    ; ...\n    [clj-fakes.core :as f :include-macros true]))\n\n\n\n\nQuickstart\n\n\nGuide", 
-            "title": "User Guide"
+            "text": "Introduction\n\n\nclj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.\n\n\nOne of the unique features of the framework is the ability to find unused fakes in order to help users write more concise test cases.\n\n\nFeatures\n\n\n\n\nAll test doubles are named \"fakes\" to simplify terminology\n\n\nFakes can be created for:\n\n\nprotocol instances\n\n\nfunctions\n\n\n\n\n\n\n\"Nice\" and \"strict\" protocol fakes are supported\n\n\nMonkey patching is supported to fake implicit dependencies\n\n\nSelf-testing: automatically checks for unused fakes\n\n\nTest runner agnostic\n\n\nArrange-Act-Assert style testing\n\n\n\n\nInstallation\n\n\nAdd this to your dependencies in project.clj:\n\n\n[clj-fakes \n0.1.1-SNAPSHOT\n]", 
+            "title": "Home"
         }, 
         {
             "location": "/#introduction", 
-            "text": "clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.\nOne of the unique features of the framework is the ability to find unused fakes in order to help users write more concise test cases.", 
+            "text": "clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.  One of the unique features of the framework is the ability to find unused fakes in order to help users write more concise test cases.", 
             "title": "Introduction"
-        }, 
-        {
-            "location": "/#references", 
-            "text": "The API was mainly inspired by  jMock  and  unittest.mock  frameworks with\ndesign decisions loosely based on the  \"Fifteen things I look for in an Isolation framework\" by Roy Osherove .  Some alternative frameworks with isolation capabilities:   clj-mock  Midje  speclj   Also take at look at the article  \"Isolating External Dependencies in Clojure\" by Joseph Wilk \nwhich discusses different approaches to mocking in Clojure.  For more detailed information about unit testing, TDD and test double patterns I'd recommend the books below:   \"Test Driven Development: By Example\" by Kent Beck  \"Growing Object-Oriented Software, Guided by Tests\" by Steve Freeman and Nat Pryce [ site ]  \"xUnit Test Patterns: Refactoring Test Code\" by Gerard Meszaros [ site ]", 
-            "title": "References"
         }, 
         {
             "location": "/#features", 
@@ -22,36 +17,91 @@
         }, 
         {
             "location": "/#installation", 
-            "text": "Add this to your dependencies in project.clj:  [clj-fakes 0.1.1-SNAPSHOT]  Require in the namespace:  ; Clojure\n(ns unit.example\n  (:require\n    ; ...\n    [clj-fakes.core :as f]))\n\n; ClojureScript\n(ns unit.example\n  (:require\n    ; ...\n    [clj-fakes.core :as f :include-macros true]))", 
+            "text": "Add this to your dependencies in project.clj:  [clj-fakes  0.1.1-SNAPSHOT ]", 
             "title": "Installation"
         }, 
         {
-            "location": "/#quickstart", 
-            "text": "", 
-            "title": "Quickstart"
+            "location": "/user-guide/", 
+            "text": "Namespaces\n\n\nThe public API is split into two namespaces:\n\n\n\n\nclj-fakes.core\n\n\nclj-fakes.context\n\n\n\n\nThis is how you could require them in Clojure and ClojureScript:\n\n\n; Clojure\n(ns unit.example\n  (:require\n    [clj-fakes.core :as f]\n    [clj-fakes.context :as fc]))\n\n; ClojureScript\n(ns unit.example\n  (:require\n    [clj-fakes.core :as f :include-macros true]\n    [clj-fakes.context :as fc :include-macros true]))\n\n\n\n\nThese namespaces contain almost the same set of members. The difference \nis that \ncore\n uses the implicit context and the \ncontext\n namespace\nfunctions require explicit context argument.\n\n\nThe private/internal API uses a \n-\n prefix and should not be used (e.g. \n-this-is-some-private-thing\n).\n\n\nContext\n\n\nContext is an object which stores all the information about\ncreated fakes (recorded calls, positions in code, etc.).\nAll fakes have to be created inside some context.\n\n\nTo create a new context use \nclj-fakes.context/context\n:\n\n\n; explicit context\n(let [ctx (fc/context)\n      foo (fc/recorded-fake ctx)]\n  ; ...\n)\n\n\n\n\nAlternatively a new context can be created with \n\nclj-fakes.core/with-fakes\n macro:\n\n\n; implicit context\n(f/with-fakes\n  ; note that now fake is created using a macro from core ns\n  (let [foo (f/recorded-fake)]\n    ; ...\n))\n\n\n\n\nThis approach is preferable since it requires less typing, automatically \nunpatches all patched vars and executes self-tests.\n\n\nInternally \nwith-fakes\n relies on a public dynamic var \n*context*\n which can be \nused to in your own helper functions.\n\n\nFunction Fakes\n\n\n-\n\n\nfake\n\n\n-\n\n\noptional-fake\n\n\n-\n\n\nrecorded-fake\n\n\n-\n\n\nArgument Matching\n\n\n-\n\n\nSelf-tests\n\n\n-\n\n\nAsserts\n\n\n-\n\n\nProtocol Fakes\n\n\n-\n\n\nMonkey Patching\n\n\n-\n\n\nFunction Spy\n\n\nExample:\n\n\n(f/patch! #'funcs/sum\n              (f/recorded-fake [f/any? funcs/sum]))\n\n\n\n\nReferences\n\n\nThe API was mainly inspired by \njMock\n and \nunittest.mock\n frameworks with\ndesign decisions loosely based on the \n\"Fifteen things I look for in an Isolation framework\" by Roy Osherove\n.\n\n\nSome alternative frameworks with isolation capabilities:\n\n\n\n\nclj-mock\n\n\nMidje\n\n\nspeclj\n\n\n\n\nAlso take at look at the article \n\"Isolating External Dependencies in Clojure\" by Joseph Wilk\n\nwhich discusses different approaches to mocking in Clojure.\n\n\nFor more detailed information about unit testing, TDD and test double patterns I'd recommend the books below:\n\n\n\n\n\"Test Driven Development: By Example\" by Kent Beck\n\n\n\"Growing Object-Oriented Software, Guided by Tests\" by Steve Freeman and Nat Pryce [\nsite\n]\n\n\n\"xUnit Test Patterns: Refactoring Test Code\" by Gerard Meszaros [\nsite\n]", 
+            "title": "User Guide"
         }, 
         {
-            "location": "/#guide", 
-            "text": "", 
-            "title": "Guide"
+            "location": "/user-guide/#namespaces", 
+            "text": "The public API is split into two namespaces:   clj-fakes.core  clj-fakes.context   This is how you could require them in Clojure and ClojureScript:  ; Clojure\n(ns unit.example\n  (:require\n    [clj-fakes.core :as f]\n    [clj-fakes.context :as fc]))\n\n; ClojureScript\n(ns unit.example\n  (:require\n    [clj-fakes.core :as f :include-macros true]\n    [clj-fakes.context :as fc :include-macros true]))  These namespaces contain almost the same set of members. The difference \nis that  core  uses the implicit context and the  context  namespace\nfunctions require explicit context argument.  The private/internal API uses a  -  prefix and should not be used (e.g.  -this-is-some-private-thing ).", 
+            "title": "Namespaces"
         }, 
         {
-            "location": "/dev/", 
-            "text": "Developer Guide\n\n\nSome notes for framework developers.\n\n\nTests\n\n\nAutorun Clojure tests: \nlein test-refresh\n\n\nRun ClojureScript tests: \nlein clean \n lein doo phantom test once\n\n(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)\n\n\nAutorun ClojureScript tests: \nfswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait.... \n lein clean \n lein doo rhino test once'\n\n\nDocumentation\n\n\nProject uses \nMkDocs\n to generate documentation static site.\n\n\nBuild: \nmkdocs build\n\n\nServe locally with automatic build: \nmkdocs serve\n\n\nDeploy docs to gh-pages branch: \nmkdocs gh-deploy --clean", 
+            "location": "/user-guide/#context", 
+            "text": "Context is an object which stores all the information about\ncreated fakes (recorded calls, positions in code, etc.).\nAll fakes have to be created inside some context.  To create a new context use  clj-fakes.context/context :  ; explicit context\n(let [ctx (fc/context)\n      foo (fc/recorded-fake ctx)]\n  ; ...\n)  Alternatively a new context can be created with  clj-fakes.core/with-fakes  macro:  ; implicit context\n(f/with-fakes\n  ; note that now fake is created using a macro from core ns\n  (let [foo (f/recorded-fake)]\n    ; ...\n))  This approach is preferable since it requires less typing, automatically \nunpatches all patched vars and executes self-tests.  Internally  with-fakes  relies on a public dynamic var  *context*  which can be \nused to in your own helper functions.", 
+            "title": "Context"
+        }, 
+        {
+            "location": "/user-guide/#function-fakes", 
+            "text": "-", 
+            "title": "Function Fakes"
+        }, 
+        {
+            "location": "/user-guide/#fake", 
+            "text": "-", 
+            "title": "fake"
+        }, 
+        {
+            "location": "/user-guide/#optional-fake", 
+            "text": "-", 
+            "title": "optional-fake"
+        }, 
+        {
+            "location": "/user-guide/#recorded-fake", 
+            "text": "-", 
+            "title": "recorded-fake"
+        }, 
+        {
+            "location": "/user-guide/#argument-matching", 
+            "text": "-", 
+            "title": "Argument Matching"
+        }, 
+        {
+            "location": "/user-guide/#self-tests", 
+            "text": "-", 
+            "title": "Self-tests"
+        }, 
+        {
+            "location": "/user-guide/#asserts", 
+            "text": "-", 
+            "title": "Asserts"
+        }, 
+        {
+            "location": "/user-guide/#protocol-fakes", 
+            "text": "-", 
+            "title": "Protocol Fakes"
+        }, 
+        {
+            "location": "/user-guide/#monkey-patching", 
+            "text": "-", 
+            "title": "Monkey Patching"
+        }, 
+        {
+            "location": "/user-guide/#function-spy", 
+            "text": "Example:  (f/patch! #'funcs/sum\n              (f/recorded-fake [f/any? funcs/sum]))", 
+            "title": "Function Spy"
+        }, 
+        {
+            "location": "/user-guide/#references", 
+            "text": "The API was mainly inspired by  jMock  and  unittest.mock  frameworks with\ndesign decisions loosely based on the  \"Fifteen things I look for in an Isolation framework\" by Roy Osherove .  Some alternative frameworks with isolation capabilities:   clj-mock  Midje  speclj   Also take at look at the article  \"Isolating External Dependencies in Clojure\" by Joseph Wilk \nwhich discusses different approaches to mocking in Clojure.  For more detailed information about unit testing, TDD and test double patterns I'd recommend the books below:   \"Test Driven Development: By Example\" by Kent Beck  \"Growing Object-Oriented Software, Guided by Tests\" by Steve Freeman and Nat Pryce [ site ]  \"xUnit Test Patterns: Refactoring Test Code\" by Gerard Meszaros [ site ]", 
+            "title": "References"
+        }, 
+        {
+            "location": "/dev-guide/", 
+            "text": "Some notes for framework developers.\n\n\nTests\n\n\nAutorun Clojure tests: \nlein test-refresh\n\n\nRun ClojureScript tests: \nlein clean \n lein doo phantom test once\n\n(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)\n\n\nAutorun ClojureScript tests: \nfswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait.... \n lein clean \n lein doo rhino test once'\n\n\nDocumentation\n\n\nProject uses \nMkDocs\n to generate documentation static site.\n\n\nBuild: \nmkdocs build\n\n\nServe locally with automatic build: \nmkdocs serve\n\n\nDeploy docs to gh-pages branch: \nmkdocs gh-deploy --clean", 
             "title": "Developer Guide"
         }, 
         {
-            "location": "/dev/#developer-guide", 
-            "text": "Some notes for framework developers.", 
-            "title": "Developer Guide"
-        }, 
-        {
-            "location": "/dev/#tests", 
+            "location": "/dev-guide/#tests", 
             "text": "Autorun Clojure tests:  lein test-refresh  Run ClojureScript tests:  lein clean   lein doo phantom test once \n(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)  Autorun ClojureScript tests:  fswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait....   lein clean   lein doo rhino test once'", 
             "title": "Tests"
         }, 
         {
-            "location": "/dev/#documentation", 
+            "location": "/dev-guide/#documentation", 
             "text": "Project uses  MkDocs  to generate documentation static site.  Build:  mkdocs build  Serve locally with automatic build:  mkdocs serve  Deploy docs to gh-pages branch:  mkdocs gh-deploy --clean", 
             "title": "Documentation"
         }
