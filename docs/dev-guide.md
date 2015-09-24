@@ -1,4 +1,3 @@
-# Developer Guide
 Some notes for framework developers.
 
 ## Tests

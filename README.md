@@ -20,8 +20,8 @@ Core functionality is ready. Documentation and more features are on the way.
 ## Installation
 Add this to your dependencies in project.clj:
 
-```
-[clj-fakes 0.1.1-SNAPSHOT]
+```clj
+[clj-fakes "0.1.1-SNAPSHOT"]
 ```
 
 ## Examples

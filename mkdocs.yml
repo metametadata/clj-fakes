@@ -6,5 +6,6 @@ repo_url: https://github.com/metametadata/clj-fakes/
 theme: flatly
 
 pages:
-- User Guide: 'index.md'
-- Developer Guide: 'dev.md'
+- Home: 'index.md'
+- User Guide: 'user-guide.md'
+- Developer Guide: 'dev-guide.md'
