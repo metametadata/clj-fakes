@@ -1,6 +1,8 @@
 # clj-fakes
 clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.
 
+One of the unique features of the framework is the ability to find unused fakes in order to help users write more concise test cases.
+
 [![Clojars Project](http://clojars.org/clj-fakes/latest-version.svg)](http://clojars.org/clj-fakes)
 
 ## Features
