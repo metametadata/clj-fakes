@@ -22,8 +22,10 @@ This is how you could require them in Clojure and ClojureScript:
 ```
 
 These namespaces contain almost the same set of members. The difference 
-is that `core` uses the implicit context and the `context` namespace
-functions require explicit context argument.
+is that `core` uses an implicit context and the `context` namespace
+functions require an explicit context argument.
+
+For your convenience functions which don't rely on a context can also be sometimes found in both namespaces (e.g. `f/any?` is the same as `fc/any?`).
 
 The private/internal API uses a `-` prefix and should not be used (e.g. `-this-is-some-private-thing`).
 
