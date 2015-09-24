@@ -61,25 +61,103 @@ This approach is preferable since it requires less typing, automatically
 unpatches all patched vars and executes self-tests.
 
 Internally `with-fakes` relies on a public dynamic var `*context*` which can be 
-used to in your own helper functions.
+used in your own helper functions.
 
 # Function Fakes
 
+Fake is a function which returns canned values on matched arguments and can optionally record its calls. It 
+can be used to define and assert a behavior of an explicit functional dependency of an SUT (system under test).
+
+## Fake
+
+A regular fake function can be created using a macro:
+
+`(fake [ctx] config)`
+
+[Config](#fake-configuration) is a vector which defines which values to return on different argument values:
+
+```clj
+(let [foo (f/fake [[1 2] "foo"
+                   [3 4 5] "bar"])]
+  (foo 1 2) ; => "foo"
+  (foo 3 4 5)) ; => "bar"
+```
+
+If passed arguments cannot be [matched](#argument-matching) using specified config then the exception will be raised:
+
+```clj
+(foo 100 200) ; => raises "Unexpected args are passed into fake: (100 200)"
+```
+
+A fake is assumed to be called at least once inside the context. Otherwise [self-test](#self-tests) exception 
+will be raised. In such case user should either modify a test, an SUT 
+or consider using an [optional fake](#optional-fake):
+
+```clj
+(f/with-fakes
+  (f/fake [[] nil])) ; => raises "Self-test: no call detected for: non-optional fake ..."
+```
+
+If you want to test a behavior (as in "assert that foo was called by an SUT") then do not rely on self-tests, 
+instead use [recorded fakes](#recorded-fake) with explicit assertions.
+
+## Optional Fake
+
+`(optional-fake [ctx] config)`
+
+It works the same as a regular fake but is not expected to be called in the context:
+
+```clj
+(f/with-fakes
+  (f/optional-fake [[] nil])) ; => ok, self-test will pass
+```
+
+Such fakes should be used to express the intent of the test writer, 
+for example when you have to provide a dependency to an SUT
+but this dependency is not related to the test case:
+ 
+```clj
+(defn process-payments
+  "Does something with payments data but also requires a logger."
+  [data logger]
+  (assert (fn? logger))
+  ; ...
+  )
+
+(deftest good-payments-are-processed-without-error
+  (f/with-fakes
+    (let [; ...
+          ; we are not interested in how logger is going to be used, just stub it and forget
+          fake-logger (f/optional-fake [f/any? nil])]
+      (is (= :success (process-payments good-payments fake-logger))))))
+```
+
+## Recorded Fake
+
 -
 
-## `fake`
+# Fake Configuration
 
--
-
-## `optional-fake`
-
--
-
-## `recorded-fake`
-
--
+Fake function config should contain pairs of args-matcher & return-value. On fake invocation 
+argument matchers will be tested from top to bottom and on the first match the specified value will be returned.
 
 # Argument Matching
+
+-
+
+# Assertions
+
+-
+
+# Protocol Fakes
+
+-
+
+## Strict
+
+-
+
+## Nice
 
 -
 
@@ -87,11 +165,11 @@ used to in your own helper functions.
 
 -
 
-# Asserts
+## Unused Fakes
 
 -
 
-# Protocol Fakes
+## Unchecked Fakes
 
 -
 
@@ -104,8 +182,7 @@ used to in your own helper functions.
 Example:
 
 ```clj
-(f/patch! #'funcs/sum
-              (f/recorded-fake [f/any? funcs/sum]))
+(f/patch! #'funcs/sum (f/recorded-fake [f/any? funcs/sum]))
 ```
 
 # References
