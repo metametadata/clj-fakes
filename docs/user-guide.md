@@ -100,7 +100,7 @@ or consider using an [optional fake](#optional-fake):
 
 If your test scenario focuses on testing a behavior (e.g. "assert that foo was called by an SUT") then do not rely on self-tests, 
 instead use [recorded fakes](#recorded-fake) with explicit assertions. 
-Self-tests are more about checking sensibility of provided preconditions than 
+Self-tests are more about checking usefulness of provided preconditions than 
 about testing expected behavior.
 
 ## Optional Fake
@@ -134,23 +134,64 @@ but this dependency is not really related to the test case:
       (is (= :success (process-payments good-payments fake-logger))))))
 ```
 
-As you may have noticed, `config` argument can be omitted. In such case fake will be created 
-with `(default-fake-config)` which allows any arguments to be passed on invocation.
+As you may have noticed, `config` argument can be omitted. 
+In such case fake will be created with `(default-fake-config)` 
+which allows any arguments to be passed on invocation.
 
 ## Recorded Fake
 
--
+Invocations of this fake are recorded so that they can later be asserted:
+
+`(recorded-fake [ctx] [config])`
+ 
+Use `calls` function in order to get all recorded invocations for the specified 
+recorded fake. 
+It can also return all the recorded calls in the context if fake is not specified:
+
+```clj
+(let [foo (f/recorded-fake [[integer? integer?] #(+ %1 %2)])
+      bar (f/recorded-fake [[integer? integer?] #(* %1 %2)])]
+  (foo 1 2)
+  (bar 5 6)
+  (foo 7 8)
+       
+  (f/calls foo)
+  ; => [{:args [1 2] :return-value 3}
+  ;     {:args [7 8] :return-value 15}]
+
+  (f/calls)
+  ; => [[foo {:args [1 2] :return-value 3}]
+  ;     [bar {:args [5 6] :return-value 30}]
+  ;     [foo {:args [7 8] :return-value 15}]]
+)
+```
+
+Recorded fake must be checked using one of the [assertions](#assertions) provided by the framework or
+be marked as checked explicitly using `mark-checked` function; otherwise, self-test will trigger:
+
+```clj
+(f/with-fakes
+  (f/recorded-fake)) ; => raises "Self-test: no check performed on: recorded fake ..."
+```
+
+```clj
+(f/with-fakes
+  (let [foo (f/recorded-fake)]
+    (f/was-called foo))) ; => ok, self-test will pass
+```
+
+```clj
+(f/with-fakes
+  (f/mark-checked (f/recorded-fake))) ; => ok, self-test will pass
+```
 
 # Fake Configuration
 
-Fake function config should contain pairs of args-matcher & return-value. On fake invocation 
-argument matchers will be tested from top to bottom and on the first match the specified value will be returned.
+Fake function config should contain pairs of args-matcher & return-value. 
+On fake invocation argument matchers will be tested from top to bottom and 
+on the first match the specified value will be returned.
 
 # Argument Matching
-
--
-
-# Assertions
 
 -
 
@@ -163,6 +204,10 @@ argument matchers will be tested from top to bottom and on the first match the s
 -
 
 ## Nice
+
+-
+
+# Assertions
 
 -
 

@@ -95,8 +95,8 @@
 (f/-deftest
   "call args and return values are recorded for several fakes"
   (f/with-fakes
-    (let [foo (f/recorded-fake [f/any? #(+ %1 %2)])
-          bar (f/recorded-fake [f/any? #(* %1 %2)])]
+    (let [foo (f/recorded-fake [[integer? integer?] #(+ %1 %2)])
+          bar (f/recorded-fake [[integer? integer?] #(* %1 %2)])]
       (f/mark-checked foo)
       (f/mark-checked bar)
 
