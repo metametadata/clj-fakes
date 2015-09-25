@@ -78,7 +78,7 @@ Add this to your dependencies in project.clj:
 
 ```clj
 (f/with-fakes
-  (f/recorded-fake [f/any? nil]))
+  (f/recorded-fake))
 ; will raise "Self-test: no check performed on: recorded fake ..."
 ```
 

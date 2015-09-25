@@ -190,10 +190,13 @@
   {:pre [ctx f]}
   (get (:positions @ctx) f))
 
+(def default-fake-config
+  "With this config fake will return a unique value for any combination of args."
+  [any? (fn [& _] (-fake-return-value))])
+
 (defn optional-fake
-  [ctx config]
-  {:pre [ctx]}
-  (-optional-fake ctx (-config->f config)))
+  ([ctx] (optional-fake ctx default-fake-config))
+  ([ctx config] {:pre [ctx]} (-optional-fake ctx (-config->f config))))
 
 #?(:clj
    (defn -emit-fake-fn-call-with-position
@@ -235,10 +238,6 @@
      form must be passed if this macro is called from another macro in order to correctly determine position."
      [ctx config]
      `(fake* ~ctx ~&form ~config)))
-
-(def default-fake-config
-  "With this config fake will return a unique value for any combination of args."
-  [any? (fn [& _] (-fake-return-value))])
 
 (defn recorded-fake**
   "This function is the same as recorded-fake macro but position must be passed explicitly."

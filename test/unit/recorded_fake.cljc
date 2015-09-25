@@ -14,16 +14,30 @@
                )
              ]))
 
+(defn recorded-fake
+  ([]
+   (let [fake-fn (f/recorded-fake)]
+     ; supress self-test warnings
+     (f/mark-checked fake-fn)
+     fake-fn))
+
+  ([config]
+   (let [fake-fn (f/recorded-fake config)]
+     ; supress self-test warnings
+     (f/mark-checked fake-fn)
+     fake-fn)))
+
+; we can't pass a macro as an arg thus it's wrapped into a function
+(defn ctx-recorded-fake
+  ([ctx] (fc/recorded-fake ctx))
+  ([ctx config] (fc/recorded-fake ctx config)))
+
 (f/-deftest
   "fake contract"
   (testing-fake-fn-contract
-    ; we can't pass a macro into a function so let's wrap it into a func
-    (fn [config]
-      (let [fake-fn (f/recorded-fake config)]
-        ; supress self-test warnings
-        (f/mark-checked fake-fn)
-        fake-fn))
-    (fn [ctx config] (fc/recorded-fake ctx config))))
+    recorded-fake
+    ctx-recorded-fake
+    false))
 
 (f/-deftest
   "there are no calls recorded if fake was not called"
@@ -118,37 +132,10 @@
       (is (= [] (f/calls))))))
 
 (f/-deftest
-  "config is not required"
+  "(just in case) calls are still recorded if config is not specified"
   (f/with-fakes
     (let [foo (f/recorded-fake)]
       (f/mark-checked foo)
 
       (let [result (foo 1 2 3)]
         (is (= [{:args [1 2 3] :return-value result}] (f/calls foo)))))))
-
-(f/-deftest
-  "config is not required (using explicit context)"
-  (let [ctx (fc/context)
-        foo (fc/recorded-fake ctx)
-        result (foo 1 2 3)]
-    (is (= [{:args [1 2 3] :return-value result}] (fc/calls ctx foo)))))
-
-(f/-deftest
-  "without config fake returns unique values on each call"
-  (f/with-fakes
-    (let [foo (f/recorded-fake)]
-      (f/mark-checked foo)
-      (is (not= (foo 1 2 3) (foo 1 2 3) (foo 100) (foo))))))
-
-(f/-deftest
-  "without config fake returns unique values on each call (using explicit context)"
-  (let [ctx (fc/context)
-        foo (fc/recorded-fake ctx)]
-    (is (not= (foo 1 2 3) (foo 1 2 3) (foo 100) (foo)))))
-
-(f/-deftest
-  "without config fake returns value of sensible type"
-  (f/with-fakes
-    (let [foo (f/recorded-fake)]
-      (f/mark-checked foo)
-      (is (satisfies? fc/FakeReturnValue (foo))))))

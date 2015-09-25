@@ -16,4 +16,4 @@
 
 (f/-deftest
   "fake contract"
-  (testing-fake-fn-contract f/optional-fake fc/optional-fake))
+  (testing-fake-fn-contract f/optional-fake fc/optional-fake false))

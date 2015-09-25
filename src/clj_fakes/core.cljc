@@ -42,8 +42,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Function fakes
 (defn optional-fake
-  [config]
-  (fc/optional-fake *context* config))
+  ([] (fc/optional-fake *context*))
+  ([config] (fc/optional-fake *context* config)))
 
 (defn -position
   [f]

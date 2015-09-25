@@ -19,4 +19,5 @@
   (testing-fake-fn-contract
     ; we can't pass a macro into a function so let's wrap it into a func
     (fn [config] (f/fake config))
-    (fn [ctx config] (fc/fake ctx config))))
+    (fn [ctx config] (fc/fake ctx config))
+    true))

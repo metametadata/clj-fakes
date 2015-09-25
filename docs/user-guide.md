@@ -74,7 +74,7 @@ A regular fake function can be created using a macro:
 
 `(fake [ctx] config)`
 
-[Config](#fake-configuration) is a vector which defines which values to return on different argument values:
+[Config](#fake-configuration) is a vector which defines which values to return for different arguments:
 
 ```clj
 (let [foo (f/fake [[1 2] "foo"
@@ -98,29 +98,31 @@ or consider using an [optional fake](#optional-fake):
   (f/fake [[] nil])) ; => raises "Self-test: no call detected for: non-optional fake ..."
 ```
 
-If you want to test a behavior (as in "assert that foo was called by an SUT") then do not rely on self-tests, 
-instead use [recorded fakes](#recorded-fake) with explicit assertions.
+If your test scenario focuses on testing a behavior (e.g. "assert that foo was called by an SUT") then do not rely on self-tests, 
+instead use [recorded fakes](#recorded-fake) with explicit assertions. 
+Self-tests are more about checking sensibility of provided preconditions than 
+about testing expected behavior.
 
 ## Optional Fake
 
-`(optional-fake [ctx] config)`
+`(optional-fake [ctx] [config])`
 
-It works the same as a regular fake but is not expected to be called in the context:
+It works the same as a regular fake but is not expected to be always called in the context:
 
 ```clj
 (f/with-fakes
-  (f/optional-fake [[] nil])) ; => ok, self-test will pass
+  (f/optional-fake [[1 2] 3])) ; => ok, self-test will pass
 ```
 
 Such fakes should be used to express the intent of the test writer, 
-for example when you have to provide a dependency to an SUT
-but this dependency is not related to the test case:
+for example, when you have to provide a dependency to an SUT,
+but this dependency is not really related to the test case:
  
 ```clj
 (defn process-payments
-  "Does something with payments data but also requires a logger."
+  "Processor requires a logger."
   [data logger]
-  (assert (fn? logger))
+  {:pre [(fn? logger)]}
   ; ...
   )
 
@@ -128,9 +130,12 @@ but this dependency is not related to the test case:
   (f/with-fakes
     (let [; ...
           ; we are not interested in how logger is going to be used, just stub it and forget
-          fake-logger (f/optional-fake [f/any? nil])]
+          fake-logger (f/optional-fake)]
       (is (= :success (process-payments good-payments fake-logger))))))
 ```
+
+As you may have noticed, `config` argument can be omitted. In such case fake will be created 
+with `(default-fake-config)` which allows any arguments to be passed on invocation.
 
 ## Recorded Fake
 

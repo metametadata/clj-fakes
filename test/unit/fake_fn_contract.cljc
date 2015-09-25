@@ -15,7 +15,7 @@
 (defn testing-fake-fn-contract
   "Parametrized test which defines a contract for all function fakes.
   Unfortunately it will short-circuit on first uncaught exception."
-  [fake-fn ctx-fake-fn]
+  [fake-fn ctx-fake-fn config-required?]
 
   (testing "fake can call a function for the simplest matcher"
     (f/with-fakes
@@ -93,4 +93,21 @@
         (is (= 1 (foo)))
         (is (= 1 (foo 2)))
         (is (= 1 (foo 3 4))))))
+
+  (when-not config-required?
+    (testing "without config fake returns unique values on each call"
+      (f/with-fakes
+        (let [foo (fake-fn)]
+          (is (not= (foo 1 2 3) (foo 1 2 3) (foo 100) (foo))))))
+
+    (testing "without config fake returns unique values on each call (using explicit context)"
+      (let [ctx (fc/context)
+            foo (ctx-fake-fn ctx)]
+        (is (not= (foo 1 2 3) (foo 1 2 3) (foo 100) (foo)))))
+
+    #_(testing "without config fake returns value of sensible type"
+      (f/with-fakes
+        (let [foo (fake-fn)]
+          (is (satisfies? fc/FakeReturnValue (foo))))))
+    )
   )
