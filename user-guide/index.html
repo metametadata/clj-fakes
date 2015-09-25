@@ -207,7 +207,7 @@ can be used to define and assert a behavior of an explicit functional dependency
 <h2 id="fake">Fake</h2>
 <p>A regular fake function can be created using a macro:</p>
 <p><code>(fake [ctx] config)</code></p>
-<p><a href="#fake-configuration">Config</a> is a vector which defines which values to return on different argument values:</p>
+<p><a href="#fake-configuration">Config</a> is a vector which defines which values to return for different arguments:</p>
 <pre><code class="clj">(let [foo (f/fake [[1 2] &quot;foo&quot;
                    [3 4 5] &quot;bar&quot;])]
   (foo 1 2) ; =&gt; &quot;foo&quot;
@@ -225,22 +225,24 @@ or consider using an <a href="#optional-fake">optional fake</a>:</p>
   (f/fake [[] nil])) ; =&gt; raises &quot;Self-test: no call detected for: non-optional fake ...&quot;
 </code></pre>
 
-<p>If you want to test a behavior (as in "assert that foo was called by an SUT") then do not rely on self-tests, 
-instead use <a href="#recorded-fake">recorded fakes</a> with explicit assertions.</p>
+<p>If your test scenario focuses on testing a behavior (e.g. "assert that foo was called by an SUT") then do not rely on self-tests, 
+instead use <a href="#recorded-fake">recorded fakes</a> with explicit assertions. 
+Self-tests are more about checking sensibility of provided preconditions than 
+about testing expected behavior.</p>
 <h2 id="optional-fake">Optional Fake</h2>
-<p><code>(optional-fake [ctx] config)</code></p>
-<p>It works the same as a regular fake but is not expected to be called in the context:</p>
+<p><code>(optional-fake [ctx] [config])</code></p>
+<p>It works the same as a regular fake but is not expected to be always called in the context:</p>
 <pre><code class="clj">(f/with-fakes
-  (f/optional-fake [[] nil])) ; =&gt; ok, self-test will pass
+  (f/optional-fake [[1 2] 3])) ; =&gt; ok, self-test will pass
 </code></pre>
 
 <p>Such fakes should be used to express the intent of the test writer, 
-for example when you have to provide a dependency to an SUT
-but this dependency is not related to the test case:</p>
+for example, when you have to provide a dependency to an SUT,
+but this dependency is not really related to the test case:</p>
 <pre><code class="clj">(defn process-payments
-  &quot;Does something with payments data but also requires a logger.&quot;
+  &quot;Processor requires a logger.&quot;
   [data logger]
-  (assert (fn? logger))
+  {:pre [(fn? logger)]}
   ; ...
   )
 
@@ -248,10 +250,12 @@ but this dependency is not related to the test case:</p>
   (f/with-fakes
     (let [; ...
           ; we are not interested in how logger is going to be used, just stub it and forget
-          fake-logger (f/optional-fake [f/any? nil])]
+          fake-logger (f/optional-fake)]
       (is (= :success (process-payments good-payments fake-logger))))))
 </code></pre>
 
+<p>As you may have noticed, <code>config</code> argument can be omitted. In such case fake will be created 
+with <code>(default-fake-config)</code> which allows any arguments to be passed on invocation.</p>
 <h2 id="recorded-fake">Recorded Fake</h2>
 <p>-</p>
 <h1 id="fake-configuration">Fake Configuration</h1>
