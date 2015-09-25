@@ -121,14 +121,14 @@
         <li class="main "><a href="#argument-matching">Argument Matching</a></li>
         
     
-        <li class="main "><a href="#assertions">Assertions</a></li>
-        
-    
         <li class="main "><a href="#protocol-fakes">Protocol Fakes</a></li>
         
             <li><a href="#strict">Strict</a></li>
         
             <li><a href="#nice">Nice</a></li>
+        
+    
+        <li class="main "><a href="#assertions">Assertions</a></li>
         
     
         <li class="main "><a href="#self-tests">Self-tests</a></li>
@@ -227,7 +227,7 @@ or consider using an <a href="#optional-fake">optional fake</a>:</p>
 
 <p>If your test scenario focuses on testing a behavior (e.g. "assert that foo was called by an SUT") then do not rely on self-tests, 
 instead use <a href="#recorded-fake">recorded fakes</a> with explicit assertions. 
-Self-tests are more about checking sensibility of provided preconditions than 
+Self-tests are more about checking usefulness of provided preconditions than 
 about testing expected behavior.</p>
 <h2 id="optional-fake">Optional Fake</h2>
 <p><code>(optional-fake [ctx] [config])</code></p>
@@ -254,22 +254,60 @@ but this dependency is not really related to the test case:</p>
       (is (= :success (process-payments good-payments fake-logger))))))
 </code></pre>
 
-<p>As you may have noticed, <code>config</code> argument can be omitted. In such case fake will be created 
-with <code>(default-fake-config)</code> which allows any arguments to be passed on invocation.</p>
+<p>As you may have noticed, <code>config</code> argument can be omitted. 
+In such case fake will be created with <code>(default-fake-config)</code> 
+which allows any arguments to be passed on invocation.</p>
 <h2 id="recorded-fake">Recorded Fake</h2>
-<p>-</p>
+<p>Invocations of this fake are recorded so that they can later be asserted:</p>
+<p><code>(recorded-fake [ctx] [config])</code></p>
+<p>Use <code>calls</code> function in order to get all recorded invocations for the specified 
+recorded fake. 
+It can also return all the recorded calls in the context if fake is not specified:</p>
+<pre><code class="clj">(let [foo (f/recorded-fake [[integer? integer?] #(+ %1 %2)])
+      bar (f/recorded-fake [[integer? integer?] #(* %1 %2)])]
+  (foo 1 2)
+  (bar 5 6)
+  (foo 7 8)
+
+  (f/calls foo)
+  ; =&gt; [{:args [1 2] :return-value 3}
+  ;     {:args [7 8] :return-value 15}]
+
+  (f/calls)
+  ; =&gt; [[foo {:args [1 2] :return-value 3}]
+  ;     [bar {:args [5 6] :return-value 30}]
+  ;     [foo {:args [7 8] :return-value 15}]]
+)
+</code></pre>
+
+<p>Recorded fake must be checked using one of the <a href="#assertions">assertions</a> provided by the framework or
+be marked as checked explicitly using <code>mark-checked</code> function; otherwise, self-test will trigger:</p>
+<pre><code class="clj">(f/with-fakes
+  (f/recorded-fake)) ; =&gt; raises &quot;Self-test: no check performed on: recorded fake ...&quot;
+</code></pre>
+
+<pre><code class="clj">(f/with-fakes
+  (let [foo (f/recorded-fake)]
+    (f/was-called foo))) ; =&gt; ok, self-test will pass
+</code></pre>
+
+<pre><code class="clj">(f/with-fakes
+  (f/mark-checked (f/recorded-fake))) ; =&gt; ok, self-test will pass
+</code></pre>
+
 <h1 id="fake-configuration">Fake Configuration</h1>
-<p>Fake function config should contain pairs of args-matcher &amp; return-value. On fake invocation 
-argument matchers will be tested from top to bottom and on the first match the specified value will be returned.</p>
+<p>Fake function config should contain pairs of args-matcher &amp; return-value. 
+On fake invocation argument matchers will be tested from top to bottom and 
+on the first match the specified value will be returned.</p>
 <h1 id="argument-matching">Argument Matching</h1>
-<p>-</p>
-<h1 id="assertions">Assertions</h1>
 <p>-</p>
 <h1 id="protocol-fakes">Protocol Fakes</h1>
 <p>-</p>
 <h2 id="strict">Strict</h2>
 <p>-</p>
 <h2 id="nice">Nice</h2>
+<p>-</p>
+<h1 id="assertions">Assertions</h1>
 <p>-</p>
 <h1 id="self-tests">Self-tests</h1>
 <p>-</p>
