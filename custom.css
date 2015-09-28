@@ -1,0 +1,11 @@
+/* highlight subsections in TOC */
+.bs-sidenav > li:not(.main) {
+  margin-left: 1em;
+}
+
+/* add scrolling to TOC
+.bs-sidebar {
+  overflow-y: auto;
+  max-height: 79%;
+}
+*/

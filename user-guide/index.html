@@ -15,6 +15,7 @@
         <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
         <link rel="stylesheet" href="../css/highlight.css">
         <link href="../css/base.css" rel="stylesheet">
+        <link href="../custom.css" rel="stylesheet">
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -121,8 +122,6 @@
         
     
         <li class="main "><a href="#argument-matching">Argument Matching</a></li>
-        
-            <li><a href="#protocol">Protocol</a></li>
         
             <li><a href="#functional-matcher">Functional matcher</a></li>
         
@@ -325,7 +324,6 @@ on the first match the specified value will be returned. If return value is a fu
 It is used by <code>optional-fake</code> and <code>recorded-fake</code> functions when user 
 doesn't specify the config explicitly.</p>
 <h1 id="argument-matching">Argument Matching</h1>
-<h2 id="protocol">Protocol</h2>
 <p>Argument matcher must implement an <code>fc/ArgsMatcher</code> protocol:</p>
 <pre><code class="clj">(defprotocol ArgsMatcher
   (args-match? [this args] &quot;Should return true or false.&quot;))
@@ -384,12 +382,22 @@ Example:</p>
 </code></pre>
 
 <h1 id="protocol-fakes">Protocol Fakes</h1>
+<p>Framework defines two new macros for reifying protocols 
+using functional fakes described earlier. So, for example, 
+you can record and assert method calls on reified instances.</p>
+<p>The <code>reify-fake</code> macro is very similar to <code>reify</code>; in particular, 
+created instance will raise an exception 
+on calling protocol method which is not defined. On the other hand, 
+<code>reify-nice-fake</code> is able to automatically generate implementations 
+for methods which are not explicitly defined by user.</p>
+<p>There are some subtleties, so here's a table to give you an overview of 
+which features are currently supported:</p>
 <table>
 <thead>
 <tr>
 <th>Feature</th>
-<th>reify-fake</th>
-<th>reify-nice-fake</th>
+<th><code>reify-fake</code></th>
+<th><code>reify-nice-fake</code></th>
 </tr>
 </thead>
 <tbody>
