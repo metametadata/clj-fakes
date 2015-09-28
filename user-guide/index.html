@@ -117,8 +117,18 @@
     
         <li class="main "><a href="#fake-configuration">Fake Configuration</a></li>
         
+            <li><a href="#default-fake-config">default-fake-config</a></li>
+        
     
         <li class="main "><a href="#argument-matching">Argument Matching</a></li>
+        
+            <li><a href="#protocol">Protocol</a></li>
+        
+            <li><a href="#functional-matcher">Functional matcher</a></li>
+        
+            <li><a href="#vector-matcher">Vector matcher</a></li>
+        
+            <li><a href="#any">any?</a></li>
         
     
         <li class="main "><a href="#protocol-fakes">Protocol Fakes</a></li>
@@ -281,7 +291,7 @@ It can also return all the recorded calls in the context if fake is not specifie
 </code></pre>
 
 <p>Recorded fake must be checked using one of the <a href="#assertions">assertions</a> provided by the framework or
-be marked as checked explicitly using <code>mark-checked</code> function; otherwise, self-test will trigger:</p>
+be marked as checked explicitly using <code>mark-checked</code> function; otherwise, self-test will raise an exception:</p>
 <pre><code class="clj">(f/with-fakes
   (f/recorded-fake)) ; =&gt; raises &quot;Self-test: no check performed on: recorded fake ...&quot;
 </code></pre>
@@ -296,11 +306,83 @@ be marked as checked explicitly using <code>mark-checked</code> function; otherw
 </code></pre>
 
 <h1 id="fake-configuration">Fake Configuration</h1>
-<p>Fake function config should contain pairs of args-matcher &amp; return-value. 
-On fake invocation argument matchers will be tested from top to bottom and 
-on the first match the specified value will be returned.</p>
+<p>Fake config should contain pairs of argument matcher and return value:</p>
+<pre><code class="clj">[args-matcher1 fn-or-value1
+args-matcher2 fn-or-value2 ...]
+</code></pre>
+
+<p>On fake invocation argument matchers will be tested from top to bottom and 
+on the first match the specified value will be returned. If return value is a function than it will be called with passed arguments to generate the return value at runtime:</p>
+<pre><code class="clj">(let [foo (f/fake [[1 2] 100
+                   [3 4] #(+ %1 %2)])]
+  (foo 1 2) ; =&gt; 100
+  (foo 3 4)) ; =&gt; 7
+</code></pre>
+
+<h2 id="default-fake-config">default-fake-config</h2>
+<p><code>fc/default-fake-config</code></p>
+<p>This config accepts any arguments and returns a new unique value on each call.
+It is used by <code>optional-fake</code> and <code>recorded-fake</code> functions when user 
+doesn't specify the config explicitly.</p>
 <h1 id="argument-matching">Argument Matching</h1>
-<p>-</p>
+<h2 id="protocol">Protocol</h2>
+<p>Argument matcher must implement an <code>fc/ArgsMatcher</code> protocol:</p>
+<pre><code class="clj">(defprotocol ArgsMatcher
+  (args-match? [this args] &quot;Should return true or false.&quot;))
+</code></pre>
+
+<p>In most cases you won't need to create instances of this protocol manually 
+because framework provides functional and vector matchers which are useful in most cases.</p>
+<h2 id="functional-matcher">Functional matcher</h2>
+<p>Functional matcher is a function which takes a vector of call arguments and returns true/false. 
+Example:</p>
+<pre><code class="clj">(let [foo (f/fake [#(odd? (count %)) &quot;odd number of args&quot;
+                   #(even? (count %)) &quot;even number of args&quot;])]
+  (foo 1 2) ; =&gt; &quot;even number of args&quot;
+  (foo 1 2 3)) ; =&gt; &quot;odd number of args&quot;
+</code></pre>
+
+<p>It's actually implemented like this:</p>
+<pre><code class="clj">(extend-type #?(:clj  clojure.lang.Fn
+                :cljs function)
+  ArgsMatcher
+  (args-match? [this args]
+    (this args)))
+</code></pre>
+
+<h2 id="vector-matcher">Vector matcher</h2>
+<p>Vector matchers were already used all other this guide, they looks like this:</p>
+<pre><code class="clj">[value-or-function1 value-or-function2 ...]
+</code></pre>
+
+<p>Let's look at the demo:</p>
+<pre><code class="clj">(let [foo (f/fake [[] &quot;no args&quot;
+                   [[]] &quot;empty vector&quot;
+                   [1 2] &quot;1 2&quot;
+                   [integer?] &quot;integer&quot;
+                   [str?] &quot;string&quot;])]
+  (foo) ; =&gt; &quot;no args&quot;
+  (foo []) ; =&gt; &quot;empty vector&quot;
+  (foo 1 2) ; =&gt; &quot;1 2&quot;
+  (foo 1 2 3) ; =&gt; exception: &quot;Unexpected args are passed into fake: (1 2 3)&quot;
+  (foo 123) ; =&gt; &quot;integer&quot;
+  (foo &quot;hey&quot;)) ; =&gt; &quot;string&quot;
+</code></pre>
+
+<h2 id="any">any?</h2>
+<p><code>(f/any? args)</code>
+<code>(fc/any? args)</code></p>
+<p>This matcher always returns <code>true</code> for any input arguments:</p>
+<pre><code class="clj">(let [foo (f/fake [[1 2] &quot;1 2&quot;
+                   [f/any? f/any? f/any?] &quot;three args&quot;
+                   f/any? &quot;something else&quot;])]
+  (foo) ; =&gt; &quot;something else&quot;
+  (foo 1) ; =&gt; &quot;something else&quot;
+  (foo 1 2) ; =&gt; &quot;1 2&quot;
+  (foo 1 2 3) ; =&gt; &quot;three args&quot;
+  (foo 1 2 3 4)) ; =&gt; &quot;something else&quot;
+</code></pre>
+
 <h1 id="protocol-fakes">Protocol Fakes</h1>
 <p>-</p>
 <h2 id="strict">Strict</h2>
