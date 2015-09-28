@@ -292,7 +292,16 @@ This matcher always returns `true` for any input arguments:
 
 # Protocol Fakes
 
--
+Feature                                    | reify-fake | reify-nice-fake 
+-                                          | -          | -            
+Fake protocol method (explicitly)          | Yes        | Yes 
+Fake protocol method (auto)                | No         | Yes
+Support overloaded protocol methods        | Yes        | Yes
+Fake Java interface method (explicitly)    | Yes        | Yes
+Fake Java interface method (auto)          | No         | No
+Fake Object method (explicitly)            | Yes        | Yes
+Fake Object method (auto)                  | No         | No
+Object can be reified with any new methods | No         | No
 
 ## Strict
 
