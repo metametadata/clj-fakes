@@ -167,7 +167,7 @@ It can also return all the recorded calls in the context if fake is not specifie
 ```
 
 Recorded fake must be checked using one of the [assertions](#assertions) provided by the framework or
-be marked as checked explicitly using `mark-checked` function; otherwise, self-test will trigger:
+be marked as checked explicitly using `mark-checked` function; otherwise, self-test will raise an exception:
 
 ```clj
 (f/with-fakes
@@ -187,13 +187,108 @@ be marked as checked explicitly using `mark-checked` function; otherwise, self-t
 
 # Fake Configuration
 
-Fake function config should contain pairs of args-matcher & return-value. 
+Fake config should contain pairs of argument matcher and return value:
+
+```clj
+[args-matcher1 fn-or-value1
+args-matcher2 fn-or-value2 ...]
+```
+
 On fake invocation argument matchers will be tested from top to bottom and 
-on the first match the specified value will be returned.
+on the first match the specified value will be returned. If return value is a function than it will be called with passed arguments to generate the return value at runtime:
+
+```clj
+(let [foo (f/fake [[1 2] 100
+                   [3 4] #(+ %1 %2)])]
+  (foo 1 2) ; => 100
+  (foo 3 4)) ; => 7
+```
+
+## default-fake-config
+
+`fc/default-fake-config`
+
+This config accepts any arguments and returns a new unique value on each call.
+It is used by `optional-fake` and `recorded-fake` functions when user 
+doesn't specify the config explicitly.
 
 # Argument Matching
 
--
+## Protocol
+
+Argument matcher must implement an `fc/ArgsMatcher` protocol:
+
+```clj
+(defprotocol ArgsMatcher
+  (args-match? [this args] "Should return true or false."))
+```
+
+In most cases you won't need to create instances of this protocol manually 
+because framework provides functional and vector matchers which are useful in most cases.
+
+## Functional matcher
+
+Functional matcher is a function which takes a vector of call arguments and returns true/false. 
+Example:
+
+```clj
+(let [foo (f/fake [#(odd? (count %)) "odd number of args"
+                   #(even? (count %)) "even number of args"])]
+  (foo 1 2) ; => "even number of args"
+  (foo 1 2 3)) ; => "odd number of args"
+```
+
+It's actually implemented like this:
+
+```clj
+(extend-type #?(:clj  clojure.lang.Fn
+                :cljs function)
+  ArgsMatcher
+  (args-match? [this args]
+    (this args)))
+```
+
+## Vector matcher
+
+Vector matchers were already used all other this guide, they looks like this:
+
+```clj
+[value-or-function1 value-or-function2 ...]
+```
+
+Let's look at the demo:
+
+```clj
+(let [foo (f/fake [[] "no args"
+                   [[]] "empty vector"
+                   [1 2] "1 2"
+                   [integer?] "integer"
+                   [str?] "string"])]
+  (foo) ; => "no args"
+  (foo []) ; => "empty vector"
+  (foo 1 2) ; => "1 2"
+  (foo 1 2 3) ; => exception: "Unexpected args are passed into fake: (1 2 3)"
+  (foo 123) ; => "integer"
+  (foo "hey")) ; => "string"
+```
+
+## any?
+
+`(f/any? args)`
+`(fc/any? args)`
+
+This matcher always returns `true` for any input arguments:
+
+```clj
+(let [foo (f/fake [[1 2] "1 2"
+                   [f/any? f/any? f/any?] "three args"
+                   f/any? "something else"])]
+  (foo) ; => "something else"
+  (foo 1) ; => "something else"
+  (foo 1 2) ; => "1 2"
+  (foo 1 2 3) ; => "three args"
+  (foo 1 2 3 4)) ; => "something else"
+```
 
 # Protocol Fakes
 
