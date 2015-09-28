@@ -214,8 +214,6 @@ doesn't specify the config explicitly.
 
 # Argument Matching
 
-## Protocol
-
 Argument matcher must implement an `fc/ArgsMatcher` protocol:
 
 ```clj
@@ -292,16 +290,29 @@ This matcher always returns `true` for any input arguments:
 
 # Protocol Fakes
 
-Feature                                    | reify-fake | reify-nice-fake 
--                                          | -          | -            
-Fake protocol method (explicitly)          | Yes        | Yes 
-Fake protocol method (auto)                | No         | Yes
-Support overloaded protocol methods        | Yes        | Yes
-Fake Java interface method (explicitly)    | Yes        | Yes
-Fake Java interface method (auto)          | No         | No
-Fake Object method (explicitly)            | Yes        | Yes
-Fake Object method (auto)                  | No         | No
-Object can be reified with any new methods | No         | No
+Framework defines two new macros for reifying protocols 
+using functional fakes described earlier. So, for example, 
+you can record and assert method calls on reified instances.
+
+The `reify-fake` macro is very similar to `reify`; in particular, 
+created instance will raise an exception 
+on calling protocol method which is not defined. On the other hand, 
+`reify-nice-fake` is able to automatically generate implementations 
+for methods which are not explicitly defined by user.
+
+There are some subtleties, so here's a table to give you an overview of 
+which features are currently supported:
+
+Feature                                    | `reify-fake` | `reify-nice-fake` 
+-                                          | -            | -            
+Fake protocol method (explicitly)          | Yes          | Yes 
+Fake protocol method (auto)                | No           | Yes
+Support overloaded protocol methods        | Yes          | Yes
+Fake Java interface method (explicitly)    | Yes          | Yes
+Fake Java interface method (auto)          | No           | No
+Fake Object method (explicitly)            | Yes          | Yes
+Fake Object method (auto)                  | No           | No
+Object can be reified with any new methods | No           | No
 
 ## Strict
 
