@@ -105,6 +105,13 @@
                               (speak :optional-fake [f/any? nil]))]
         (p/sleep cow)))))
 
+(f/-deftest
+  "config is not required for optional fake"
+  (f/with-fakes
+    (let [cow (f/reify-fake p/AnimalProtocol
+                            (speak :optional-fake))]
+      (is (not= (p/speak cow "Bob") (p/speak cow "Bob"))))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; recorded-fake
 (f/-deftest
   "simplest method can be a recorded fake"
@@ -161,7 +168,7 @@
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
                             (speak :recorded-fake))]
-      (p/speak cow "Bob")
+      (is (not= (p/speak cow "Bob") (p/speak cow "Bob")))
       (is (f/was-called-on cow p/speak ["Bob"])))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; fake

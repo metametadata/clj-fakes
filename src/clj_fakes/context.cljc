@@ -387,7 +387,9 @@
            config (-add-any-first-arg-into-matchers config)]
        (condp = fake-type
          :optional-fake
-         `(optional-fake ~ctx ~config)
+         (if config
+           `(optional-fake ~ctx ~config)
+           `(optional-fake ~ctx))
 
          :fake
          `(let [fake# (fake* ~ctx ~form ~config)]
@@ -400,7 +402,7 @@
             ~(if config
                `(-recorded-fake-as ~ctx ~form ~method-hash ~config)
                `(-recorded-fake-as ~ctx ~form ~method-hash)))
-
+§
          :-nice-fake
          `(optional-fake ~ctx default-fake-config)
 
