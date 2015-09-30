@@ -291,7 +291,7 @@ This matcher always returns `true` for any input arguments:
 # Protocol Fakes
 
 Framework defines two new macros for reifying protocols 
-using functional fakes described earlier. So, for example, 
+using function fakes described earlier. So, for example, 
 you can record and assert method calls on reified instances.
 
 The `reify-fake` macro is very similar to `reify`; in particular, 

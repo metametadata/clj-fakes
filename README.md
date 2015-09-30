@@ -27,13 +27,6 @@ Add this to your dependencies in project.clj:
 ```
 
 ## Examples
-### Fake function
-
-```clj
-(f/with-fakes
-  (let [foo (f/fake [[1 2 3] "hey!"])]
-    (println (foo 1 2 3))))
-```
 
 ### Fake protocol instance with recorded method (aka mock object)
 
@@ -66,15 +59,13 @@ Add this to your dependencies in project.clj:
 (is (= 3 (funcs/sum 1 2)))
 ```
 
-### Self-test for unused fake
+### Self-tests
 
 ```clj
 (f/with-fakes
   (f/fake [f/any? nil]))
 ; will raise "Self-test: no call detected for: non-optional fake ..."
 ```
-
-### Self-test for unchecked fake
 
 ```clj
 (f/with-fakes
