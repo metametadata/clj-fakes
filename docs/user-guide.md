@@ -72,7 +72,9 @@ can be used to define and assert a behavior of an explicit functional dependency
 
 A regular fake function can be created using a macro:
 
-`(fake [ctx] config)`
+`(f/fake config)`
+
+`(fc/fake ctx config)`
 
 [Config](#fake-configuration) is a vector which defines which values to return for different arguments:
 
@@ -89,7 +91,7 @@ If passed arguments cannot be [matched](#argument-matching) using specified conf
 (foo 100 200) ; => raises "Unexpected args are passed into fake: (100 200)"
 ```
 
-A fake is assumed to be called at least once inside the context. Otherwise [self-test](#self-tests) exception 
+A fake is assumed to be called at least once inside the context; otherwise, [self-test](#self-tests) exception 
 will be raised. In such case user should either modify a test, an SUT 
 or consider using an [optional fake](#optional-fake):
 
@@ -105,7 +107,9 @@ about testing expected behavior.
 
 ## Optional Fake
 
-`(optional-fake [ctx] [config])`
+`(f/optional-fake [config])`
+
+`(fc/optional-fake ctx [config])`
 
 It works the same as a regular fake but is not expected to be always called in the context:
 
@@ -142,7 +146,9 @@ which allows any arguments to be passed on invocation.
 
 Invocations of this fake are recorded so that they can later be asserted:
 
-`(recorded-fake [ctx] [config])`
+`(f/recorded-fake [config])`
+
+`(fc/recorded-fake ctx [config])`
  
 Use `calls` function in order to get all recorded invocations for the specified 
 recorded fake. 
@@ -204,13 +210,14 @@ on the first match the specified value will be returned. If return value is a fu
   (foo 3 4)) ; => 7
 ```
 
-## default-fake-config
+There's one built-in config in the framework:
 
 `fc/default-fake-config`
 
-This config accepts any arguments and returns a new unique value on each call.
-It is used by `optional-fake` and `recorded-fake` functions when user 
-doesn't specify the config explicitly.
+It accepts any number of arguments and returns a new unique 
+instance of protocol `fc/FakeReturnValue` on each call.
+It is used by `optional-fake` and `recorded-fake` functions by default (i.e. when user 
+doesn't specify the config explicitly).
 
 # Argument Matching
 
@@ -224,7 +231,8 @@ Argument matcher must implement an `fc/ArgsMatcher` protocol:
 In most cases you won't need to create instances of this protocol manually 
 because framework provides functional and vector matchers which are useful in most cases.
 
-## Functional matcher
+## Built-in matchers
+### Functional matcher
 
 Functional matcher is a function which takes a vector of call arguments and returns true/false. 
 Example:
@@ -246,7 +254,7 @@ It's actually implemented like this:
     (this args)))
 ```
 
-## Vector matcher
+### Vector matcher
 
 Vector matchers were already used all other this guide, they looks like this:
 
@@ -270,7 +278,7 @@ Let's look at the demo:
   (foo "hey")) ; => "string"
 ```
 
-## any?
+### any?
 
 `(f/any? args)`
 `(fc/any? args)`
@@ -306,21 +314,120 @@ which features are currently supported:
 Feature                                    | `reify-fake` | `reify-nice-fake` 
 -                                          | -            | -            
 Fake protocol method (explicitly)          | Yes          | Yes 
-Fake protocol method (auto)                | No           | Yes
+Fake protocol method (auto)                | -            | Yes
 Support overloaded protocol methods        | Yes          | Yes
 Fake Java interface method (explicitly)    | Yes          | Yes
-Fake Java interface method (auto)          | No           | No
+Fake Java interface method (auto)          | -            | No
 Fake Object method (explicitly)            | Yes          | Yes
-Fake Object method (auto)                  | No           | No
+Fake Object method (auto)                  | -            | No
 Object can be reified with any new methods | No           | No
 
-## Strict
+## Syntax
 
+The syntax is very similar to the built-in `reify` macro:
+ 
+```clj
+(f/reify-fake specs*)
+(fc/reify-fake ctx specs*)
+
+(f/reify-nice-fake specs*)
+(fc/reify-nice-fake ctx specs*)
+```
+
+Each spec consists of the protocol or interface name followed by zero
+or more method fakes:
+
+```clj
+protocol-or-interface-or-Object
+(method-name fake-type config)*
+```
+
+Available fake types:
+
+* `:fake`
+* `:optional-fake`
+* `:recorded-fake`
+
+As with function fakes, config can be omitted for `:optional-fake` and `:recorded-fake`.
+
+An example:
+
+```clj
+(defprotocol AnimalProtocol
+  (speak [this] [this name] [this name1 name2])
+  (eat [this food drink])
+  (sleep [this]))
+
+(defprotocol FileProtocol
+  (save [this])
+  (scan [this]))
+
+; ...
+
+(f/reify-fake
+  p/AnimalProtocol
+  (sleep :fake [f/any? "zzz"])
+  (speak :recorded-fake)
+    
+  p/FileProtocol
+  (save :optional-fake)
+  
+  java.lang.CharSequence
+  (charAt :recorded-fake [f/any? \a]))
+```
+
+### Configs
+-
+## Calls & Assertions
+-
+## Strict
+-
+### Protocol
+-
+### Java interface
+-
+### Object
+-
+#### Clojure
+-
+#### ClojureScript
 -
 
 ## Nice
-
 -
+### Protocol
+-
+### Java interface
+-
+### Object
+-
+
+## Custom Macros
+
+In your own reusable macros you should use `reify-fake*/reify-nice-fake*` 
+instead of `reify-fake/reify-nice-fake`:
+
+```clj
+(f/reify-fake* form env specs*)
+(fc/reify-fake* ctx form env specs*)
+
+(f/reify-nice-fake* form env specs*)
+(fc/reify-nice-fake* ctx form env specs*)
+```
+
+In other words, your macro must explicitly provide `&form` and `&env` to framework macros; 
+otherwise, due to implementation details, framework will not be 
+able to correctly determine fake method line numbers which is crucial for debugging. 
+
+For instance:
+
+```clj
+(defmacro my-reify-fake
+  [& specs]
+  `(f/reify-fake* ~&form ~&env ~@specs))
+```
+
+The framework will warn you if you accidentally use the version of macro without asterisk.
 
 # Assertions
 
@@ -342,9 +449,7 @@ Object can be reified with any new methods | No           | No
 
 -
 
-## Function Spy
-
-Example:
+Function spy example:
 
 ```clj
 (f/patch! #'funcs/sum (f/recorded-fake [f/any? funcs/sum]))

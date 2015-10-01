@@ -402,7 +402,7 @@
             ~(if config
                `(-recorded-fake-as ~ctx ~form ~method-hash ~config)
                `(-recorded-fake-as ~ctx ~form ~method-hash)))
-§
+
          :-nice-fake
          `(optional-fake ~ctx default-fake-config)
 
