@@ -118,23 +118,23 @@
     
         <li class="main "><a href="#fake-configuration">Fake Configuration</a></li>
         
-            <li><a href="#default-fake-config">default-fake-config</a></li>
-        
     
         <li class="main "><a href="#argument-matching">Argument Matching</a></li>
         
-            <li><a href="#functional-matcher">Functional matcher</a></li>
-        
-            <li><a href="#vector-matcher">Vector matcher</a></li>
-        
-            <li><a href="#any">any?</a></li>
+            <li><a href="#built-in-matchers">Built-in matchers</a></li>
         
     
         <li class="main "><a href="#protocol-fakes">Protocol Fakes</a></li>
         
+            <li><a href="#syntax">Syntax</a></li>
+        
+            <li><a href="#calls-assertions">Calls &amp; Assertions</a></li>
+        
             <li><a href="#strict">Strict</a></li>
         
             <li><a href="#nice">Nice</a></li>
+        
+            <li><a href="#custom-macros">Custom Macros</a></li>
         
     
         <li class="main "><a href="#assertions">Assertions</a></li>
@@ -148,8 +148,6 @@
         
     
         <li class="main "><a href="#monkey-patching">Monkey Patching</a></li>
-        
-            <li><a href="#function-spy">Function Spy</a></li>
         
     
         <li class="main "><a href="#references">References</a></li>
@@ -215,7 +213,8 @@ used in your own helper functions.</p>
 can be used to define and assert a behavior of an explicit functional dependency of an SUT (system under test).</p>
 <h2 id="fake">Fake</h2>
 <p>A regular fake function can be created using a macro:</p>
-<p><code>(fake [ctx] config)</code></p>
+<p><code>(f/fake config)</code></p>
+<p><code>(fc/fake ctx config)</code></p>
 <p><a href="#fake-configuration">Config</a> is a vector which defines which values to return for different arguments:</p>
 <pre><code class="clj">(let [foo (f/fake [[1 2] &quot;foo&quot;
                    [3 4 5] &quot;bar&quot;])]
@@ -227,7 +226,7 @@ can be used to define and assert a behavior of an explicit functional dependency
 <pre><code class="clj">(foo 100 200) ; =&gt; raises &quot;Unexpected args are passed into fake: (100 200)&quot;
 </code></pre>
 
-<p>A fake is assumed to be called at least once inside the context. Otherwise <a href="#self-tests">self-test</a> exception 
+<p>A fake is assumed to be called at least once inside the context; otherwise, <a href="#self-tests">self-test</a> exception 
 will be raised. In such case user should either modify a test, an SUT 
 or consider using an <a href="#optional-fake">optional fake</a>:</p>
 <pre><code class="clj">(f/with-fakes
@@ -239,7 +238,8 @@ instead use <a href="#recorded-fake">recorded fakes</a> with explicit assertions
 Self-tests are more about checking usefulness of provided preconditions than 
 about testing expected behavior.</p>
 <h2 id="optional-fake">Optional Fake</h2>
-<p><code>(optional-fake [ctx] [config])</code></p>
+<p><code>(f/optional-fake [config])</code></p>
+<p><code>(fc/optional-fake ctx [config])</code></p>
 <p>It works the same as a regular fake but is not expected to be always called in the context:</p>
 <pre><code class="clj">(f/with-fakes
   (f/optional-fake [[1 2] 3])) ; =&gt; ok, self-test will pass
@@ -268,7 +268,8 @@ In such case fake will be created with <code>(default-fake-config)</code>
 which allows any arguments to be passed on invocation.</p>
 <h2 id="recorded-fake">Recorded Fake</h2>
 <p>Invocations of this fake are recorded so that they can later be asserted:</p>
-<p><code>(recorded-fake [ctx] [config])</code></p>
+<p><code>(f/recorded-fake [config])</code></p>
+<p><code>(fc/recorded-fake ctx [config])</code></p>
 <p>Use <code>calls</code> function in order to get all recorded invocations for the specified 
 recorded fake. 
 It can also return all the recorded calls in the context if fake is not specified:</p>
@@ -318,11 +319,12 @@ on the first match the specified value will be returned. If return value is a fu
   (foo 3 4)) ; =&gt; 7
 </code></pre>
 
-<h2 id="default-fake-config">default-fake-config</h2>
+<p>There's one built-in config in the framework:</p>
 <p><code>fc/default-fake-config</code></p>
-<p>This config accepts any arguments and returns a new unique value on each call.
-It is used by <code>optional-fake</code> and <code>recorded-fake</code> functions when user 
-doesn't specify the config explicitly.</p>
+<p>It accepts any number of arguments and returns a new unique 
+instance of protocol <code>fc/FakeReturnValue</code> on each call.
+It is used by <code>optional-fake</code> and <code>recorded-fake</code> functions by default (i.e. when user 
+doesn't specify the config explicitly).</p>
 <h1 id="argument-matching">Argument Matching</h1>
 <p>Argument matcher must implement an <code>fc/ArgsMatcher</code> protocol:</p>
 <pre><code class="clj">(defprotocol ArgsMatcher
@@ -331,7 +333,8 @@ doesn't specify the config explicitly.</p>
 
 <p>In most cases you won't need to create instances of this protocol manually 
 because framework provides functional and vector matchers which are useful in most cases.</p>
-<h2 id="functional-matcher">Functional matcher</h2>
+<h2 id="built-in-matchers">Built-in matchers</h2>
+<h3 id="functional-matcher">Functional matcher</h3>
 <p>Functional matcher is a function which takes a vector of call arguments and returns true/false. 
 Example:</p>
 <pre><code class="clj">(let [foo (f/fake [#(odd? (count %)) &quot;odd number of args&quot;
@@ -348,7 +351,7 @@ Example:</p>
     (this args)))
 </code></pre>
 
-<h2 id="vector-matcher">Vector matcher</h2>
+<h3 id="vector-matcher">Vector matcher</h3>
 <p>Vector matchers were already used all other this guide, they looks like this:</p>
 <pre><code class="clj">[value-or-function1 value-or-function2 ...]
 </code></pre>
@@ -367,7 +370,7 @@ Example:</p>
   (foo &quot;hey&quot;)) ; =&gt; &quot;string&quot;
 </code></pre>
 
-<h2 id="any">any?</h2>
+<h3 id="any">any?</h3>
 <p><code>(f/any? args)</code>
 <code>(fc/any? args)</code></p>
 <p>This matcher always returns <code>true</code> for any input arguments:</p>
@@ -408,7 +411,7 @@ which features are currently supported:</p>
 </tr>
 <tr>
 <td>Fake protocol method (auto)</td>
-<td>No</td>
+<td>-</td>
 <td>Yes</td>
 </tr>
 <tr>
@@ -423,7 +426,7 @@ which features are currently supported:</p>
 </tr>
 <tr>
 <td>Fake Java interface method (auto)</td>
-<td>No</td>
+<td>-</td>
 <td>No</td>
 </tr>
 <tr>
@@ -433,7 +436,7 @@ which features are currently supported:</p>
 </tr>
 <tr>
 <td>Fake Object method (auto)</td>
-<td>No</td>
+<td>-</td>
 <td>No</td>
 </tr>
 <tr>
@@ -443,10 +446,96 @@ which features are currently supported:</p>
 </tr>
 </tbody>
 </table>
+<h2 id="syntax">Syntax</h2>
+<p>The syntax is very similar to the built-in <code>reify</code> macro:</p>
+<pre><code class="clj">(f/reify-fake specs*)
+(fc/reify-fake ctx specs*)
+
+(f/reify-nice-fake specs*)
+(fc/reify-nice-fake ctx specs*)
+</code></pre>
+
+<p>Each spec consists of the protocol or interface name followed by zero
+or more method fakes:</p>
+<pre><code class="clj">protocol-or-interface-or-Object
+(method-name fake-type config)*
+</code></pre>
+
+<p>Available fake types:</p>
+<ul>
+<li><code>:fake</code></li>
+<li><code>:optional-fake</code></li>
+<li><code>:recorded-fake</code></li>
+</ul>
+<p>As with function fakes, config can be omitted for <code>:optional-fake</code> and <code>:recorded-fake</code>.</p>
+<p>An example:</p>
+<pre><code class="clj">(defprotocol AnimalProtocol
+  (speak [this] [this name] [this name1 name2])
+  (eat [this food drink])
+  (sleep [this]))
+
+(defprotocol FileProtocol
+  (save [this])
+  (scan [this]))
+
+; ...
+
+(f/reify-fake
+  p/AnimalProtocol
+  (sleep :fake [f/any? &quot;zzz&quot;])
+  (speak :recorded-fake)
+
+  p/FileProtocol
+  (save :optional-fake)
+
+  java.lang.CharSequence
+  (charAt :recorded-fake [f/any? \a]))
+</code></pre>
+
+<h3 id="configs">Configs</h3>
+<p>-</p>
+<h2 id="calls-assertions">Calls &amp; Assertions</h2>
+<p>-</p>
 <h2 id="strict">Strict</h2>
+<p>-</p>
+<h3 id="protocol">Protocol</h3>
+<p>-</p>
+<h3 id="java-interface">Java interface</h3>
+<p>-</p>
+<h3 id="object">Object</h3>
+<p>-</p>
+<h4 id="clojure">Clojure</h4>
+<p>-</p>
+<h4 id="clojurescript">ClojureScript</h4>
 <p>-</p>
 <h2 id="nice">Nice</h2>
 <p>-</p>
+<h3 id="protocol_1">Protocol</h3>
+<p>-</p>
+<h3 id="java-interface_1">Java interface</h3>
+<p>-</p>
+<h3 id="object_1">Object</h3>
+<p>-</p>
+<h2 id="custom-macros">Custom Macros</h2>
+<p>In your own reusable macros you should use <code>reify-fake*/reify-nice-fake*</code> 
+instead of <code>reify-fake/reify-nice-fake</code>:</p>
+<pre><code class="clj">(f/reify-fake* form env specs*)
+(fc/reify-fake* ctx form env specs*)
+
+(f/reify-nice-fake* form env specs*)
+(fc/reify-nice-fake* ctx form env specs*)
+</code></pre>
+
+<p>In other words, your macro must explicitly provide <code>&amp;form</code> and <code>&amp;env</code> to framework macros; 
+otherwise, due to implementation details, framework will not be 
+able to correctly determine fake method line numbers which is crucial for debugging. </p>
+<p>For instance:</p>
+<pre><code class="clj">(defmacro my-reify-fake
+  [&amp; specs]
+  `(f/reify-fake* ~&amp;form ~&amp;env ~@specs))
+</code></pre>
+
+<p>The framework will warn you if you accidentally use the version of macro without asterisk.</p>
 <h1 id="assertions">Assertions</h1>
 <p>-</p>
 <h1 id="self-tests">Self-tests</h1>
@@ -457,8 +546,7 @@ which features are currently supported:</p>
 <p>-</p>
 <h1 id="monkey-patching">Monkey Patching</h1>
 <p>-</p>
-<h2 id="function-spy">Function Spy</h2>
-<p>Example:</p>
+<p>Function spy example:</p>
 <pre><code class="clj">(f/patch! #'funcs/sum (f/recorded-fake [f/any? funcs/sum]))
 </code></pre>
 
