@@ -467,8 +467,7 @@ or more method fakes:</p>
 <li><code>:optional-fake</code></li>
 <li><code>:recorded-fake</code></li>
 </ul>
-<p>As with function fakes, config can be omitted for <code>:optional-fake</code> and <code>:recorded-fake</code>.</p>
-<p>An example:</p>
+<p>As with function fakes, config can be omitted for <code>:optional-fake</code> and <code>:recorded-fake</code>:</p>
 <pre><code class="clj">(defprotocol AnimalProtocol
   (speak [this] [this name] [this name1 name2])
   (eat [this food drink])
@@ -492,8 +491,17 @@ or more method fakes:</p>
   (charAt :recorded-fake [f/any? \a]))
 </code></pre>
 
-<h3 id="configs">Configs</h3>
-<p>-</p>
+<p>While protocol methods always have a first <code>this</code> argument, 
+method config must not try to match this argument (there is no sense to do it).
+However, the return value function will receive all the arguments on invocation, 
+including <code>this</code>:</p>
+<pre><code class="clj">(let [monkey (f/reify-fake p/AnimalProtocol
+                           ; config only matches |food| and |drink| arguments
+                           ; but return value function will get all 3 arguments on call
+                           (eat :fake [[f/any? f/any?] #(str &quot;ate &quot; %2 &quot; and drank &quot; %3)]))]
+      (println (p/eat monkey &quot;banana&quot; &quot;water&quot;))) ; =&gt; ate banana and drank water
+</code></pre>
+
 <h2 id="calls-assertions">Calls &amp; Assertions</h2>
 <p>-</p>
 <h2 id="strict">Strict</h2>
