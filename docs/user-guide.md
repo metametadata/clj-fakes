@@ -348,9 +348,7 @@ Available fake types:
 * `:optional-fake`
 * `:recorded-fake`
 
-As with function fakes, config can be omitted for `:optional-fake` and `:recorded-fake`.
-
-An example:
+As with function fakes, config can be omitted for `:optional-fake` and `:recorded-fake`:
 
 ```clj
 (defprotocol AnimalProtocol
@@ -376,8 +374,19 @@ An example:
   (charAt :recorded-fake [f/any? \a]))
 ```
 
-### Configs
--
+While protocol methods always have a first `this` argument, 
+method config must not try to match this argument (there is no sense to do it).
+However, the return value function will receive all the arguments on invocation, 
+including `this`:
+
+```clj
+(let [monkey (f/reify-fake p/AnimalProtocol
+                           ; config only matches |food| and |drink| arguments
+                           ; but return value function will get all 3 arguments on call
+                           (eat :fake [[f/any? f/any?] #(str "ate " %2 " and drank " %3)]))]
+      (println (p/eat monkey "banana" "water"))) ; => ate banana and drank water
+```
+
 ## Calls & Assertions
 -
 ## Strict
