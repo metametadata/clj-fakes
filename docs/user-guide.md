@@ -139,7 +139,7 @@ but this dependency is not really related to the test case:
 ```
 
 As you may have noticed, `config` argument can be omitted. 
-In such case fake will be created with `(default-fake-config)` 
+In such case fake will be created with [`(default-fake-config)`](#fake-configuration) 
 which allows any arguments to be passed on invocation.
 
 ## Recorded Fake
@@ -302,11 +302,17 @@ Framework defines two new macros for reifying protocols
 using function fakes described earlier. So, for example, 
 you can record and assert method calls on reified instances.
 
-The `reify-fake` macro is very similar to `reify`; in particular, 
+The "strict" `reify-fake` macro is very similar to `reify`; in particular, 
 created instance will raise an exception 
-on calling protocol method which is not defined. On the other hand, 
-`reify-nice-fake` is able to automatically generate implementations 
-for methods which are not explicitly defined by user.
+on calling protocol method which is not defined. 
+
+On the other hand, `reify-nice-fake` is able to automatically 
+generate [optional-fake](#optional-fake) implementations for methods which are 
+not explicitly defined by user. 
+
+Which macro to use solely depends on your testing style. I'd 
+recommend to use nice fakes whenever possible in order to make 
+tests more compact and break less often on code changes.
 
 There are some subtleties, so here's a table to give you an overview of 
 which features are currently supported:
@@ -416,28 +422,6 @@ So the last expression can be rewritten like this:
 ```
 
 For the list of all available assertion function see [Assertions](#assertions).
-
-## Strict
--
-### Protocol
--
-### Java interface
--
-### Object
--
-#### Clojure
--
-#### ClojureScript
--
-
-## Nice
--
-### Protocol
--
-### Java interface
--
-### Object
--
 
 ## Custom Macros
 
