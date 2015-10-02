@@ -503,7 +503,26 @@ including <code>this</code>:</p>
 </code></pre>
 
 <h2 id="calls-assertions">Calls &amp; Assertions</h2>
-<p>-</p>
+<p>In order to get and assert recorded method calls there's a 
+helper function:</p>
+<p><code>(f/method obj f)</code></p>
+<p><code>(fc/method ctx obj f)</code></p>
+<p>It can be used in combination with existing <code>calls</code> and <code>was-called-*</code> functions like this:</p>
+<pre><code class="clj">(f/with-fakes
+  (let [cow (f/reify-fake p/AnimalProtocol
+                          (speak :recorded-fake [f/any? &quot;moo&quot;]))]
+    (p/speak cow)
+    (println (f/calls (f/method cow p/speak))) ; =&gt; [{:args ..., :return-value moo}]
+    (is (f/was-called (f/method cow p/speak) [cow]))))
+</code></pre>
+
+<p>Notice how object name <code>cow</code> is duplicated at the last line. In order to get 
+rid of such duplications there are additional <code>was-called-*-on</code> functions defined. 
+So the last expression can be rewritten like this:</p>
+<pre><code class="clj">(is (f/was-called-on cow p/speak))
+</code></pre>
+
+<p>For the list of all available assertion function see <a href="#assertions">Assertions</a>.</p>
 <h2 id="strict">Strict</h2>
 <p>-</p>
 <h3 id="protocol">Protocol</h3>
