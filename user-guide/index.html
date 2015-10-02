@@ -130,10 +130,6 @@
         
             <li><a href="#calls-assertions">Calls &amp; Assertions</a></li>
         
-            <li><a href="#strict">Strict</a></li>
-        
-            <li><a href="#nice">Nice</a></li>
-        
             <li><a href="#custom-macros">Custom Macros</a></li>
         
     
@@ -264,7 +260,7 @@ but this dependency is not really related to the test case:</p>
 </code></pre>
 
 <p>As you may have noticed, <code>config</code> argument can be omitted. 
-In such case fake will be created with <code>(default-fake-config)</code> 
+In such case fake will be created with <a href="#fake-configuration"><code>(default-fake-config)</code></a> 
 which allows any arguments to be passed on invocation.</p>
 <h2 id="recorded-fake">Recorded Fake</h2>
 <p>Invocations of this fake are recorded so that they can later be asserted:</p>
@@ -388,11 +384,15 @@ Example:</p>
 <p>Framework defines two new macros for reifying protocols 
 using function fakes described earlier. So, for example, 
 you can record and assert method calls on reified instances.</p>
-<p>The <code>reify-fake</code> macro is very similar to <code>reify</code>; in particular, 
+<p>The "strict" <code>reify-fake</code> macro is very similar to <code>reify</code>; in particular, 
 created instance will raise an exception 
-on calling protocol method which is not defined. On the other hand, 
-<code>reify-nice-fake</code> is able to automatically generate implementations 
-for methods which are not explicitly defined by user.</p>
+on calling protocol method which is not defined. </p>
+<p>On the other hand, <code>reify-nice-fake</code> is able to automatically 
+generate <a href="#optional-fake">optional-fake</a> implementations for methods which are 
+not explicitly defined by user. </p>
+<p>Which macro to use solely depends on your testing style. I'd 
+recommend to use nice fakes whenever possible in order to make 
+tests more compact and break less often on code changes.</p>
 <p>There are some subtleties, so here's a table to give you an overview of 
 which features are currently supported:</p>
 <table>
@@ -523,26 +523,6 @@ So the last expression can be rewritten like this:</p>
 </code></pre>
 
 <p>For the list of all available assertion function see <a href="#assertions">Assertions</a>.</p>
-<h2 id="strict">Strict</h2>
-<p>-</p>
-<h3 id="protocol">Protocol</h3>
-<p>-</p>
-<h3 id="java-interface">Java interface</h3>
-<p>-</p>
-<h3 id="object">Object</h3>
-<p>-</p>
-<h4 id="clojure">Clojure</h4>
-<p>-</p>
-<h4 id="clojurescript">ClojureScript</h4>
-<p>-</p>
-<h2 id="nice">Nice</h2>
-<p>-</p>
-<h3 id="protocol_1">Protocol</h3>
-<p>-</p>
-<h3 id="java-interface_1">Java interface</h3>
-<p>-</p>
-<h3 id="object_1">Object</h3>
-<p>-</p>
 <h2 id="custom-macros">Custom Macros</h2>
 <p>In your own reusable macros you should use <code>reify-fake*/reify-nice-fake*</code> 
 instead of <code>reify-fake/reify-nice-fake</code>:</p>
