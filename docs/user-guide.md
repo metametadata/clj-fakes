@@ -388,7 +388,35 @@ including `this`:
 ```
 
 ## Calls & Assertions
--
+
+In order to get and assert recorded method calls there's a 
+helper function:
+
+`(f/method obj f)`
+
+`(fc/method ctx obj f)`
+
+It can be used in combination with existing `calls` and `was-called-*` functions like this:
+ 
+```clj
+(f/with-fakes
+  (let [cow (f/reify-fake p/AnimalProtocol
+                          (speak :recorded-fake [f/any? "moo"]))]
+    (p/speak cow)
+    (println (f/calls (f/method cow p/speak))) ; => [{:args ..., :return-value moo}]
+    (is (f/was-called (f/method cow p/speak) [cow]))))
+```
+
+Notice how object name `cow` is duplicated at the last line. In order to get 
+rid of such duplications there are additional `was-called-*-on` functions defined. 
+So the last expression can be rewritten like this:
+
+```clj
+(is (f/was-called-on cow p/speak))
+```
+
+For the list of all available assertion function see [Assertions](#assertions).
+
 ## Strict
 -
 ### Protocol
