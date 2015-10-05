@@ -552,10 +552,10 @@ able to correctly determine fake method line numbers which is crucial for debugg
 <h2 id="unchecked-fakes">Unchecked Fakes</h2>
 <p>-</p>
 <h1 id="monkey-patching">Monkey Patching</h1>
-<p>You can temporarily change a variable value by calling <code>patch!</code> macro:</p>
+<p>You can temporarily change a variable value by using <code>patch!</code> macro:</p>
 <p><code>(f/patch! var-expr val)</code></p>
 <p><code>(fc/patch! ctx var-expr val)</code></p>
-<p>After patching, original value can be still obtained using a function:</p>
+<p>After patching original value can still be obtained using a function:</p>
 <p><code>(f/original-val a-var)</code></p>
 <p><code>(fc/original-val ctx a-var)</code></p>
 <p>Also don't forget to unpatch the variable to recover its original value:</p>
