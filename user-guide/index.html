@@ -552,8 +552,33 @@ able to correctly determine fake method line numbers which is crucial for debugg
 <h2 id="unchecked-fakes">Unchecked Fakes</h2>
 <p>-</p>
 <h1 id="monkey-patching">Monkey Patching</h1>
-<p>-</p>
-<p>Function spy example:</p>
+<p>You can temporarily change a variable value by calling <code>patch!</code> macro:</p>
+<p><code>(f/patch! var-expr val)</code></p>
+<p><code>(fc/patch! ctx var-expr val)</code></p>
+<p>After patching, original value can be still obtained using a function:</p>
+<p><code>(f/original-val a-var)</code></p>
+<p><code>(fc/original-val ctx a-var)</code></p>
+<p>Also don't forget to unpatch the variable to recover its original value:</p>
+<p><code>(f/unpatch! var-expr)</code></p>
+<p><code>(fc/unpatch! ctx var-expr)</code></p>
+<p>Or unpatch all the variables inside the context at once:</p>
+<p><code>(f/unpatch-all!)</code></p>
+<p><code>(fc/unpatch-all! ctx)</code></p>
+<p>If you use <code>with-fakes</code> then all variables will be unpatched 
+automatically on exiting the block, for instance:</p>
+<pre><code class="clj">(f/with-fakes
+  (f/patch! #'funcs/sum (f/fake [[1 2] &quot;foo&quot;
+                                 [3 4] &quot;bar&quot;]))
+  (is (= &quot;foo&quot; (funcs/sum 1 2)))
+  (is (= &quot;bar&quot; (funcs/sum 3 4))))
+
+; patching is reverted on exiting with-fakes block
+(is (= 3 (funcs/sum 1 2)))
+</code></pre>
+
+<p>Another example is combining <code>patch</code> and <code>recorded-fake</code> in order
+to create a <em>function spy</em> which works exactly the same as the original function
+and also records its calls:</p>
 <pre><code class="clj">(f/patch! #'funcs/sum (f/recorded-fake [f/any? funcs/sum]))
 </code></pre>
 
