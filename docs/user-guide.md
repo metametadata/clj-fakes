@@ -468,13 +468,13 @@ The framework will warn you if you accidentally use the version of macro without
 
 # Monkey Patching
 
-You can temporarily change a variable value by calling `patch!` macro:
+You can temporarily change a variable value by using `patch!` macro:
 
 `(f/patch! var-expr val)`
 
 `(fc/patch! ctx var-expr val)`
 
-After patching, original value can be still obtained using a function:
+After patching original value can still be obtained using a function:
 
 `(f/original-val a-var)`
 
