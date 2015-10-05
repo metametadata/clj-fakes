@@ -468,9 +468,47 @@ The framework will warn you if you accidentally use the version of macro without
 
 # Monkey Patching
 
--
+You can temporarily change a variable value by calling `patch!` macro:
 
-Function spy example:
+`(f/patch! var-expr val)`
+
+`(fc/patch! ctx var-expr val)`
+
+After patching, original value can be still obtained using a function:
+
+`(f/original-val a-var)`
+
+`(fc/original-val ctx a-var)`
+
+Also don't forget to unpatch the variable to recover its original value:
+
+`(f/unpatch! var-expr)`
+
+`(fc/unpatch! ctx var-expr)`
+
+Or unpatch all the variables inside the context at once:
+
+`(f/unpatch-all!)`
+
+`(fc/unpatch-all! ctx)`
+
+If you use `with-fakes` then all variables will be unpatched 
+automatically on exiting the block, for instance:
+
+```clj
+(f/with-fakes
+  (f/patch! #'funcs/sum (f/fake [[1 2] "foo"
+                                 [3 4] "bar"]))
+  (is (= "foo" (funcs/sum 1 2)))
+  (is (= "bar" (funcs/sum 3 4))))
+
+; patching is reverted on exiting with-fakes block
+(is (= 3 (funcs/sum 1 2)))
+```
+
+Another example is combining `patch` and `recorded-fake` in order
+to create a *function spy* which works exactly the same as the original function
+and also records its calls:
 
 ```clj
 (f/patch! #'funcs/sum (f/recorded-fake [f/any? funcs/sum]))
