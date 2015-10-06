@@ -185,7 +185,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Fakes - API
 (defn -position
-  "Returns a position of the specified fake. Does not yet work for optional fakes and protocol method fakes."
+  "Returns a position of the specified fake. Does not yet work for optional fakes."
   [ctx f]
   {:pre [ctx f]}
   (get (:positions @ctx) f))
