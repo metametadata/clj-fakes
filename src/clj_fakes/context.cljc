@@ -220,7 +220,7 @@
                            :column ~column}]
             (~fake-fn ~ctx position# ~@args))))))
 
-(defn fake**
+(defn -fake**
   "This function is the same as fake macro but position must be passed explicitly."
   [ctx position config]
   (-fake ctx position (-config->f config)))
@@ -230,7 +230,7 @@
      "This is the same as fake macro but for reuse in other macros.
      form must be passed from the parent macro in order to correctly detect positions of fakes."
      [ctx form config]
-     (-emit-fake-fn-call-with-position `fake** ctx form config)))
+     (-emit-fake-fn-call-with-position `-fake** ctx form config)))
 
 #?(:clj
    (defmacro fake
@@ -239,17 +239,17 @@
      [ctx config]
      `(fake* ~ctx ~&form ~config)))
 
-(defn recorded-fake**
+(defn -recorded-fake**
   "This function is the same as recorded-fake macro but position must be passed explicitly."
-  ([ctx position] (recorded-fake** ctx position default-fake-config))
+  ([ctx position] (-recorded-fake** ctx position default-fake-config))
   ([ctx position config] (-recorded ctx position (-config->f config))))
 
 #?(:clj
    (defmacro recorded-fake*
      "This is the same as recorded-fake macro but for reuse in other macros.
      form must be passed from the parent macro in order to correctly detect positions of fakes."
-     ([ctx form] (-emit-fake-fn-call-with-position `recorded-fake** ctx form))
-     ([ctx form config] (-emit-fake-fn-call-with-position `recorded-fake** ctx form config))))
+     ([ctx form] (-emit-fake-fn-call-with-position `-recorded-fake** ctx form))
+     ([ctx form config] (-emit-fake-fn-call-with-position `-recorded-fake** ctx form config))))
 
 #?(:clj
    (defmacro recorded-fake

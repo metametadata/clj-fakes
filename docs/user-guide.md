@@ -192,6 +192,27 @@ be marked as checked explicitly using `mark-checked` function; otherwise, self-t
   (f/mark-checked (f/recorded-fake))) ; => ok, self-test will pass
 ```
 
+## Custom Macros
+
+In your own reusable macros you should use `fake*/recorded-fake*` 
+instead of `fake/recorded-fake`:
+
+`(f/fake* form config)`
+
+`(fc/fake* ctx form config)`
+
+`(f/recorded-fake* form [config])`
+
+`(fc/recorded-fake* ctx form [config])`
+
+In other words, your macro must explicitly provide `&form` to framework macros; 
+otherwise, due to implementation details, framework will not be 
+able to correctly determine fake function line numbers which is crucial for debugging. 
+
+The framework will warn you if you accidentally use the version without asterisk 
+in your macro.
+
+
 # Fake Configuration
 
 Fake config should contain pairs of argument matcher and return value:
@@ -333,13 +354,13 @@ Object can be reified with any new methods | No           | No
 
 The syntax is very similar to the built-in `reify` macro:
  
-```clj
-(f/reify-fake specs*)
-(fc/reify-fake ctx specs*)
+`(f/reify-fake specs*)`
 
-(f/reify-nice-fake specs*)
-(fc/reify-nice-fake ctx specs*)
-```
+`(fc/reify-fake ctx specs*)`
+
+`(f/reify-nice-fake specs*)`
+
+`(fc/reify-nice-fake ctx specs*)`
 
 Each spec consists of the protocol or interface name followed by zero
 or more method fakes:
@@ -429,13 +450,13 @@ For the list of all available assertion function see [Assertions](#assertions).
 In your own reusable macros you should use `reify-fake*/reify-nice-fake*` 
 instead of `reify-fake/reify-nice-fake`:
 
-```clj
-(f/reify-fake* form env specs*)
-(fc/reify-fake* ctx form env specs*)
+`(f/reify-fake* form env specs*)`
 
-(f/reify-nice-fake* form env specs*)
-(fc/reify-nice-fake* ctx form env specs*)
-```
+`(fc/reify-fake* ctx form env specs*)`
+
+`(f/reify-nice-fake* form env specs*)`
+
+`(fc/reify-nice-fake* ctx form env specs*)`
 
 In other words, your macro must explicitly provide `&form` and `&env` to framework macros; 
 otherwise, due to implementation details, framework will not be 
@@ -449,7 +470,8 @@ For instance:
   `(f/reify-fake* ~&form ~&env ~@specs))
 ```
 
-The framework will warn you if you accidentally use the version of macro without asterisk.
+The framework will warn you if you accidentally use the version without asterisk 
+in your macro.
 
 # Assertions
 
@@ -565,6 +587,10 @@ and also records its calls:
 ```clj
 (f/patch! #'funcs/sum (f/recorded-fake [f/any? funcs/sum]))
 ```
+
+Monkey patching is not thread-safe because it changes variable 
+in all threads 
+(underlying implementation uses [`alter-var-root`](https://clojuredocs.org/clojure.core/alter-var-root)/[`set!`](https://github.com/cljsinfo/cljs-api-docs/blob/catalog/refs/special/setBANG.md)).
 
 # References
 The API was mainly inspired by [jMock](http://www.jmock.org/) and [unittest.mock](https://docs.python.org/3/library/unittest.mock.html) frameworks with
