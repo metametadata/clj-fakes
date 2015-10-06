@@ -115,6 +115,8 @@
         
             <li><a href="#recorded-fake">Recorded Fake</a></li>
         
+            <li><a href="#custom-macros">Custom Macros</a></li>
+        
     
         <li class="main "><a href="#fake-configuration">Fake Configuration</a></li>
         
@@ -130,7 +132,7 @@
         
             <li><a href="#calls-assertions">Calls &amp; Assertions</a></li>
         
-            <li><a href="#custom-macros">Custom Macros</a></li>
+            <li><a href="#custom-macros_1">Custom Macros</a></li>
         
     
         <li class="main "><a href="#assertions">Assertions</a></li>
@@ -302,6 +304,18 @@ be marked as checked explicitly using <code>mark-checked</code> function; otherw
   (f/mark-checked (f/recorded-fake))) ; =&gt; ok, self-test will pass
 </code></pre>
 
+<h2 id="custom-macros">Custom Macros</h2>
+<p>In your own reusable macros you should use <code>fake*/recorded-fake*</code> 
+instead of <code>fake/recorded-fake</code>:</p>
+<p><code>(f/fake* form config)</code></p>
+<p><code>(fc/fake* ctx form config)</code></p>
+<p><code>(f/recorded-fake* form [config])</code></p>
+<p><code>(fc/recorded-fake* ctx form [config])</code></p>
+<p>In other words, your macro must explicitly provide <code>&amp;form</code> to framework macros; 
+otherwise, due to implementation details, framework will not be 
+able to correctly determine fake function line numbers which is crucial for debugging. </p>
+<p>The framework will warn you if you accidentally use the version without asterisk 
+in your macro.</p>
 <h1 id="fake-configuration">Fake Configuration</h1>
 <p>Fake config should contain pairs of argument matcher and return value:</p>
 <pre><code class="clj">[args-matcher1 fn-or-value1
@@ -449,13 +463,10 @@ which features are currently supported:</p>
 </table>
 <h2 id="syntax">Syntax</h2>
 <p>The syntax is very similar to the built-in <code>reify</code> macro:</p>
-<pre><code class="clj">(f/reify-fake specs*)
-(fc/reify-fake ctx specs*)
-
-(f/reify-nice-fake specs*)
-(fc/reify-nice-fake ctx specs*)
-</code></pre>
-
+<p><code>(f/reify-fake specs*)</code></p>
+<p><code>(fc/reify-fake ctx specs*)</code></p>
+<p><code>(f/reify-nice-fake specs*)</code></p>
+<p><code>(fc/reify-nice-fake ctx specs*)</code></p>
 <p>Each spec consists of the protocol or interface name followed by zero
 or more method fakes:</p>
 <pre><code class="clj">protocol-or-interface-or-Object
@@ -524,16 +535,13 @@ So the last expression can be rewritten like this:</p>
 </code></pre>
 
 <p>For the list of all available assertion function see <a href="#assertions">Assertions</a>.</p>
-<h2 id="custom-macros">Custom Macros</h2>
+<h2 id="custom-macros_1">Custom Macros</h2>
 <p>In your own reusable macros you should use <code>reify-fake*/reify-nice-fake*</code> 
 instead of <code>reify-fake/reify-nice-fake</code>:</p>
-<pre><code class="clj">(f/reify-fake* form env specs*)
-(fc/reify-fake* ctx form env specs*)
-
-(f/reify-nice-fake* form env specs*)
-(fc/reify-nice-fake* ctx form env specs*)
-</code></pre>
-
+<p><code>(f/reify-fake* form env specs*)</code></p>
+<p><code>(fc/reify-fake* ctx form env specs*)</code></p>
+<p><code>(f/reify-nice-fake* form env specs*)</code></p>
+<p><code>(fc/reify-nice-fake* ctx form env specs*)</code></p>
 <p>In other words, your macro must explicitly provide <code>&amp;form</code> and <code>&amp;env</code> to framework macros; 
 otherwise, due to implementation details, framework will not be 
 able to correctly determine fake method line numbers which is crucial for debugging. </p>
@@ -543,7 +551,8 @@ able to correctly determine fake method line numbers which is crucial for debugg
   `(f/reify-fake* ~&amp;form ~&amp;env ~@specs))
 </code></pre>
 
-<p>The framework will warn you if you accidentally use the version of macro without asterisk.</p>
+<p>The framework will warn you if you accidentally use the version without asterisk 
+in your macro.</p>
 <h1 id="assertions">Assertions</h1>
 <p>Framework provides several assertion functions for <a href="#recorded-fake">recorded fakes</a>. 
 Each function either returns <code>true</code> or raises an exception with additional details:</p>
@@ -615,6 +624,9 @@ and also records its calls:</p>
 <pre><code class="clj">(f/patch! #'funcs/sum (f/recorded-fake [f/any? funcs/sum]))
 </code></pre>
 
+<p>Monkey patching is not thread-safe because it changes variable 
+in all threads 
+(underlying implementation uses <a href="https://clojuredocs.org/clojure.core/alter-var-root"><code>alter-var-root</code></a>/<a href="https://github.com/cljsinfo/cljs-api-docs/blob/catalog/refs/special/setBANG.md"><code>set!</code></a>).</p>
 <h1 id="references">References</h1>
 <p>The API was mainly inspired by <a href="http://www.jmock.org/">jMock</a> and <a href="https://docs.python.org/3/library/unittest.mock.html">unittest.mock</a> frameworks with
 design decisions loosely based on the <a href="http://osherove.com/blog/2013/11/23/fifteen-things-i-look-for-in-an-isolation-framework.html">"Fifteen things I look for in an Isolation framework" by Roy Osherove</a>.</p>

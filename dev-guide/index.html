@@ -107,20 +107,24 @@
         <li class="main "><a href="#documentation">Documentation</a></li>
         
     
+        <li class="main "><a href="#deploying">Deploying</a></li>
+        
+    
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-<p>Some notes for framework developers.</p>
-<h2 id="tests">Tests</h2>
+<h1 id="tests">Tests</h1>
 <p>Autorun Clojure tests: <code>lein test-refresh</code></p>
 <p>Run ClojureScript tests: <code>lein clean &amp;&amp; lein doo phantom test once</code>
 (clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)</p>
 <p>Autorun ClojureScript tests: <code>fswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait.... &amp;&amp; lein clean &amp;&amp; lein doo rhino test once'</code></p>
-<h2 id="documentation">Documentation</h2>
+<h1 id="documentation">Documentation</h1>
 <p>Project uses <a href="http://www.mkdocs.org/">MkDocs</a> to generate documentation static site.</p>
 <p>Build: <code>mkdocs build</code></p>
 <p>Serve locally with automatic build: <code>mkdocs serve</code></p>
+<h1 id="deploying">Deploying</h1>
+<p>Deploy to Clojars: <code>lein deploy clojars</code></p>
 <p>Deploy docs to gh-pages branch: <code>mkdocs gh-deploy --clean</code></p></div>
         </div>
 
