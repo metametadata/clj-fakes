@@ -452,7 +452,40 @@ The framework will warn you if you accidentally use the version of macro without
 
 # Assertions
 
--
+Framework provides several assertion functions for [recorded fakes](#recorded-fake). 
+Each function either returns `true` or raises an exception with additional details:
+
+`(f/was-called-once f [args-matcher])`
+- checks that function was called strictly once and that the call was with the specified args.
+
+`(f/was-called f [args-matcher])`
+- checks that function was called at least once with the specified args.
+
+`(f/was-not-called f)`
+- checks that function was never called.
+
+The set of similar functions is defined for [protocol methods](#calls-assertions):
+
+`(f/was-called-once-on obj f [args-matcher])`
+
+`(f/was-called-on obj f [args-matcher])`
+
+`(f/was-not-called-on obj f)`
+
+Of course, all these function can be called with an explicit context:
+
+`(fc/was-called-once ctx f [args-matcher])`
+
+`(fc/was-called ctx f [args-matcher])`
+
+`(fc/was-not-called ctx f)`
+
+`(fc/was-called-once-on ctx obj f [args-matcher])`
+
+`(fc/was-called-on obj ctx f [args-matcher])`
+
+`(fc/was-not-called-on ctx obj f)`
+
 
 # Self-tests
 
@@ -520,6 +553,7 @@ design decisions loosely based on the ["Fifteen things I look for in an Isolatio
 
 Some alternative frameworks with isolation capabilities:
 
+* [shrubbery](https://github.com/bguthrie/shrubbery)
 * [clj-mock](https://github.com/EchoTeam/clj-mock)
 * [Midje](https://github.com/marick/Midje)
 * [speclj](https://github.com/slagyr/speclj)
