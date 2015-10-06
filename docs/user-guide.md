@@ -495,7 +495,7 @@ The set of similar functions is defined for [protocol methods](#calls-assertions
 
 `(f/was-not-called-on obj f)`
 
-Of course, all these function can be called with an explicit context:
+Of course, all these functions can be called with an explicit context:
 
 `(fc/was-called-once ctx f [args-matcher])`
 

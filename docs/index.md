@@ -15,6 +15,10 @@ One of the unique features of the framework is the ability to find unused fakes 
 * Test runner agnostic
 * Arrange-Act-Assert style testing
 
+# Requirements
+
+Clojure 1.7.0 or higher.
+
 # Installation
 
 Add this to your dependencies in project.clj:

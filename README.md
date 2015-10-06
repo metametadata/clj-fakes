@@ -19,6 +19,10 @@ One of the unique features of the framework is the ability to find unused fakes 
 ## Status
 Core functionality is ready. Documentation and more features are on the way.
 
+# Requirements
+
+Clojure 1.7.0 or higher.
+
 ## Installation
 Add this to your dependencies in project.clj:
 
