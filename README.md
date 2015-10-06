@@ -33,30 +33,33 @@ Add this to your dependencies in project.clj:
 ```clj
 (defprotocol AnimalProtocol
   (speak [this name]))
+; ...
 
-(f/with-fakes
-  ; create fake instance of specified protocol
-  (let [cow (f/reify-fake p/AnimalProtocol
-                          ; ask framework to record method calls
-                          (speak :recorded-fake))]
-    ; call method on fake object
-    (p/speak cow "Bob")
-    
-    ; assert that method was called with specified args
-    (is (f/was-called-on cow p/speak ["Bob"]))))
+(deftest example
+  (f/with-fakes
+    ; create fake instance of specified protocol
+    (let [cow (f/reify-fake p/AnimalProtocol
+                            ; ask framework to record method calls
+                            (speak :recorded-fake))]
+      ; call method on fake object
+      (p/speak cow "Bob")
+      
+      ; assert that method was called with specified args
+      (is (f/was-called-on cow p/speak ["Bob"])))))
 ```
 
 ### Patch a function
 
 ```clj
-(f/with-fakes
-  (f/patch! #'funcs/sum (f/fake [[1 2] "foo"
-                                 [3 4] "bar"]))
-  (is (= "foo" (funcs/sum 1 2)))
-  (is (= "bar" (funcs/sum 3 4))))
-
-; patching is reverted on exiting with-fakes block
-(is (= 3 (funcs/sum 1 2)))
+(deftest example
+  (f/with-fakes
+    (f/patch! #'funcs/sum (f/fake [[1 2] "foo"
+                                   [3 4] "bar"]))
+    (is (= "foo" (funcs/sum 1 2)))
+    (is (= "bar" (funcs/sum 3 4))))
+  
+  ; patching is reverted on exiting with-fakes block
+  (is (= 3 (funcs/sum 1 2))))
 ```
 
 ### Self-tests
