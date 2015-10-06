@@ -201,7 +201,7 @@ All fakes have to be created inside some context.</p>
 </code></pre>
 
 <p>This approach is preferable since it requires less typing, automatically 
-unpatches all patched vars and executes self-tests.</p>
+unpatches all <a href="#monkey-patching">patched vars</a> and executes <a href="#self-tests">self-tests</a>.</p>
 <p>Internally <code>with-fakes</code> relies on a public dynamic var <code>*context*</code> which can be 
 used in your own helper functions.</p>
 <h1 id="function-fakes">Function Fakes</h1>
@@ -218,7 +218,8 @@ can be used to define and assert a behavior of an explicit functional dependency
   (foo 3 4 5)) ; =&gt; &quot;bar&quot;
 </code></pre>
 
-<p>If passed arguments cannot be <a href="#argument-matching">matched</a> using specified config then the exception will be raised:</p>
+<p>If passed arguments cannot be <a href="#argument-matching">matched</a> using specified 
+config then the exception will be raised:</p>
 <pre><code class="clj">(foo 100 200) ; =&gt; raises &quot;Unexpected args are passed into fake: (100 200)&quot;
 </code></pre>
 
@@ -564,11 +565,25 @@ Each function either returns <code>true</code> or raises an exception with addit
 <p><code>(fc/was-called-on obj ctx f [args-matcher])</code></p>
 <p><code>(fc/was-not-called-on ctx obj f)</code></p>
 <h1 id="self-tests">Self-tests</h1>
-<p>-</p>
+<p>Framework can perform "self-tests" in order to inform a user 
+early on that some fakes (including protocol method fakes) are potentially used inappropriately.</p>
+<p>If you use <a href="#context"><code>with-fakes</code></a> macro then self-tests will be run automatically on exiting the block.
+Otherwise, when <a href="#context">explicit context</a> is used, you have to invoke self-tests manually.</p>
+<p>Currently two types of self-tests are supported to identify:</p>
+<ul>
+<li>unused fakes </li>
+<li>unchecked fakes</li>
+</ul>
 <h2 id="unused-fakes">Unused Fakes</h2>
-<p>-</p>
+<p><code>(fc/self-test-unused-fakes ctx)</code></p>
+<p>This function raises an exception when some <a href="#fake">fake</a> is never called after its creation.</p>
+<p>For example, this self-test comes in handy when SUT stops using a dependency which 
+was faked in several test scenarios. In such case the framework will guide you in cleaning 
+ your test suite from the unused stubs.</p>
 <h2 id="unchecked-fakes">Unchecked Fakes</h2>
-<p>-</p>
+<p><code>(fc/self-test-unchecked-fakes ctx)</code></p>
+<p>This self-test raises an exception if some <code>recorded-fake</code> 
+was never <a href="#recorded-fake">marked checked</a>, i.e. you forgot assert its calls.</p>
 <h1 id="monkey-patching">Monkey Patching</h1>
 <p>You can temporarily change a variable value by using <code>patch!</code> macro:</p>
 <p><code>(f/patch! var-expr val)</code></p>
