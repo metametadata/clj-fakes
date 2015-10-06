@@ -58,7 +58,7 @@ Alternatively a new context can be created with
 ```
 
 This approach is preferable since it requires less typing, automatically 
-unpatches all patched vars and executes self-tests.
+unpatches all [patched vars](#monkey-patching) and executes [self-tests](#self-tests).
 
 Internally `with-fakes` relies on a public dynamic var `*context*` which can be 
 used in your own helper functions.
@@ -85,7 +85,8 @@ A regular fake function can be created using a macro:
   (foo 3 4 5)) ; => "bar"
 ```
 
-If passed arguments cannot be [matched](#argument-matching) using specified config then the exception will be raised:
+If passed arguments cannot be [matched](#argument-matching) using specified 
+config then the exception will be raised:
 
 ```clj
 (foo 100 200) ; => raises "Unexpected args are passed into fake: (100 200)"
@@ -489,15 +490,33 @@ Of course, all these function can be called with an explicit context:
 
 # Self-tests
 
--
+Framework can perform "self-tests" in order to inform a user 
+early on that some fakes (including protocol method fakes) are potentially used inappropriately.
+
+If you use [`with-fakes`](#context) macro then self-tests will be run automatically on exiting the block.
+Otherwise, when [explicit context](#context) is used, you have to invoke self-tests manually.
+
+Currently two types of self-tests are supported to identify:
+ 
+* unused fakes 
+* unchecked fakes
 
 ## Unused Fakes
 
--
+`(fc/self-test-unused-fakes ctx)`
+
+This function raises an exception when some [fake](#fake) is never called after its creation.
+
+For example, this self-test comes in handy when SUT stops using a dependency which 
+was faked in several test scenarios. In such case the framework will guide you in cleaning 
+ your test suite from the unused stubs.
 
 ## Unchecked Fakes
 
--
+`(fc/self-test-unchecked-fakes ctx)`
+
+This self-test raises an exception if some `recorded-fake` 
+was never [marked checked](#recorded-fake), i.e. you forgot assert its calls.
 
 # Monkey Patching
 
