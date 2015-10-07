@@ -9,11 +9,14 @@ Autorun ClojureScript tests: `fswatch -o ./src ./test | xargs -n1 -I{} sh -c 'ec
 
 # Documentation
 
-Project uses [MkDocs](http://www.mkdocs.org/) to generate documentation static site.
+Project uses [MkDocs](http://www.mkdocs.org/) to generate documentation static site and 
+[Codox](https://github.com/weavejester/codox) for API reference.
 
-Build: `mkdocs build`
+Build site: `mkdocs build`
 
-Serve locally with automatic build: `mkdocs serve`
+Serve site locally with automatic build: `mkdocs serve`
+
+Generate API docs: `lein doc`
 
 # Deploying
 

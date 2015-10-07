@@ -51,7 +51,7 @@
   (args-match? [this args]
     (this args)))
 
-(defn -arg-matches?
+(defn ^:no-doc -arg-matches?
   [matcher arg]
   (if (fn? matcher)
     (matcher arg)
@@ -70,7 +70,7 @@
   [_]
   true)
 
-(defn -with-any-first-arg
+(defn ^:no-doc -with-any-first-arg
   "Args matcher decorator which allows any first arg. The rest of the args will be checked by specified matcher.
   Returns a new matcher."
   [rest-args-matcher]
@@ -80,12 +80,12 @@
     (args-match? rest-args-matcher (rest args))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Utils
-(defn -find-first
+(defn ^:no-doc -find-first
   [pred coll]
   (first (filter pred coll)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Fakes - core
-(defn -config->f
+(defn ^:no-doc -config->f
   "Constructs a function from a config vector:
   [args-matcher1 fn-or-value1
    args-matcher2 fn-or-value2 ...]"

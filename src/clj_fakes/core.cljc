@@ -19,9 +19,9 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Macros - with-fakes
 (defn with-fakes*
-  "Function which drives |with-fakes| macro.
-  It defines an implicit dynamic *context* and
-  executes the specified function |f| with specified arguments inside the context."
+  "Function which drives `with-fakes` macro.
+  It defines an implicit dynamic `*context*` and
+  executes the specified function `f` with specified arguments inside the context."
   [f & args]
   (binding [*context* (fc/context)]
     (let [exception-caught? (atom false)]
@@ -41,8 +41,8 @@
 
 #?(:clj
    (defmacro with-fakes
-     "Defines an implicit dynamic *context* and executes the body in it.
-     Inside the body you can use the simpler clj-fakes.core API instead of clj-fakes.context API.
+     "Defines an implicit dynamic `*context*` and executes the body in it.
+     Inside the body you can use the simpler `clj-fakes.core` API instead of `clj-fakes.context` API.
 
      The block will automatically unpatch all the patched variables and execute self-tests on exiting.
      Self-tests will not be executed if exception was raised inside the body.
@@ -55,7 +55,7 @@
   ([] (fc/optional-fake *context*))
   ([config] (fc/optional-fake *context* config)))
 
-(defn -position
+(defn ^:no-doc -position
   [f]
   (fc/-position *context* f))
 
@@ -156,7 +156,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Macros - utils for unit tests; not extracted into separate ns for convenience
 #?(:clj
-   (defmacro -deftest
+   (defmacro ^:no-doc -deftest
      "The same as deftest but name is defined using a string.
      Inspired by: https://gist.github.com/mybuddymichael/4425558"
      [name-string & body]
@@ -171,7 +171,7 @@
        `(~deftest ~name-symbol ~@body))))
 
 #?(:clj
-   (defmacro -is-exception-thrown
+   (defmacro ^:no-doc -is-exception-thrown
      "(is (thrown-with-msg? ...)) for specified exceptions in Clojure/ClojureScript."
      [clj-exc-class cljs-exc-class re expr]
      (let [is (if (-cljs-env? &env) 'cljs.test/is
@@ -181,13 +181,13 @@
        `(~is (~'thrown-with-msg? ~exc-class ~re ~expr)))))
 
 #?(:clj
-   (defmacro -is-error-thrown
+   (defmacro ^:no-doc -is-error-thrown
      "(is (thrown-with-msg? ...)) for general exceptions in Clojure/ClojureScript."
      [re expr]
      `(-is-exception-thrown java.lang.Exception js/Error ~re ~expr)))
 
 #?(:clj
-   (defmacro -is-assertion-error-thrown
+   (defmacro ^:no-doc -is-assertion-error-thrown
      "(is (thrown-with-msg? ...)) for assert exceptions in Clojure/ClojureScript."
      [re expr]
      `(-is-exception-thrown java.lang.AssertionError js/Error ~re ~expr)))
