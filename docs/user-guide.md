@@ -60,7 +60,7 @@ Alternatively a new context can be created with
 This approach is preferable since it requires less typing, automatically 
 unpatches all [patched vars](#monkey-patching) and executes [self-tests](#self-tests).
 
-Internally `with-fakes` relies on a public dynamic var `*context*` which can be 
+Internally `with-fakes` relies on a public dynamic variable `*context*` which can be 
 used in your own helper functions.
 
 # Function Fakes
@@ -443,7 +443,7 @@ So the last expression can be rewritten like this:
 (is (f/was-called-on cow p/speak))
 ```
 
-For the list of all available assertion function see [Assertions](#assertions).
+For the list of all available assertion functions see [Assertions](#assertions).
 
 ## Custom Macros
 
@@ -527,7 +527,7 @@ Currently two types of self-tests are supported to identify:
 
 `(fc/self-test-unused-fakes ctx)`
 
-This function raises an exception when some [fake](#fake) is never called after its creation.
+This function raises an exception when some [fake](#fake) was never called after its creation.
 
 For example, this self-test comes in handy when SUT stops using a dependency which 
 was faked in several test scenarios. In such case the framework will guide you in cleaning 

@@ -14,10 +14,14 @@
 (def any? fc/any?)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Core
+; you can use this atom in your code but do not alter it directly; instead, always use framework API
 (def ^:dynamic *context* nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Macros - with-fakes
 (defn with-fakes*
+  "Function which drives |with-fakes| macro.
+  It defines an implicit dynamic *context* and
+  executes the specified function |f| with specified arguments inside the context."
   [f & args]
   (binding [*context* (fc/context)]
     (let [exception-caught? (atom false)]
@@ -37,6 +41,12 @@
 
 #?(:clj
    (defmacro with-fakes
+     "Defines an implicit dynamic *context* and executes the body in it.
+     Inside the body you can use the simpler clj-fakes.core API instead of clj-fakes.context API.
+
+     The block will automatically unpatch all the patched variables and execute self-tests on exiting.
+     Self-tests will not be executed if exception was raised inside the body.
+     Variables are guaranteed to always be unpatched on exiting the block."
      [& body]
      `(with-fakes* (fn [] ~@body))))
 
@@ -77,30 +87,6 @@
   [k]
   (fc/mark-checked *context* k))
 
-;;;;;;;;;;;;;;;;;;;;;;;; Asserts
-(defn was-called-once
-  ([k] (fc/was-called-once *context* k))
-  ([k args-matcher] (fc/was-called-once *context* k args-matcher)))
-
-(defn was-called
-  ([k] (fc/was-called *context* k))
-  ([k args-matcher] (fc/was-called *context* k args-matcher)))
-
-(defn was-not-called
-  [k] (fc/was-not-called *context* k))
-
-;;;;;;;;;;;;;;;;;;;;;;;; Asserts for objects
-(defn was-called-once-on
-  ([obj f] (fc/was-called-once-on *context* obj f))
-  ([obj f args-matcher] (fc/was-called-once-on *context* obj f args-matcher)))
-
-(defn was-called-on
-  ([obj f] (fc/was-called-on *context* obj f))
-  ([obj f args-matcher] (fc/was-called-on *context* obj f args-matcher)))
-
-(defn was-not-called-on
-  [obj f] (fc/was-not-called-on *context* obj f))
-
 ;;;;;;;;;;;;;;;;;;;;;;;; Protocol fakes
 #?(:clj
    (defmacro reify-fake*
@@ -125,6 +111,30 @@
 (defn method
   [obj f]
   (fc/method *context* obj f))
+
+;;;;;;;;;;;;;;;;;;;;;;;; Assertions
+(defn was-called-once
+  ([k] (fc/was-called-once *context* k))
+  ([k args-matcher] (fc/was-called-once *context* k args-matcher)))
+
+(defn was-called
+  ([k] (fc/was-called *context* k))
+  ([k args-matcher] (fc/was-called *context* k args-matcher)))
+
+(defn was-not-called
+  [k] (fc/was-not-called *context* k))
+
+;;;;;;;;;;;;;;;;;;;;;;;; Assertions for protocol methods
+(defn was-called-once-on
+  ([obj f] (fc/was-called-once-on *context* obj f))
+  ([obj f args-matcher] (fc/was-called-once-on *context* obj f args-matcher)))
+
+(defn was-called-on
+  ([obj f] (fc/was-called-on *context* obj f))
+  ([obj f args-matcher] (fc/was-called-on *context* obj f args-matcher)))
+
+(defn was-not-called-on
+  [obj f] (fc/was-not-called-on *context* obj f))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Monkey patching
 #?(:clj

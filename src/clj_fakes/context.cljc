@@ -12,7 +12,7 @@
      (:require-macros [clj-fakes.macro :refer [-cljs-env? P PP]])))
 
 (defn context
-  "Create a new context. Context fields should be considered a private API."
+  "Creates a new context atom. Do not alter the atom manually, context fields should be considered a private API."
   []
   (atom {; Contains pairs: [key call]
          :calls           []
@@ -165,7 +165,7 @@
   (contains? (:recorded-fakes @ctx) k))
 
 (defn mark-checked
-  "Self-test will not warn about specified recorded fake after using this function."
+  "After using this function self-test will not warn about the specified recorded fake."
   [ctx k]
   {:pre [ctx (-recorded? ctx k)]}
   (swap! ctx update-in [:unchecked-fakes] #(remove #{k} %)))
@@ -195,6 +195,9 @@
   [any? (fn [& _] (-fake-return-value))])
 
 (defn optional-fake
+  "Creates an optional fake function which will not be checked by |self-test-unused-fakes|,
+  i.e. created fake is allowed to be never called.
+  If |config| is not specified then fake will be created with |default-fake-config|."
   ([ctx] (optional-fake ctx default-fake-config))
   ([ctx config] {:pre [ctx]} (-optional-fake ctx (-config->f config))))
 
@@ -227,15 +230,17 @@
 
 #?(:clj
    (defmacro fake*
-     "This is the same as fake macro but for reuse in other macros.
-     form must be passed from the parent macro in order to correctly detect positions of fakes."
+     "The same as |fake| macro but for reuse in other macros.
+     |form| must be passed from the parent macro in order to correctly detect positions of fakes."
      [ctx form config]
      (-emit-fake-fn-call-with-position `-fake** ctx form config)))
 
 #?(:clj
    (defmacro fake
-     "It's made a macro instead of a function to be able to catch fake creation position for better error messages.
-     form must be passed if this macro is called from another macro in order to correctly determine position."
+     "Creates a fake function.
+     The created function must be called; otherwise, |self-test-unused-fakes| will fail.
+     It's made a macro instead of a function to be able to catch fake creation position for better error messages.
+     Use |fake*| in case this macro is called from another macro in order to correctly detect positions."
      [ctx config]
      `(fake* ~ctx ~&form ~config)))
 
@@ -246,15 +251,17 @@
 
 #?(:clj
    (defmacro recorded-fake*
-     "This is the same as recorded-fake macro but for reuse in other macros.
-     form must be passed from the parent macro in order to correctly detect positions of fakes."
+     "This is the same as |recorded-fake| macro but for reuse in other macros.
+     |form| must be passed from the parent macro in order to correctly detect positions of fakes."
      ([ctx form] (-emit-fake-fn-call-with-position `-recorded-fake** ctx form))
      ([ctx form config] (-emit-fake-fn-call-with-position `-recorded-fake** ctx form config))))
 
 #?(:clj
    (defmacro recorded-fake
-     "It's made a macro instead of a function to be able to catch fake creation position for better error messages.
-     Use recorded-fake* in case this macro is called from another macro in order to correctly detect positions."
+     "Creates a fake function which calls will be recorded.
+     Ultimatelly, the created function must be marked checked; otherwise, |self-test-unchecked-fakes| will fail.
+     It's made a macro instead of a function to be able to catch fake creation position for better error messages.
+     Use |recorded-fake*| in case this macro is called from another macro in order to correctly detect positions."
      ([ctx] `(recorded-fake* ~ctx ~&form))
      ([ctx config] `(recorded-fake* ~ctx ~&form ~config))))
 
@@ -272,6 +279,16 @@
      ([ctx form k config] (-emit-fake-fn-call-with-position `-recorded-fake-as* ctx form k config))))
 
 (defn calls
+  "For the specified recorded fake returns a vector of its calls.
+
+  If fake is not specified then it will return all the calls recorded in the context:
+  [[recorded-fake1 call1]
+   [recorded-fake2 call2]
+   ...]
+
+  A call is a map with keys: :args, :return-value.
+
+  Returned vector is ordered by call time: the earliest call will be at the head."
   ([ctx] (:calls @ctx))
   ([ctx k]
    {:pre [ctx (-recorded? ctx k)]}
@@ -298,7 +315,8 @@
   [id f])
 
 (defn method
-  "Returns a hash-key by which calls are recorded for the specified protocol instance method."
+  "Returns a hash-key by which calls are recorded for the specified fake protocol instance method.
+  Can be used in functions which take recorded fake as an input."
   [ctx obj f]
   {:pre [ctx obj (or (fn? f) (string? f))]}
   (-method-hash (-obj->id ctx obj) f))
@@ -694,30 +712,49 @@
 
 #?(:clj
    (defmacro reify-fake*
-     "The same as reify-fake but to be used inside the macros.
-     form is needed to correctly determine fake positions, env is needed to determine target language.
-     Syntax example:
-     (reify-fake* my-context
-       protocol-or-interface-or-Object
-       [method1 :optional-fake [any? 123]]
-       protocol-or-interface-or-Object
-       [method2 :recorded-fake])"
+     "The same as |reify-fake| but to be used inside the macros.
+     |form| is needed to correctly determine fake positions, |env| is needed to determine target language."
      [ctx form env & specs]
      `(-reify-fake* ~ctx ~form ~env false ~@specs)))
 
 #?(:clj
    (defmacro reify-nice-fake*
-     "The same as reify-nice-fake but to be used inside macros."
+     "The same as |reify-nice-fake| but to be used inside macros.
+     |form| is needed to correctly determine fake positions, |env| is needed to determine target language."
      [ctx form env & specs]
      `(-reify-fake* ~ctx ~form ~env true ~@specs)))
 
 #?(:clj
    (defmacro reify-fake
+     "Works similarly to |reify| macro but implements methods in terms of fake functions.
+     Created instance will raise an exception on calling protocol method which is not defined.
+
+     Supported fake types: :optional-fake, :fake, :recorded-fake.
+
+     Syntax example:
+     (reify-fake my-context
+       protocol-or-interface-or-Object
+       [method1 :optional-fake [any? 123]]
+       protocol-or-interface-or-Object
+       [method2 :recorded-fake])"
      [ctx & specs]
      `(reify-fake* ~ctx ~&form ~&env ~@specs)))
 
 #?(:clj
    (defmacro reify-nice-fake
+     "Works similarly to |reify-fake| but automatically generates :optional-fake implementations for methods which are
+     not explicitly defined by user.
+
+     It cannot yet automatically fake Java interface and Object methods.
+
+     Supported fake types: :optional-fake, :fake, :recorded-fake.
+
+     Syntax example:
+     (reify-nice-fake my-context
+       protocol-or-interface-or-Object
+       [method1 :optional-fake [any? 123]]
+       protocol-or-interface-or-Object
+       [method2 :recorded-fake])"
      [ctx & specs]
      `(reify-nice-fake* ~ctx ~&form ~&env ~@specs)))
 
@@ -732,6 +769,7 @@
       base-str)))
 
 (defn self-test-unused-fakes
+  "Raises an exception when some fake was never called after its creation."
   [ctx]
   {:pre [ctx]}
   (if-let [descriptions (not-empty (map (partial -fake->str ctx "non-optional fake")
@@ -741,6 +779,7 @@
                     {}))))
 
 (defn self-test-unchecked-fakes
+  "Raises an exception if some recorded fake was never marked checked, i.e. you forgot assert its calls."
   [ctx]
   {:pre [ctx]}
   (if-let [descriptions (not-empty (map (partial -fake->str ctx "recorded fake")
@@ -749,7 +788,7 @@
                          (string/join "\n" descriptions))
                     {}))))
 
-;;;;;;;;;;;;;;;;;;;;;;;; Asserts
+;;;;;;;;;;;;;;;;;;;;;;;; Assertions
 (defn -was-called-times
   "Checks that function:
    1) was called the specified number of times and
@@ -776,21 +815,21 @@
       :else true)))
 
 (defn was-called-once
-  "Checks that function was called strictly once and that the call was with the specified args."
+  "Checks that recorded fake was called strictly once and that the call was with the specified args."
   ([ctx k] (was-called-once ctx k any?))
   ([ctx k args-matcher]
    {:pre [ctx (-recorded? ctx k) (satisfies? ArgsMatcher args-matcher)]}
    (-was-called-times ctx #(= % 1) "1" k args-matcher)))
 
 (defn was-called
-  "Checks that function was called at least once with the specified args."
+  "Checks that recorded fake was called at least once with the specified args."
   ([ctx k] (was-called ctx k any?))
   ([ctx k args-matcher]
    {:pre [ctx (-recorded? ctx k) (satisfies? ArgsMatcher args-matcher)]}
    (-was-called-times ctx #(> % 0) "> 0" k args-matcher)))
 
 (defn was-not-called
-  "Checks that function was never called."
+  "Checks that recorded fake was never called."
   [ctx k]
   {:pre [ctx (-recorded? ctx k)]}
   (mark-checked ctx k)
@@ -798,22 +837,23 @@
     (or (empty? k-calls)
         (throw (ex-info (str "Function is expected to be never called. Actual calls: " (pr-str k-calls) ".") {})))))
 
+;;;;;;;;;;;;;;;;;;;;;;;; Assertions for protocol methods
 (defn was-called-once-on
-  "Shortcut for checking method call on specified instance."
+  "|was-called-once| for protocol method fakes."
   ([ctx obj f] (was-called-once-on ctx obj f any?))
   ([ctx obj f args-matcher]
    {:pre [ctx obj f (satisfies? ArgsMatcher args-matcher)]}
    (was-called-once ctx (method ctx obj f) (-with-any-first-arg args-matcher))))
 
 (defn was-called-on
-  "Shortcut for checking method call on specified instance."
+  "|was-called| for protocol method fakes."
   ([ctx obj f] (was-called-on ctx obj f any?))
   ([ctx obj f args-matcher]
    {:pre [ctx obj f (satisfies? ArgsMatcher args-matcher)]}
    (was-called ctx (method ctx obj f) (-with-any-first-arg args-matcher))))
 
 (defn was-not-called-on
-  "Shortcut for checking method call on specified instance."
+  "|was-not-called| for protocol method fakes."
   [ctx obj f]
   {:pre [ctx obj f]}
   (was-not-called ctx (method ctx obj f)))
@@ -851,6 +891,7 @@
 
 #?(:clj
    (defmacro patch!
+     "Changes variable value in all threads."
      [ctx var-expr val]
      `(do
         (-save-original-val! ~ctx ~var-expr)
@@ -860,12 +901,14 @@
         (-set-var! ~var-expr ~val))))
 
 (defn unpatch!
+  "Restores original variable value."
   [ctx a-var]
   {:pre [ctx a-var]}
   (assert (contains? (:unpatches @ctx) a-var) "Specified var is not patched")
   ((get (:unpatches @ctx) a-var)))
 
 (defn unpatch-all!
+  "Restores original values for all the variables patched in the specified context."
   [ctx]
   (doseq [[_var_ unpatch-fn] (:unpatches @ctx)]
     (unpatch-fn)))
