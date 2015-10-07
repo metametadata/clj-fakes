@@ -204,7 +204,7 @@ All fakes have to be created inside some context.</p>
 
 <p>This approach is preferable since it requires less typing, automatically 
 unpatches all <a href="#monkey-patching">patched vars</a> and executes <a href="#self-tests">self-tests</a>.</p>
-<p>Internally <code>with-fakes</code> relies on a public dynamic var <code>*context*</code> which can be 
+<p>Internally <code>with-fakes</code> relies on a public dynamic variable <code>*context*</code> which can be 
 used in your own helper functions.</p>
 <h1 id="function-fakes">Function Fakes</h1>
 <p>Fake is a function which returns canned values on matched arguments and can optionally record its calls. It 
@@ -534,7 +534,7 @@ So the last expression can be rewritten like this:</p>
 <pre><code class="clj">(is (f/was-called-on cow p/speak))
 </code></pre>
 
-<p>For the list of all available assertion function see <a href="#assertions">Assertions</a>.</p>
+<p>For the list of all available assertion functions see <a href="#assertions">Assertions</a>.</p>
 <h2 id="custom-macros_1">Custom Macros</h2>
 <p>In your own reusable macros you should use <code>reify-fake*/reify-nice-fake*</code> 
 instead of <code>reify-fake/reify-nice-fake</code>:</p>
@@ -585,7 +585,7 @@ Otherwise, when <a href="#context">explicit context</a> is used, you have to inv
 </ul>
 <h2 id="unused-fakes">Unused Fakes</h2>
 <p><code>(fc/self-test-unused-fakes ctx)</code></p>
-<p>This function raises an exception when some <a href="#fake">fake</a> is never called after its creation.</p>
+<p>This function raises an exception when some <a href="#fake">fake</a> was never called after its creation.</p>
 <p>For example, this self-test comes in handy when SUT stops using a dependency which 
 was faked in several test scenarios. In such case the framework will guide you in cleaning 
  your test suite from the unused stubs.</p>
