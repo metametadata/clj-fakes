@@ -132,7 +132,7 @@
         }, 
         {
             "location": "/dev-guide/", 
-            "text": "Tests\n\n\nAutorun Clojure tests: \nlein test-refresh\n\n\nRun ClojureScript tests: \nlein clean \n lein doo phantom test once\n\n(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)\n\n\nAutorun ClojureScript tests: \nfswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait.... \n lein clean \n lein doo rhino test once'\n\n\nDocumentation\n\n\nProject uses \nMkDocs\n to generate documentation static site.\n\n\nBuild: \nmkdocs build\n\n\nServe locally with automatic build: \nmkdocs serve\n\n\nDeploying\n\n\nDeploy to Clojars: \nlein deploy clojars\n\n\nDeploy docs to gh-pages branch: \nmkdocs gh-deploy --clean", 
+            "text": "Tests\n\n\nAutorun Clojure tests: \nlein test-refresh\n\n\nRun ClojureScript tests: \nlein clean \n lein doo phantom test once\n\n(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)\n\n\nAutorun ClojureScript tests: \nfswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait.... \n lein clean \n lein doo rhino test once'\n\n\nDocumentation\n\n\nProject uses \nMkDocs\n to generate documentation static site and \n\nCodox\n for API reference.\n\n\nBuild site: \nmkdocs build\n\n\nServe site locally with automatic build: \nmkdocs serve\n\n\nGenerate API docs: \nlein doc\n\n\nDeploying\n\n\nDeploy to Clojars: \nlein deploy clojars\n\n\nDeploy docs to gh-pages branch: \nmkdocs gh-deploy --clean", 
             "title": "Developer Guide"
         }, 
         {
@@ -142,7 +142,7 @@
         }, 
         {
             "location": "/dev-guide/#documentation", 
-            "text": "Project uses  MkDocs  to generate documentation static site.  Build:  mkdocs build  Serve locally with automatic build:  mkdocs serve", 
+            "text": "Project uses  MkDocs  to generate documentation static site and  Codox  for API reference.  Build site:  mkdocs build  Serve site locally with automatic build:  mkdocs serve  Generate API docs:  lein doc", 
             "title": "Documentation"
         }, 
         {
