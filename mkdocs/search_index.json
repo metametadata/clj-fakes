@@ -137,7 +137,7 @@
         }, 
         {
             "location": "/dev-guide/", 
-            "text": "Tests\n\n\nAutorun Clojure tests: \nlein test-refresh\n\n\nRun ClojureScript tests: \nlein clean \n lein doo phantom test once\n\n(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)\n\n\nAutorun ClojureScript tests: \nfswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait.... \n lein clean \n lein doo rhino test once'\n\n\nDocumentation\n\n\nProject uses \nMkDocs\n to generate documentation static site and \n\nCodox\n for API reference.\n\n\nServe site locally with automatic build: \nmkdocs serve\n\n\nBuild site: \nmkdocs build\n\n\nGenerate API docs into site folder: \nlein doc\n\n\nDeploying\n\n\nDeploy to Clojars: \nlein deploy clojars\n\n\nDeploy site to gh-pages branch: \nmkdocs gh-deploy", 
+            "text": "Tests\n\n\nAutorun Clojure tests: \nlein test-refresh\n\n\nRun ClojureScript tests: \nlein clean \n lein doo phantom test once\n\n(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)\n\n\nAutorun ClojureScript tests: \nfswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait.... \n lein clean \n lein doo rhino test once'\n\n\nDocumentation\n\n\nProject uses \nMkDocs\n to generate documentation static site and \n\nCodox\n for API reference.\n\n\nServe site locally with automatic build: \nmkdocs serve\n\n\nBuild site and API docs into site folder: \nmkdocs build --clean \n lein doc\n\n\nDeploying\n\n\nDeploy to Clojars: \nlein deploy clojars\n\n\nDeploy site to gh-pages branch: \nghp-import -p site", 
             "title": "Developer Guide"
         }, 
         {
@@ -147,12 +147,12 @@
         }, 
         {
             "location": "/dev-guide/#documentation", 
-            "text": "Project uses  MkDocs  to generate documentation static site and  Codox  for API reference.  Serve site locally with automatic build:  mkdocs serve  Build site:  mkdocs build  Generate API docs into site folder:  lein doc", 
+            "text": "Project uses  MkDocs  to generate documentation static site and  Codox  for API reference.  Serve site locally with automatic build:  mkdocs serve  Build site and API docs into site folder:  mkdocs build --clean   lein doc", 
             "title": "Documentation"
         }, 
         {
             "location": "/dev-guide/#deploying", 
-            "text": "Deploy to Clojars:  lein deploy clojars  Deploy site to gh-pages branch:  mkdocs gh-deploy", 
+            "text": "Deploy to Clojars:  lein deploy clojars  Deploy site to gh-pages branch:  ghp-import -p site", 
             "title": "Deploying"
         }
     ]

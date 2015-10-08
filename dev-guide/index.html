@@ -129,11 +129,10 @@
 <p>Project uses <a href="http://www.mkdocs.org/">MkDocs</a> to generate documentation static site and 
 <a href="https://github.com/weavejester/codox">Codox</a> for API reference.</p>
 <p>Serve site locally with automatic build: <code>mkdocs serve</code></p>
-<p>Build site: <code>mkdocs build</code></p>
-<p>Generate API docs into site folder: <code>lein doc</code></p>
+<p>Build site and API docs into site folder: <code>mkdocs build --clean &amp;&amp; lein doc</code></p>
 <h1 id="deploying">Deploying</h1>
 <p>Deploy to Clojars: <code>lein deploy clojars</code></p>
-<p>Deploy site to gh-pages branch: <code>mkdocs gh-deploy</code></p></div>
+<p>Deploy site to gh-pages branch: <code>ghp-import -p site</code></p></div>
         </div>
 
         <footer class="col-md-12">
