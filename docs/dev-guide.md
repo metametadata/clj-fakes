@@ -14,13 +14,10 @@ Project uses [MkDocs](http://www.mkdocs.org/) to generate documentation static s
 
 Serve site locally with automatic build: `mkdocs serve`
 
-Build site: `mkdocs build`
-
-Generate API docs into site folder: `lein doc`
-
+Build site and API docs into site folder: `mkdocs build --clean && lein doc`
 
 # Deploying
 
 Deploy to Clojars: `lein deploy clojars`
 
-Deploy site to gh-pages branch: `mkdocs gh-deploy`
+Deploy site to gh-pages branch: `ghp-import -p site`

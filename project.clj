@@ -25,9 +25,9 @@
                                   :optimizations :whitespace}}}}
 
   :codox {
-          ;:src-dir-uri "http://github.com/metametadata/clj-fakes/blob/master/"
-          ;:src-linenum-anchor-prefix "L"
-          :sources    ["src/clj_fakes"]
+          :src-dir-uri "https://github.com/metametadata/clj-fakes/blob/master/"
+          :src-linenum-anchor-prefix "L"
+          :sources    ["src"]
           :exclude    clj-fakes.macro
           :output-dir "site/api"
           :defaults   {:doc/format :markdown}
