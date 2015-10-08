@@ -14,8 +14,8 @@
 (def any? fc/any?)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Core
-; you can use this atom in your code but do not alter it directly; instead, always use framework API
-(def ^:dynamic *context* nil)
+(def ^{:doc "You can use this atom in your code but do not alter it directly; instead, always use framework API."}
+  ^:dynamic *context* nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Macros - with-fakes
 (defn with-fakes*

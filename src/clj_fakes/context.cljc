@@ -106,19 +106,19 @@
           (apply return-value args)
           return-value)))))
 
-(defn -optional-fake
+(defn ^:no-doc -optional-fake
   "Extracted for code readability."
   [ctx f]
   {:pre [ctx (fn? f)]}
   f)
 
-(defn -mark-used
+(defn ^:no-doc -mark-used
   "Self-test will not warn about specified fake after using this function."
   [ctx f]
   {:pre [ctx (fn? f)]}
   (swap! ctx update-in [:unused-fakes] #(remove #{f} %)))
 
-(defn -required
+(defn ^:no-doc -required
   [ctx position f]
   {:pre [ctx position (fn? f)]}
   (letfn [(wrapper [& args]
@@ -128,15 +128,15 @@
     (swap! ctx update-in [:unused-fakes] conj wrapper)
     wrapper))
 
-(defn -fake
+(defn ^:no-doc -fake
   [ctx position f]
   (-required ctx position (-optional-fake ctx f)))
 
-(defn -record-call
+(defn ^:no-doc -record-call
   [ctx k call]
   (swap! ctx update-in [:calls] conj [k call]))
 
-(defn -recorded-as
+(defn ^:no-doc -recorded-as
   "Decorates the specified function in order to record its calls.
   Calls will be recorded by the specified key k.
   If k is nil - calls will be recorded by the decorated function (in this case use -recorded).
@@ -154,13 +154,13 @@
     (swap! ctx update-in [:unchecked-fakes] conj (or k wrapper))
     wrapper))
 
-(defn -recorded
+(defn ^:no-doc -recorded
   "Decorates the specified function in order to record its calls.
   Calls will be recorded by the returned decorated function."
   [ctx position f]
   (-recorded-as ctx position nil f))
 
-(defn -recorded?
+(defn ^:no-doc -recorded?
   [ctx k]
   (contains? (:recorded-fakes @ctx) k))
 
@@ -170,21 +170,21 @@
   {:pre [ctx (-recorded? ctx k)]}
   (swap! ctx update-in [:unchecked-fakes] #(remove #{k} %)))
 
-; Protocol with meaningful name is used for more readable stacktraces
-(defprotocol FakeReturnValue)
+(defprotocol FakeReturnValue
+  "Empty protocol with meaningful name for creating unique return values.")
 
-(defn -fake-return-value
+(defn ^:no-doc -fake-return-value
   []
   (reify FakeReturnValue))
 
-(defn -set-desc
+(defn ^:no-doc -set-desc
   "Saves a description for the specified fake. It can be later used for debugging."
   [ctx k desc]
   {:pre [ctx k]}
   (swap! ctx assoc-in [:fake-descs k] desc))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Fakes - API
-(defn -position
+(defn ^:no-doc -position
   "Returns a position of the specified fake. Does not yet work for optional fakes."
   [ctx f]
   {:pre [ctx f]}
@@ -202,7 +202,7 @@
   ([ctx config] {:pre [ctx]} (-optional-fake ctx (-config->f config))))
 
 #?(:clj
-   (defn -emit-fake-fn-call-with-position
+   (defn ^:no-doc -emit-fake-fn-call-with-position
      "Emits code with call to specified fake-fn with correct position arg.
      Line and column are retrieved from macro's &form var which must be passed explicitly.
      Filepath is retrieved from a dummy var metadata.
@@ -223,7 +223,7 @@
                            :column ~column}]
             (~fake-fn ~ctx position# ~@args))))))
 
-(defn -fake**
+(defn ^:no-doc -fake**
   "This function is the same as fake macro but position must be passed explicitly."
   [ctx position config]
   (-fake ctx position (-config->f config)))
@@ -244,7 +244,7 @@
      [ctx config]
      `(fake* ~ctx ~&form ~config)))
 
-(defn -recorded-fake**
+(defn ^:no-doc -recorded-fake**
   "This function is the same as recorded-fake macro but position must be passed explicitly."
   ([ctx position] (-recorded-fake** ctx position default-fake-config))
   ([ctx position config] (-recorded ctx position (-config->f config))))
@@ -265,13 +265,13 @@
      ([ctx] `(recorded-fake* ~ctx ~&form))
      ([ctx config] `(recorded-fake* ~ctx ~&form ~config))))
 
-(defn -recorded-fake-as*
+(defn ^:no-doc -recorded-fake-as*
   [ctx position k config]
   {:pre [ctx]}
   (-recorded-as ctx position k (-config->f config)))
 
 #?(:clj
-   (defmacro -recorded-fake-as
+   (defmacro ^:no-doc -recorded-fake-as
      "The same as recorded-fake but fake will be stored into context by specified key instead of its value.
      E.g. it is used in reify-fake in order to emualte recording calls on the protocol method.
      form must be passed if this macro is called from another macro in order to correctly determine position."
@@ -297,18 +297,18 @@
         (mapv #(second %)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Protocol fakes
-(defn -register-obj-id
+(defn ^:no-doc -register-obj-id
   [ctx obj id]
   {:pre [ctx obj id]}
   (swap! ctx assoc-in [:object-ids obj] id))
 
-(defn -obj->id
+(defn ^:no-doc -obj->id
   "Finds id for reified protocol instance. Returns nil if not found."
   [ctx obj]
   {:pre [ctx obj]}
   (get (:object-ids @ctx) obj))
 
-(defn -method-hash
+(defn ^:no-doc -method-hash
   "Generates a unique hash from specified protocol instance id and function."
   [id f]
   {:pre [id f]}
@@ -321,7 +321,7 @@
   {:pre [ctx obj (or (fn? f) (string? f))]}
   (-method-hash (-obj->id ctx obj) f))
 
-(defn -with-any-first-arg-config
+(defn ^:no-doc -with-any-first-arg-config
   "Applies -with-any-first-arg to all args-matchers in config. Returns a new config."
   [config]
   {:pre  [(vector? config)]
@@ -334,7 +334,7 @@
                      config)))
 
 #?(:clj
-   (defn -add-any-first-arg-into-matchers
+   (defn ^:no-doc -add-any-first-arg-into-matchers
      "In config map kinda adds an additional first matcher to match any 'this' param.
      Before:
      [matcher1 fn1
@@ -350,12 +350,12 @@
        `(-with-any-first-arg-config ~config))))
 
 #?(:clj
-   (defn -looks-like-method-spec?
+   (defn ^:no-doc -looks-like-method-spec?
      [x]
      (list? x)))
 
 #?(:clj
-   (defn -parse-specs
+   (defn ^:no-doc -parse-specs
      "Returns a map: protocol -> method-specs"
      [specs]
      (loop [ret {}
@@ -366,7 +366,7 @@
          ret))))
 
 #?(:clj
-   (defn -emit-method-full-sym
+   (defn ^:no-doc -emit-method-full-sym
      "Infers fully qualified method symbol."
      [env protocol-sym method-sym]
      (if (-cljs-env? env)
@@ -381,7 +381,7 @@
          (symbol ns (name method-sym))))))
 
 #?(:clj
-   (defn -resolves?
+   (defn ^:no-doc -resolves?
      [env sym]
      (if (-cljs-env? env)
        ; ClojureScript
@@ -391,7 +391,7 @@
        (not (nil? (resolve sym))))))
 
 #?(:clj
-   (defn -emit-imp-value
+   (defn ^:no-doc -emit-imp-value
      [form env ctx obj-id-sym protocol-sym
       [method-sym fake-type config :as _method-spec_]]
      (let [method-full-sym (-emit-method-full-sym env protocol-sym method-sym)
@@ -427,7 +427,7 @@
          (assert nil (str "Unknown fake type specified: " fake-type))))))
 
 #?(:clj
-   (defn -resolve-protocol-with-specs
+   (defn ^:no-doc -resolve-protocol-with-specs
      "Returns a resolved protocol or nil if resolved object has no protocol specs."
      [env protocol-sym]
      (if (-cljs-env? env)
@@ -442,7 +442,7 @@
            protocol)))))
 
 #?(:clj
-   (defn -resolves-to-Object?
+   (defn ^:no-doc -resolves-to-Object?
      [env sym]
      (if (-cljs-env? env)
        ; ClojureScript
@@ -452,7 +452,7 @@
        (= Object (resolve sym)))))
 
 #?(:clj
-   (defn -protocol-methods
+   (defn ^:no-doc -protocol-methods
      "Portable reflection helper. Returns different structures for different hosts.
      Protocol must be already resolved."
      [env protocol]
@@ -464,7 +464,7 @@
        (-> protocol deref :sigs vals))))
 
 #?(:clj
-   (defn -protocol-method-name
+   (defn ^:no-doc -protocol-method-name
      "Portable reflection helper."
      [env protocol-method]
      (if (-cljs-env? env)
@@ -475,7 +475,7 @@
        (:name protocol-method))))
 
 #?(:clj
-   (defn -protocol-method-argslist
+   (defn ^:no-doc -protocol-method-argslist
      "Portable reflection helper."
      [env protocol-method]
      (if (-cljs-env? env)
@@ -486,7 +486,7 @@
        (:arglists protocol-method))))
 
 #?(:clj
-   (defn -reflect-interface-or-object
+   (defn ^:no-doc -reflect-interface-or-object
      "Raises an exception if cannot reflect on specified symbol."
      [env interface-sym]
      (assert (not (-cljs-env? env)) "Works only in Clojure for reflection on Java interfaces and Object class.")
@@ -504,17 +504,17 @@
                             ". Underlying exception: " (pr-str e))))))))
 
 #?(:clj
-   (defn -remove-meta
+   (defn ^:no-doc -remove-meta
      [x]
      (with-meta x nil)))
 
 #?(:clj
-   (defn -with-hint
+   (defn ^:no-doc -with-hint
      [hint sym]
      (with-meta sym {:tag hint})))
 
 #?(:clj
-   (defn -arg
+   (defn ^:no-doc -arg
      "Constructs arg symbol from the specified name."
      [name]
      (-> name
@@ -523,7 +523,7 @@
          (gensym))))
 
 #?(:clj
-   (defn -fix-arglist
+   (defn ^:no-doc -fix-arglist
      "Passed arglist can have duplicated args and not allowed symbols.
      This function generates a correct arglist for code emitting.
      No type hints will be specified."
@@ -531,7 +531,7 @@
      (mapv -arg arglist)))
 
 #?(:clj
-   (defn -fix-arglist-with-hints
+   (defn ^:no-doc -fix-arglist-with-hints
      "The same as -fix-arglist and also adds type hints:
        for the first arg: protocol-sym will be used as a hint;
        for the rest: arg value itself will be used as a hint."
@@ -540,7 +540,7 @@
            (map #(-with-hint % (-arg %)) (rest arglist)))))
 
 #?(:clj
-   (defn -method-arglists
+   (defn ^:no-doc -method-arglists
      "Given protocol and method returns all allowed method arglists:
      [[...] ...]
 
@@ -568,7 +568,7 @@
                  members))))))
 
 #?(:clj
-   (defn -hinted-method-sym
+   (defn ^:no-doc -hinted-method-sym
      [env protocol-sym method-sym]
      ; no hint is needed in ClojureScript or for Clojure protocol methods
      (if (or (-cljs-env? env)
@@ -582,7 +582,7 @@
          (-with-hint (:return-type member) method-sym)))))
 
 #?(:clj
-   (defn -method-imp
+   (defn ^:no-doc -method-imp
      "Generates an implementation for the specified method.
      {:imp-sym ...
       :imp-value ...
@@ -608,7 +608,7 @@
         :arglists   arglists})))
 
 #?(:clj
-   (defn -method-imps-for-protocol
+   (defn ^:no-doc -method-imps-for-protocol
      "Returns a list of maps:
       ({:imp-sym ...
        :imp-value ...
@@ -618,7 +618,7 @@
      (map (partial -method-imp form env ctx obj-id-sym protocol-sym) method-specs)))
 
 #?(:clj
-   (defn -generate-protocol-method-imps
+   (defn ^:no-doc -generate-protocol-method-imps
      "Produces a helper map:
      {protocol-sym -> [{:imp-sym ...
                         :imp-value ...
@@ -633,7 +633,7 @@
                 protocol-method-specs))))
 
 #?(:clj
-   (defn -emit-imp-bindings
+   (defn ^:no-doc -emit-imp-bindings
      "Emits a list of let bindings with implementations for reified methods:
      [imp-sym1 imp-value1
      imp-sym2 imp-value2 ...]"
@@ -642,7 +642,7 @@
              (flatten (vals protocol-method-imps)))))
 
 #?(:clj
-   (defn -emit-method-specs
+   (defn ^:no-doc -emit-method-specs
      [{:keys [method-sym arglists imp-sym] :as _method-imp_}]
      (map (fn [arglist]
             `(~method-sym ~arglist
@@ -650,19 +650,19 @@
           arglists)))
 
 #?(:clj
-   (defn -emit-protocol-specs
+   (defn ^:no-doc -emit-protocol-specs
      [[protocol-sym method-imps]]
      (into [protocol-sym]
            (mapcat -emit-method-specs method-imps))))
 
 #?(:clj
-   (defn -emit-specs
+   (defn ^:no-doc -emit-specs
      "Emits final specs for reify macro."
      [protocol-method-imps]
      (mapcat -emit-protocol-specs protocol-method-imps)))
 
 #?(:clj
-   (defn -nice-specs
+   (defn ^:no-doc -nice-specs
      "Generates nice specs for all methods from the specified protocol.
      Does nothing for Java interfaces and unresolved symbols."
      [env protocol-sym]
@@ -672,27 +672,27 @@
          nice-specs))))
 
 #?(:clj
-   (defn -not-yet-in-specs [specs [nice-method-sym :as _spec_]]
+   (defn ^:no-doc -not-yet-in-specs [specs [nice-method-sym :as _spec_]]
      (nil?
        (-find-first (fn [[method-sym :as _spec_]]
                       (= method-sym nice-method-sym))
                     specs))))
 
 #?(:clj
-   (defn -add-nice-specs-for-protocol [env [protocol-sym parsed-specs :as _parsed_spec_]]
+   (defn ^:no-doc -add-nice-specs-for-protocol [env [protocol-sym parsed-specs :as _parsed_spec_]]
      (let [nice-specs (-nice-specs env protocol-sym)
            auto-specs (filter (partial -not-yet-in-specs parsed-specs) nice-specs)
            new-specs (concat parsed-specs auto-specs)]
        [protocol-sym new-specs])))
 
 #?(:clj
-   (defn -add-nice-specs
+   (defn ^:no-doc -add-nice-specs
      "For all methods which are not explicitly defined adds a 'nice' default spec."
      [env parsed-specs]
      (map (partial -add-nice-specs-for-protocol env) parsed-specs)))
 
 #?(:clj
-   (defmacro -reify-fake*
+   (defmacro ^:no-doc -reify-fake*
      [ctx form env nice? & specs]
      (let [obj-id-sym (gensym "obj-id")
            obj-sym (gensym "obj")
@@ -759,7 +759,7 @@
      `(reify-nice-fake* ~ctx ~&form ~&env ~@specs)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Self-tests
-(defn -fake->str
+(defn ^:no-doc -fake->str
   [ctx fake-type f]
   (let [p (-position ctx f)
         base-str (str fake-type " from " (:file p) ", " (:line p) ":" (:column p))
@@ -789,7 +789,7 @@
                     {}))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Assertions
-(defn -was-called-times
+(defn ^:no-doc -was-called-times
   "Checks that function:
    1) was called the specified number of times and
    2) at least once with the specified args."
@@ -859,13 +859,13 @@
   (was-not-called ctx (method ctx obj f)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Monkey patching
-(defn -save-original-val!
+(defn ^:no-doc -save-original-val!
   [ctx a-var]
   {:pre [ctx a-var]}
   (when-not (contains? (:original-vals @ctx) a-var)
     (swap! ctx assoc-in [:original-vals a-var] @a-var)))
 
-(defn -save-unpatch!
+(defn ^:no-doc -save-unpatch!
   [ctx a-var unpatch-fn]
   {:pre [ctx a-var (fn? unpatch-fn)]}
   (swap! ctx assoc-in [:unpatches a-var] unpatch-fn))
@@ -878,7 +878,7 @@
   (get (:original-vals @ctx) a-var))
 
 #?(:clj
-   (defmacro -set-var!
+   (defmacro ^:no-doc -set-var!
      "Portable var set. ClojureScript version expects passed var to be a pair, e.g. (var foo)."
      [a-var val]
      (if (-cljs-env? &env)
