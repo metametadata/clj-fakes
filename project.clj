@@ -29,6 +29,6 @@
           ;:src-linenum-anchor-prefix "L"
           :sources    ["src/clj_fakes"]
           :exclude    clj-fakes.macro
-          :output-dir "docs/api"
+          :output-dir "site/api"
           :defaults   {:doc/format :markdown}
           :project    {:description ""}})
