@@ -16,6 +16,7 @@
         <link rel="stylesheet" href="../css/highlight.css">
         <link href="../css/base.css" rel="stylesheet">
         <link href="../custom.css" rel="stylesheet">
+        <link href="../api/css/default.css" rel="stylesheet">
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -63,6 +64,12 @@
             
             
             
+                <li >
+                    <a href="../api/">API Reference</a>
+                </li>
+            
+            
+            
                 <li class="active">
                     <a href="./">Developer Guide</a>
                 </li>
@@ -73,7 +80,7 @@
             <!-- Search, Navigation and Repo links -->
             <ul class="nav navbar-nav navbar-right">
                 <li >
-                    <a rel="next" href="../user-guide/">
+                    <a rel="next" href="../api/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
@@ -122,9 +129,9 @@
 <h1 id="documentation">Documentation</h1>
 <p>Project uses <a href="http://www.mkdocs.org/">MkDocs</a> to generate documentation static site and 
 <a href="https://github.com/weavejester/codox">Codox</a> for API reference.</p>
-<p>Build site: <code>mkdocs build</code></p>
-<p>Serve site locally with automatic build: <code>mkdocs serve</code></p>
 <p>Generate API docs: <code>lein doc</code></p>
+<p>Build site (after API docs are generated): <code>mkdocs build</code></p>
+<p>Serve site locally with automatic build: <code>mkdocs serve</code></p>
 <h1 id="deploying">Deploying</h1>
 <p>Deploy to Clojars: <code>lein deploy clojars</code></p>
 <p>Deploy docs to gh-pages branch: <code>mkdocs gh-deploy --clean</code></p></div>
@@ -140,5 +147,7 @@
         <script src="../js/bootstrap-3.0.3.min.js"></script>
         <script src="../js/highlight.pack.js"></script>
         <script src="../js/base.js"></script>
+        <script src="../api/js/jquery.min.js"></script>
+        <script src="../api/js/page_effects.js"></script>
     </body>
 </html>
