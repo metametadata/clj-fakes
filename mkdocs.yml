@@ -8,4 +8,5 @@ theme: flatly
 pages:
 - Home: 'index.md'
 - User Guide: 'user-guide.md'
+- API Reference: 'api/index.html'
 - Developer Guide: 'dev-guide.md'

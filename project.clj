@@ -24,10 +24,11 @@
                                   :main          'unit.runner
                                   :optimizations :whitespace}}}}
 
-  :codox {:src-dir-uri "http://github.com/metametadata/clj-fakes/blob/master/"
-          :src-linenum-anchor-prefix "L"
-          :sources ["src/clj_fakes"]
-          :exclude clj-fakes.macro
-          :output-dir "site/api"
-          :defaults {:doc/format :markdown}
-          :project {:description ""}})
+  :codox {
+          ;:src-dir-uri "http://github.com/metametadata/clj-fakes/blob/master/"
+          ;:src-linenum-anchor-prefix "L"
+          :sources    ["src/clj_fakes"]
+          :exclude    clj-fakes.macro
+          :output-dir "docs/api"
+          :defaults   {:doc/format :markdown}
+          :project    {:description ""}})
