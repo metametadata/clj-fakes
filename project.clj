@@ -31,4 +31,4 @@
           :exclude    clj-fakes.macro
           :output-dir "site/api"
           :defaults   {:doc/format :markdown}
-          :project    {:description ""}})
+          :project    {:name "clj-fakes" :description ""}})

@@ -1,4 +1,6 @@
 (ns clj-fakes.core
+  "Simpler API for working in implicit dynamic context.
+  Implements almost the same set of functions as [[clj-fakes.context]]."
   (:require [clojure.string :as string]
     #?@(:clj  [
             [clj-fakes.context :as fc]
@@ -14,14 +16,16 @@
 (def any? fc/any?)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Core
-(def ^{:doc "You can use this atom in your code but do not alter it directly; instead, always use framework API."}
+(def ^{:doc "You can use this atom in your code but do not alter it directly; instead, always use framework API.
+
+Also see [[with-fakes]] macro."}
   ^:dynamic *context* nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Macros - with-fakes
 (defn with-fakes*
-  "Function which drives `with-fakes` macro.
-  It defines an implicit dynamic `*context*` and
-  executes the specified function `f` with specified arguments inside the context."
+  "Function which drives [[with-fakes]] macro.
+  It defines an implicit dynamic [[*context*]] and
+  executes function `f` with specified arguments inside the context."
   [f & args]
   (binding [*context* (fc/context)]
     (let [exception-caught? (atom false)]
@@ -41,8 +45,8 @@
 
 #?(:clj
    (defmacro with-fakes
-     "Defines an implicit dynamic `*context*` and executes the body in it.
-     Inside the body you can use the simpler `clj-fakes.core` API instead of `clj-fakes.context` API.
+     "Defines an implicit dynamic [[*context*]] and executes the body in it.
+     Inside the body you can use the simpler [[clj-fakes.core]] API instead of [[clj-fakes.context]] API.
 
      The block will automatically unpatch all the patched variables and execute self-tests on exiting.
      Self-tests will not be executed if exception was raised inside the body.
