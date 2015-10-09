@@ -19,7 +19,7 @@ One of the unique features of the framework is the ability to find unused fakes 
 ## Status
 Core functionality is ready. Documentation and more features are on the way.
 
-# Requirements
+## Requirements
 
 Clojure 1.7.0 or higher.
 
