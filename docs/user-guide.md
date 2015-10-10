@@ -102,7 +102,7 @@ or consider using an [optional fake](#optional-fake):
 ```
 
 If your test scenario focuses on testing a behavior (e.g. "assert that foo was called by an SUT") then do not rely on self-tests, 
-instead use [recorded fakes](#recorded-fake) with explicit assertions. 
+instead use [recorded fakes](#recorded-fake) with explicit [assertions](#assertions). 
 Self-tests are more about checking usefulness of provided preconditions than 
 about testing expected behavior.
 
@@ -432,7 +432,7 @@ It can be used in combination with existing `calls` and `was-called-*` functions
                           (speak :recorded-fake [f/any? "moo"]))]
     (p/speak cow)
     (println (f/calls (f/method cow p/speak))) ; => [{:args ..., :return-value moo}]
-    (is (f/was-called (f/method cow p/speak) [cow]))))
+    (is (f/was-called-once (f/method cow p/speak) [cow]))))
 ```
 
 Notice how object name `cow` is duplicated at the last line. In order to get 
@@ -440,10 +440,20 @@ rid of such duplications there are additional `was-called-*-on` functions define
 So the last expression can be rewritten like this:
 
 ```clj
-(is (f/was-called-on cow p/speak))
+(is (f/was-called-once-on cow p/speak))
 ```
 
 For the list of all available assertion functions see [Assertions](#assertions).
+
+There's a quirk when Java interface method is faked: you will need to use its
+string representation in `method`/`was-called-*-on`:
+
+```clj
+(let [foo (f/reify-fake clojure.lang.IFn
+                        (invoke :recorded-fake))]
+  (foo 1 2 3)
+  (is (f/was-called-on foo "invoke" [1 2 3])))
+```
 
 ## Custom Macros
 

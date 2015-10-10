@@ -1,5 +1,5 @@
 (ns clj-fakes.context
-  "API for working in explicit faking context."
+  "API for working in explicit context."
   (:require [clojure.string :as string]
     #?@(:clj  [
             [clojure.pprint :as pprint]
