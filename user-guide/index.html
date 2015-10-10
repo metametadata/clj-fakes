@@ -239,7 +239,7 @@ or consider using an <a href="#optional-fake">optional fake</a>:</p>
 </code></pre>
 
 <p>If your test scenario focuses on testing a behavior (e.g. "assert that foo was called by an SUT") then do not rely on self-tests, 
-instead use <a href="#recorded-fake">recorded fakes</a> with explicit assertions. 
+instead use <a href="#recorded-fake">recorded fakes</a> with explicit <a href="#assertions">assertions</a>. 
 Self-tests are more about checking usefulness of provided preconditions than 
 about testing expected behavior.</p>
 <h2 id="optional-fake">Optional Fake</h2>
@@ -531,16 +531,24 @@ helper function:</p>
                           (speak :recorded-fake [f/any? &quot;moo&quot;]))]
     (p/speak cow)
     (println (f/calls (f/method cow p/speak))) ; =&gt; [{:args ..., :return-value moo}]
-    (is (f/was-called (f/method cow p/speak) [cow]))))
+    (is (f/was-called-once (f/method cow p/speak) [cow]))))
 </code></pre>
 
 <p>Notice how object name <code>cow</code> is duplicated at the last line. In order to get 
 rid of such duplications there are additional <code>was-called-*-on</code> functions defined. 
 So the last expression can be rewritten like this:</p>
-<pre><code class="clj">(is (f/was-called-on cow p/speak))
+<pre><code class="clj">(is (f/was-called-once-on cow p/speak))
 </code></pre>
 
 <p>For the list of all available assertion functions see <a href="#assertions">Assertions</a>.</p>
+<p>There's a quirk when Java interface method is faked: you will need to use its
+string representation in <code>method</code>/<code>was-called-*-on</code>:</p>
+<pre><code class="clj">(let [foo (f/reify-fake clojure.lang.IFn
+                        (invoke :recorded-fake))]
+  (foo 1 2 3)
+  (is (f/was-called-on foo &quot;invoke&quot; [1 2 3])))
+</code></pre>
+
 <h2 id="custom-macros_1">Custom Macros</h2>
 <p>In your own reusable macros you should use <code>reify-fake*/reify-nice-fake*</code> 
 instead of <code>reify-fake/reify-nice-fake</code>:</p>
