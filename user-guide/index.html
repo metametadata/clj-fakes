@@ -57,6 +57,12 @@
             
             
             
+                <li >
+                    <a href="../quickstart/">Quickstart</a>
+                </li>
+            
+            
+            
                 <li class="active">
                     <a href="./">User Guide</a>
                 </li>
@@ -79,7 +85,7 @@
             <!-- Search, Navigation and Repo links -->
             <ul class="nav navbar-nav navbar-right">
                 <li >
-                    <a rel="next" href="..">
+                    <a rel="next" href="../quickstart/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
@@ -606,7 +612,7 @@ was faked in several test scenarios. In such case the framework will guide you i
 <h2 id="unchecked-fakes">Unchecked Fakes</h2>
 <p><code>(fc/self-test-unchecked-fakes ctx)</code></p>
 <p>This self-test raises an exception if some <code>recorded-fake</code> 
-was never <a href="#recorded-fake">marked checked</a>, i.e. you forgot assert its calls.</p>
+was never <a href="#recorded-fake">marked checked</a>, i.e. you forgot to assert its calls.</p>
 <h1 id="monkey-patching">Monkey Patching</h1>
 <p>You can temporarily change a variable value by using <code>patch!</code> macro:</p>
 <p><code>(f/patch! var-expr val)</code></p>
