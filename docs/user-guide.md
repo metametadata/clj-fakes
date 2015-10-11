@@ -548,7 +548,7 @@ was faked in several test scenarios. In such case the framework will guide you i
 `(fc/self-test-unchecked-fakes ctx)`
 
 This self-test raises an exception if some `recorded-fake` 
-was never [marked checked](#recorded-fake), i.e. you forgot assert its calls.
+was never [marked checked](#recorded-fake), i.e. you forgot to assert its calls.
 
 # Monkey Patching
 
