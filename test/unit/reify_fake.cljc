@@ -273,7 +273,7 @@
        (let [foo (f/reify-fake Object
                                (toString :recorded-fake [[] "bla"]))]
          (is (= "bla" (str foo)))
-         (is (f/was-called-on foo "toString"))))))
+         (is (f/was-called-on foo "toString" []))))))
 
 #?(:clj
    (f/-deftest
@@ -331,7 +331,7 @@
       (is (= "moo, Bob" (p/speak cow "Bob")))
       (is (= "zzz" (p/sleep cow)))
       (is (f/was-called-on cow p/speak ["Bob"]))
-      (is (f/was-called-on cow p/save)))))
+      (is (f/was-called-on cow p/save [])))))
 
 #?(:clj
    (f/-deftest
@@ -346,5 +346,5 @@
          (p/save foo)
          (.charAt foo 100)
 
-         (is (f/was-called-on foo p/save))
-         (is (f/was-called-on foo "charAt"))))))
+         (is (f/was-called-on foo p/save []))
+         (is (f/was-called-on foo "charAt" [100]))))))

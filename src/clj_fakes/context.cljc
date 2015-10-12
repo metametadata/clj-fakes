@@ -819,17 +819,15 @@
 
 (defn was-called-once
   "Checks that recorded fake was called strictly once and that the call was with the specified args."
-  ([ctx k] (was-called-once ctx k any?))
-  ([ctx k args-matcher]
-   {:pre [ctx (-recorded? ctx k) (satisfies? ArgsMatcher args-matcher)]}
-   (-was-called-times ctx #(= % 1) "1" k args-matcher)))
+  [ctx k args-matcher]
+  {:pre [ctx (-recorded? ctx k) (satisfies? ArgsMatcher args-matcher)]}
+  (-was-called-times ctx #(= % 1) "1" k args-matcher))
 
 (defn was-called
   "Checks that recorded fake was called at least once with the specified args."
-  ([ctx k] (was-called ctx k any?))
-  ([ctx k args-matcher]
-   {:pre [ctx (-recorded? ctx k) (satisfies? ArgsMatcher args-matcher)]}
-   (-was-called-times ctx #(> % 0) "> 0" k args-matcher)))
+  [ctx k args-matcher]
+  {:pre [ctx (-recorded? ctx k) (satisfies? ArgsMatcher args-matcher)]}
+  (-was-called-times ctx #(> % 0) "> 0" k args-matcher))
 
 (defn was-not-called
   "Checks that recorded fake was never called."
@@ -843,17 +841,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;; Assertions for protocol methods
 (defn was-called-once-on
   "[[was-called-once]] for protocol method fakes."
-  ([ctx obj f] (was-called-once-on ctx obj f any?))
-  ([ctx obj f args-matcher]
-   {:pre [ctx obj f (satisfies? ArgsMatcher args-matcher)]}
-   (was-called-once ctx (method ctx obj f) (-with-any-first-arg args-matcher))))
+  [ctx obj f args-matcher]
+  {:pre [ctx obj f (satisfies? ArgsMatcher args-matcher)]}
+  (was-called-once ctx (method ctx obj f) (-with-any-first-arg args-matcher)))
 
 (defn was-called-on
   "[[was-called]] for protocol method fakes."
-  ([ctx obj f] (was-called-on ctx obj f any?))
-  ([ctx obj f args-matcher]
-   {:pre [ctx obj f (satisfies? ArgsMatcher args-matcher)]}
-   (was-called ctx (method ctx obj f) (-with-any-first-arg args-matcher))))
+  [ctx obj f args-matcher]
+  {:pre [ctx obj f (satisfies? ArgsMatcher args-matcher)]}
+  (was-called ctx (method ctx obj f) (-with-any-first-arg args-matcher)))
 
 (defn was-not-called-on
   "[[was-not-called]] for protocol method fakes."

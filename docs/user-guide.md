@@ -184,7 +184,8 @@ be marked as checked explicitly using `mark-checked` function; otherwise, self-t
 ```clj
 (f/with-fakes
   (let [foo (f/recorded-fake)]
-    (f/was-called foo))) ; => ok, self-test will pass
+    (foo)
+    (f/was-called foo []))) ; => ok, self-test will pass
 ```
 
 ```clj
@@ -440,7 +441,7 @@ rid of such duplications there are additional `was-called-*-on` functions define
 So the last expression can be rewritten like this:
 
 ```clj
-(is (f/was-called-once-on cow p/speak))
+(is (f/was-called-once-on cow p/speak []))
 ```
 
 For the list of all available assertion functions see [Assertions](#assertions).
@@ -488,10 +489,10 @@ in your macro.
 Framework provides several assertion functions for [recorded fakes](#recorded-fake). 
 Each function either returns `true` or raises an exception with additional details:
 
-`(f/was-called-once f [args-matcher])`
+`(f/was-called-once f args-matcher)`
 - checks that function was called strictly once and that the call was with the specified args.
 
-`(f/was-called f [args-matcher])`
+`(f/was-called f args-matcher)`
 - checks that function was called at least once with the specified args.
 
 `(f/was-not-called f)`
@@ -499,26 +500,25 @@ Each function either returns `true` or raises an exception with additional detai
 
 The set of similar functions is defined for [protocol methods](#calls-assertions):
 
-`(f/was-called-once-on obj f [args-matcher])`
+`(f/was-called-once-on obj f args-matcher)`
 
-`(f/was-called-on obj f [args-matcher])`
+`(f/was-called-on obj f args-matcher)`
 
 `(f/was-not-called-on obj f)`
 
 Of course, all these functions can be called with an explicit context:
 
-`(fc/was-called-once ctx f [args-matcher])`
+`(fc/was-called-once ctx f args-matcher)`
 
-`(fc/was-called ctx f [args-matcher])`
+`(fc/was-called ctx f args-matcher)`
 
 `(fc/was-not-called ctx f)`
 
-`(fc/was-called-once-on ctx obj f [args-matcher])`
+`(fc/was-called-once-on ctx obj f args-matcher)`
 
-`(fc/was-called-on obj ctx f [args-matcher])`
+`(fc/was-called-on obj ctx f args-matcher)`
 
 `(fc/was-not-called-on ctx obj f)`
-
 
 # Self-tests
 

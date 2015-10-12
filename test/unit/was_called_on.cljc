@@ -26,6 +26,7 @@
       (p/speak cow)
       (p/speak cow 2)
       (p/speak cow 3)
+
       (is (f/was-called-on cow p/speak [2]))
-      (is (f/was-called-on cow p/speak))
+      (is (f/was-called-on cow p/speak []))
       (is (f/was-called-on cow p/speak [3])))))

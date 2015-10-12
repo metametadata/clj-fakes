@@ -21,14 +21,14 @@
     (f/with-fakes
       (let [foo (f/recorded-fake [f/any? nil])]
         (foo)
-        (is (was-called-fn foo)))))
+        (is (was-called-fn foo [])))))
 
   (testing "throws if function was not called at all"
     (f/with-fakes
       (let [foo (f/recorded-fake [f/any? nil])]
         (f/-is-error-thrown
           expected-exc-re-on-no-call
-          (was-called-fn foo)))))
+          (was-called-fn foo [])))))
 
   (testing "args matcher can be specified"
     (f/with-fakes

@@ -25,5 +25,5 @@
       (foo 2)
       (foo 3)
       (is (f/was-called foo [2]))
-      (is (f/was-called foo))
+      (is (f/was-called foo []))
       (is (f/was-called foo [3])))))
