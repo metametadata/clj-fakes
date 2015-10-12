@@ -132,9 +132,9 @@
       (is (= "drank some juice" (p/eat cow "" "juice")))
       (is (= "ate a banana" (p/eat cow "banana" nil)))
 
-      (is (f/method-was-called cow p/eat ["grass" "water"]))
-      (is (f/method-was-called cow p/eat ["" "juice"]))
-      (is (f/method-was-called cow p/eat ["banana" nil])))))
+      (is (f/method-was-called p/eat cow ["grass" "water"]))
+      (is (f/method-was-called p/eat cow ["" "juice"]))
+      (is (f/method-was-called p/eat cow ["banana" nil])))))
 
 (f/-deftest
   "the same method can be recorded in different fake instances"
@@ -147,8 +147,8 @@
       (is (= "moo, Bob" (p/speak cow "Bob")))
       (is (= "woof, Alice" (p/speak dog "Alice")))
 
-      (is (f/method-was-called cow p/speak ["Bob"]))
-      (is (f/method-was-called dog p/speak ["Alice"])))))
+      (is (f/method-was-called p/speak cow ["Bob"]))
+      (is (f/method-was-called p/speak dog ["Alice"])))))
 
 (f/-deftest
   "several methods can be recorded in the fake instance"
@@ -160,8 +160,8 @@
       (is (= "moo, Bob" (p/speak cow "Bob")))
       (is (= "zzz" (p/sleep cow)))
 
-      (is (f/method-was-called cow p/speak ["Bob"]))
-      (is (f/method-was-called cow p/sleep [])))))
+      (is (f/method-was-called p/speak cow ["Bob"]))
+      (is (f/method-was-called p/sleep cow [])))))
 
 (f/-deftest
   "config is not required for recorded fake"
@@ -169,7 +169,7 @@
     (let [cow (f/reify-fake p/AnimalProtocol
                             (speak :recorded-fake))]
       (is (not= (p/speak cow "Bob") (p/speak cow "Bob")))
-      (is (f/method-was-called cow p/speak ["Bob"])))))
+      (is (f/method-was-called p/speak cow ["Bob"])))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; fake
 (f/-deftest
@@ -249,8 +249,8 @@
                    (invoke :recorded-fake))]
          (foo 123)
          (foo 1 2 3)
-         (is (f/method-was-called foo "invoke" [123]))
-         (is (f/method-was-called foo "invoke" [1 2 3]))))))
+         (is (f/method-was-called "invoke" foo [123]))
+         (is (f/method-was-called "invoke" foo [1 2 3]))))))
 
 #?(:cljs
    (f/-deftest
@@ -261,8 +261,8 @@
                    (-invoke :recorded-fake))]
          (foo 123)
          (foo 1 2 3)
-         (is (f/method-was-called foo -invoke [123]))
-         (is (f/method-was-called foo -invoke [1 2 3]))))))
+         (is (f/method-was-called -invoke foo [123]))
+         (is (f/method-was-called -invoke foo [1 2 3]))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Object
 ; TODO: the same for cljs
@@ -273,7 +273,7 @@
        (let [foo (f/reify-fake Object
                                (toString :recorded-fake [[] "bla"]))]
          (is (= "bla" (str foo)))
-         (is (f/method-was-called foo "toString" []))))))
+         (is (f/method-was-called "toString" foo []))))))
 
 #?(:clj
    (f/-deftest
@@ -305,7 +305,7 @@
 
       (is (= "moo, Bob" (p/speak cow "Bob")))
       (is (= "zzz" (p/sleep cow)))
-      (is (f/method-was-called cow p/speak ["Bob"])))))
+      (is (f/method-was-called p/speak cow ["Bob"])))))
 
 (f/-deftest
   "several methods can be fakes using different fake types (using explicit context)"
@@ -316,7 +316,7 @@
 
       (is (= "moo, Bob" (p/speak cow "Bob")))
       (is (= "zzz" (p/sleep cow)))
-      (is (fc/method-was-called ctx cow p/speak ["Bob"])))))
+      (is (fc/method-was-called ctx p/speak cow ["Bob"])))))
 
 (f/-deftest
   "several protocols can be reified at once with different fake types"
@@ -330,8 +330,8 @@
       (p/save cow)
       (is (= "moo, Bob" (p/speak cow "Bob")))
       (is (= "zzz" (p/sleep cow)))
-      (is (f/method-was-called cow p/speak ["Bob"]))
-      (is (f/method-was-called cow p/save [])))))
+      (is (f/method-was-called p/speak cow ["Bob"]))
+      (is (f/method-was-called p/save cow [])))))
 
 #?(:clj
    (f/-deftest
@@ -346,5 +346,5 @@
          (p/save foo)
          (.charAt foo 100)
 
-         (is (f/method-was-called foo p/save []))
-         (is (f/method-was-called foo "charAt" [100]))))))
+         (is (f/method-was-called p/save foo []))
+         (is (f/method-was-called "charAt" foo [100]))))))

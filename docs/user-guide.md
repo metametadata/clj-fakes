@@ -441,7 +441,7 @@ rid of such duplications there are additional `method-was-called-*` functions de
 So the last expression can be rewritten like this:
 
 ```clj
-(is (f/method-was-called-once cow p/speak []))
+(is (f/method-was-called-once p/speak cow []))
 ```
 
 For the list of all available assertion functions see [Assertions](#assertions).
@@ -453,7 +453,7 @@ string representation in `method`/`method-was-called-*`:
 (let [foo (f/reify-fake clojure.lang.IFn
                         (invoke :recorded-fake))]
   (foo 1 2 3)
-  (is (f/method-was-called foo "invoke" [1 2 3])))
+  (is (f/method-was-called "invoke" foo [1 2 3])))
 ```
 
 ## Custom Macros
@@ -500,11 +500,11 @@ Each function either returns `true` or raises an exception with additional detai
 
 The set of similar functions is defined for [protocol methods](#calls-assertions):
 
-`(f/method-was-called-once obj f args-matcher)`
+`(f/method-was-called-once f obj args-matcher)`
 
-`(f/method-was-called obj f args-matcher)`
+`(f/method-was-called f obj args-matcher)`
 
-`(f/method-was-not-called obj f)`
+`(f/method-was-not-called f obj)`
 
 Of course, all these functions can be called with an explicit context:
 
@@ -514,11 +514,11 @@ Of course, all these functions can be called with an explicit context:
 
 `(fc/was-not-called ctx f)`
 
-`(fc/method-was-called-once ctx obj f args-matcher)`
+`(fc/method-was-called-once ctx f obj args-matcher)`
 
-`(fc/method-was-called obj ctx f args-matcher)`
+`(fc/method-was-called ctx f obj args-matcher)`
 
-`(fc/method-was-not-called ctx obj f)`
+`(fc/method-was-not-called ctx f obj)`
 
 # Self-tests
 

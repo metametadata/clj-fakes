@@ -27,4 +27,4 @@
       (p/speak cow 2)
       (f/-is-error-thrown
         #"^Function was not called the expected number of times\. Expected: 1\. Actual: 2\."
-        (f/method-was-called-once cow p/speak [2])))))
+        (f/method-was-called-once p/speak cow [2])))))

@@ -49,7 +49,7 @@ Add this to your dependencies in project.clj:
       (p/speak cow "Bob")
       
       ; assert that method was called with specified args
-      (is (f/method-was-called cow p/speak ["Bob"])))))
+      (is (f/method-was-called p/speak cow ["Bob"])))))
 ```
 
 ### Patch a function

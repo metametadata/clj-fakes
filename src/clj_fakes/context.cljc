@@ -841,20 +841,20 @@
 ;;;;;;;;;;;;;;;;;;;;;;;; Assertions for protocol methods
 (defn method-was-called-once
   "[[was-called-once]] for protocol method fakes."
-  [ctx obj f args-matcher]
-  {:pre [ctx obj f (satisfies? ArgsMatcher args-matcher)]}
+  [ctx f obj args-matcher]
+  {:pre [ctx f obj (satisfies? ArgsMatcher args-matcher)]}
   (was-called-once ctx (method ctx obj f) (-with-any-first-arg args-matcher)))
 
 (defn method-was-called
   "[[was-called]] for protocol method fakes."
-  [ctx obj f args-matcher]
-  {:pre [ctx obj f (satisfies? ArgsMatcher args-matcher)]}
+  [ctx f obj args-matcher]
+  {:pre [ctx f obj (satisfies? ArgsMatcher args-matcher)]}
   (was-called ctx (method ctx obj f) (-with-any-first-arg args-matcher)))
 
 (defn method-was-not-called
   "[[was-not-called]] for protocol method fakes."
-  [ctx obj f]
-  {:pre [ctx obj f]}
+  [ctx f obj]
+  {:pre [ctx f obj]}
   (was-not-called ctx (method ctx obj f)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Monkey patching

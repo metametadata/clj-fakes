@@ -116,7 +116,7 @@
 
                                     p/FileProtocol)]
          (is (= "bla" (str foo)))
-         (is (f/method-was-called foo "toString" []))
+         (is (f/method-was-called "toString" foo []))
 
          (is-faked p/save foo)
          (is-faked p/scan foo)))))
@@ -143,7 +143,7 @@
       (p/scan cow)
 
       ; AnimalProtocol
-      (f/method-was-called cow p/sleep [])
+      (f/method-was-called p/sleep cow [])
 
       ; FileProtocol
-      (f/method-was-called cow p/scan []))))
+      (f/method-was-called p/scan cow []))))

@@ -17,7 +17,7 @@
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
                             (speak :recorded-fake))]
-      (is (f/method-was-not-called cow p/speak)))))
+      (is (f/method-was-not-called p/speak cow)))))
 
 (f/-deftest
   "throws if function was called once"
@@ -28,7 +28,7 @@
       (f/-is-error-thrown
         ; message is too complicated to assert here fully
         #"^Function is expected to be never called\. .*\."
-        (f/method-was-not-called cow p/speak)))))
+        (f/method-was-not-called p/speak cow)))))
 
 (f/-deftest
   "throws if function was called more than once"
@@ -39,4 +39,4 @@
       (p/speak cow 2)
       (f/-is-error-thrown
         #"^Function is expected to be never called\. .*\."
-        (f/method-was-not-called cow p/speak)))))
+        (f/method-was-not-called p/speak cow)))))

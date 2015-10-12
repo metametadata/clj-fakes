@@ -27,6 +27,6 @@
       (p/speak cow 2)
       (p/speak cow 3)
 
-      (is (f/method-was-called cow p/speak [2]))
-      (is (f/method-was-called cow p/speak []))
-      (is (f/method-was-called cow p/speak [3])))))
+      (is (f/method-was-called p/speak cow [2]))
+      (is (f/method-was-called p/speak cow []))
+      (is (f/method-was-called p/speak cow [3])))))

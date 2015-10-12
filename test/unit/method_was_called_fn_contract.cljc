@@ -24,14 +24,14 @@
       (let [cow (f/reify-fake p/AnimalProtocol
                               (speak :recorded-fake))]
         (p/speak cow)
-        (is (was-called-fn cow p/speak [])))))
+        (is (was-called-fn p/speak cow [])))))
 
   (testing "args matcher can be specified"
     (f/with-fakes
       (let [cow (f/reify-fake p/AnimalProtocol
                               (speak :recorded-fake))]
         (p/speak cow 2 3)
-        (is (was-called-fn cow p/speak (reify fc/ArgsMatcher
+        (is (was-called-fn p/speak cow (reify fc/ArgsMatcher
                                          (args-match? [_ args]
                                            (= [2 3] args))))))))
 
@@ -41,7 +41,7 @@
                               (speak :recorded-fake))]
         (f/-is-error-thrown
           expected-exc-re-on-no-call
-          (was-called-fn cow p/speak [])))))
+          (was-called-fn p/speak cow [])))))
 
   (testing "throws if function was never called with specified args"
     (f/with-fakes
@@ -51,5 +51,5 @@
         (f/-is-error-thrown
           ; message is too complicated to assert here fully
           #"^Function was never called with the expected args\. .*\n"
-          (was-called-fn cow p/speak [2 4])))))
+          (was-called-fn p/speak cow [2 4])))))
   )
