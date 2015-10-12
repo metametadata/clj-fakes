@@ -542,18 +542,18 @@ helper function:</p>
 </code></pre>
 
 <p>Notice how object name <code>cow</code> is duplicated at the last line. In order to get 
-rid of such duplications there are additional <code>was-called-*-on</code> functions defined. 
+rid of such duplications there are additional <code>method-was-called-*</code> functions defined. 
 So the last expression can be rewritten like this:</p>
-<pre><code class="clj">(is (f/was-called-once-on cow p/speak []))
+<pre><code class="clj">(is (f/method-was-called-once cow p/speak []))
 </code></pre>
 
 <p>For the list of all available assertion functions see <a href="#assertions">Assertions</a>.</p>
 <p>There's a quirk when Java interface method is faked: you will need to use its
-string representation in <code>method</code>/<code>was-called-*-on</code>:</p>
+string representation in <code>method</code>/<code>method-was-called-*</code>:</p>
 <pre><code class="clj">(let [foo (f/reify-fake clojure.lang.IFn
                         (invoke :recorded-fake))]
   (foo 1 2 3)
-  (is (f/was-called-on foo &quot;invoke&quot; [1 2 3])))
+  (is (f/method-was-called foo &quot;invoke&quot; [1 2 3])))
 </code></pre>
 
 <h2 id="custom-macros_1">Custom Macros</h2>
@@ -584,16 +584,16 @@ Each function either returns <code>true</code> or raises an exception with addit
 <p><code>(f/was-not-called f)</code>
 - checks that function was never called.</p>
 <p>The set of similar functions is defined for <a href="#calls-assertions">protocol methods</a>:</p>
-<p><code>(f/was-called-once-on obj f args-matcher)</code></p>
-<p><code>(f/was-called-on obj f args-matcher)</code></p>
-<p><code>(f/was-not-called-on obj f)</code></p>
+<p><code>(f/method-was-called-once obj f args-matcher)</code></p>
+<p><code>(f/method-was-called obj f args-matcher)</code></p>
+<p><code>(f/method-was-not-called obj f)</code></p>
 <p>Of course, all these functions can be called with an explicit context:</p>
 <p><code>(fc/was-called-once ctx f args-matcher)</code></p>
 <p><code>(fc/was-called ctx f args-matcher)</code></p>
 <p><code>(fc/was-not-called ctx f)</code></p>
-<p><code>(fc/was-called-once-on ctx obj f args-matcher)</code></p>
-<p><code>(fc/was-called-on obj ctx f args-matcher)</code></p>
-<p><code>(fc/was-not-called-on ctx obj f)</code></p>
+<p><code>(fc/method-was-called-once ctx obj f args-matcher)</code></p>
+<p><code>(fc/method-was-called obj ctx f args-matcher)</code></p>
+<p><code>(fc/method-was-not-called ctx obj f)</code></p>
 <h1 id="self-tests">Self-tests</h1>
 <p>Framework can perform "self-tests" in order to inform a user 
 early on that some fakes (including protocol method fakes) are potentially used inappropriately.</p>
