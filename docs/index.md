@@ -17,7 +17,7 @@ One of the unique features is the ability to find unused fakes in order to help 
 
 # Requirements
 
-Clojure 1.7.0 and ClojureScript 0.0-3196 or higher.
+Clojure 1.7.0 and/or ClojureScript 1.7.28 or higher.
 
 # Installation
 

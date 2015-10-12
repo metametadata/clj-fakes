@@ -21,7 +21,7 @@ Core functionality is ready. Documentation and more features are on the way.
 
 ## Requirements
 
-Clojure 1.7.0 and ClojureScript 0.0-3196 or higher.
+Clojure 1.7.0 and/or ClojureScript 1.7.28 or higher.
 
 ## Installation
 Add this to your dependencies in project.clj:
