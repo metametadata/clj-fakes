@@ -14,9 +14,9 @@
             [unit.reify-fake]
             [unit.reify-nice-fake]
             [unit.positions]
-            [unit.was-called-on]
-            [unit.was-called-once-on]
-            [unit.was-not-called-on]
+            [unit.method-was-called]
+            [unit.method-was-called-once]
+            [unit.method-was-not-called]
             [unit.patch]
             [unit.original-val]
             [unit.unpatch]
@@ -37,9 +37,9 @@
   'unit.reify-fake
   'unit.reify-nice-fake
   'unit.positions
-  'unit.was-called-on
-  'unit.was-called-once-on
-  'unit.was-not-called-on
+  'unit.method-was-called
+  'unit.method-was-called-once
+  'unit.method-was-not-called
   'unit.patch
   'unit.original-val
   'unit.unpatch

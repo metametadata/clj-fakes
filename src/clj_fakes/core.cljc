@@ -130,17 +130,17 @@ Also see [[with-fakes]] macro."}
   (fc/was-not-called *context* k))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Assertions for protocol methods
-(defn was-called-once-on
+(defn method-was-called-once
   [obj f args-matcher]
-  (fc/was-called-once-on *context* obj f args-matcher))
+  (fc/method-was-called-once *context* obj f args-matcher))
 
-(defn was-called-on
+(defn method-was-called
   [obj f args-matcher]
-  (fc/was-called-on *context* obj f args-matcher))
+  (fc/method-was-called *context* obj f args-matcher))
 
-(defn was-not-called-on
+(defn method-was-not-called
   [obj f]
-  (fc/was-not-called-on *context* obj f))
+  (fc/method-was-not-called *context* obj f))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Monkey patching
 #?(:clj

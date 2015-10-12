@@ -839,19 +839,19 @@
         (throw (ex-info (str "Function is expected to be never called. Actual calls: " (pr-str k-calls) ".") {})))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Assertions for protocol methods
-(defn was-called-once-on
+(defn method-was-called-once
   "[[was-called-once]] for protocol method fakes."
   [ctx obj f args-matcher]
   {:pre [ctx obj f (satisfies? ArgsMatcher args-matcher)]}
   (was-called-once ctx (method ctx obj f) (-with-any-first-arg args-matcher)))
 
-(defn was-called-on
+(defn method-was-called
   "[[was-called]] for protocol method fakes."
   [ctx obj f args-matcher]
   {:pre [ctx obj f (satisfies? ArgsMatcher args-matcher)]}
   (was-called ctx (method ctx obj f) (-with-any-first-arg args-matcher)))
 
-(defn was-not-called-on
+(defn method-was-not-called
   "[[was-not-called]] for protocol method fakes."
   [ctx obj f]
   {:pre [ctx obj f]}

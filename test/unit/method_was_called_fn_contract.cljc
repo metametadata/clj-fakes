@@ -1,4 +1,4 @@
-(ns unit.was-called-on-fn-contract
+(ns unit.method-was-called-fn-contract
   #?@(:clj  [
              (:require
                [clojure.test :refer :all]
@@ -14,8 +14,8 @@
                )
              ]))
 
-(defn testing-was-called-on-fn-contract
-  "Parametrized test which defines a contract for was-called-on* funcs.
+(defn testing-method-was-called-fn-contract
+  "Parametrized test which defines a contract for method-was-called-* funcs.
   Unfortunately it will short-circuit on first uncaught exception."
   [was-called-fn expected-exc-re-on-no-call]
 
