@@ -2,7 +2,7 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Introduction\n\n\nclj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.\n\n\nOne of the unique features is the ability to find unused fakes in order to help you write more concise test cases.\n\n\nFeatures\n\n\n\n\nAll test doubles are named \"fakes\" to simplify terminology\n\n\nFakes can be created for:\n\n\nprotocol instances\n\n\nfunctions\n\n\n\n\n\n\n\"Nice\" and \"strict\" protocol fakes are supported\n\n\nMonkey patching is supported to fake implicit dependencies\n\n\nSelf-testing: automatically checks for unused fakes\n\n\nTest runner agnostic\n\n\nArrange-Act-Assert style testing\n\n\n\n\nRequirements\n\n\nClojure 1.7.0 and ClojureScript 0.0-3196 or higher.\n\n\nInstallation\n\n\nAdd this to your dependencies in project.clj:\n\n\n[clj-fakes \n0.1.1-SNAPSHOT\n]", 
+            "text": "Introduction\n\n\nclj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.\n\n\nOne of the unique features is the ability to find unused fakes in order to help you write more concise test cases.\n\n\nFeatures\n\n\n\n\nAll test doubles are named \"fakes\" to simplify terminology\n\n\nFakes can be created for:\n\n\nprotocol instances\n\n\nfunctions\n\n\n\n\n\n\n\"Nice\" and \"strict\" protocol fakes are supported\n\n\nMonkey patching is supported to fake implicit dependencies\n\n\nSelf-testing: automatically checks for unused fakes\n\n\nTest runner agnostic\n\n\nArrange-Act-Assert style testing\n\n\n\n\nRequirements\n\n\nClojure 1.7.0 and/or ClojureScript 1.7.28 or higher.\n\n\nInstallation\n\n\nAdd this to your dependencies in project.clj:\n\n\n[clj-fakes \n0.1.1-SNAPSHOT\n]", 
             "title": "Home"
         }, 
         {
@@ -17,7 +17,7 @@
         }, 
         {
             "location": "/#requirements", 
-            "text": "Clojure 1.7.0 and ClojureScript 0.0-3196 or higher.", 
+            "text": "Clojure 1.7.0 and/or ClojureScript 1.7.28 or higher.", 
             "title": "Requirements"
         }, 
         {
