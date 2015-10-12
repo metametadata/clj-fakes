@@ -309,7 +309,8 @@ be marked as checked explicitly using <code>mark-checked</code> function; otherw
 
 <pre><code class="clj">(f/with-fakes
   (let [foo (f/recorded-fake)]
-    (f/was-called foo))) ; =&gt; ok, self-test will pass
+    (foo)
+    (f/was-called foo []))) ; =&gt; ok, self-test will pass
 </code></pre>
 
 <pre><code class="clj">(f/with-fakes
@@ -543,7 +544,7 @@ helper function:</p>
 <p>Notice how object name <code>cow</code> is duplicated at the last line. In order to get 
 rid of such duplications there are additional <code>was-called-*-on</code> functions defined. 
 So the last expression can be rewritten like this:</p>
-<pre><code class="clj">(is (f/was-called-once-on cow p/speak))
+<pre><code class="clj">(is (f/was-called-once-on cow p/speak []))
 </code></pre>
 
 <p>For the list of all available assertion functions see <a href="#assertions">Assertions</a>.</p>
@@ -576,22 +577,22 @@ in your macro.</p>
 <h1 id="assertions">Assertions</h1>
 <p>Framework provides several assertion functions for <a href="#recorded-fake">recorded fakes</a>. 
 Each function either returns <code>true</code> or raises an exception with additional details:</p>
-<p><code>(f/was-called-once f [args-matcher])</code>
+<p><code>(f/was-called-once f args-matcher)</code>
 - checks that function was called strictly once and that the call was with the specified args.</p>
-<p><code>(f/was-called f [args-matcher])</code>
+<p><code>(f/was-called f args-matcher)</code>
 - checks that function was called at least once with the specified args.</p>
 <p><code>(f/was-not-called f)</code>
 - checks that function was never called.</p>
 <p>The set of similar functions is defined for <a href="#calls-assertions">protocol methods</a>:</p>
-<p><code>(f/was-called-once-on obj f [args-matcher])</code></p>
-<p><code>(f/was-called-on obj f [args-matcher])</code></p>
+<p><code>(f/was-called-once-on obj f args-matcher)</code></p>
+<p><code>(f/was-called-on obj f args-matcher)</code></p>
 <p><code>(f/was-not-called-on obj f)</code></p>
 <p>Of course, all these functions can be called with an explicit context:</p>
-<p><code>(fc/was-called-once ctx f [args-matcher])</code></p>
-<p><code>(fc/was-called ctx f [args-matcher])</code></p>
+<p><code>(fc/was-called-once ctx f args-matcher)</code></p>
+<p><code>(fc/was-called ctx f args-matcher)</code></p>
 <p><code>(fc/was-not-called ctx f)</code></p>
-<p><code>(fc/was-called-once-on ctx obj f [args-matcher])</code></p>
-<p><code>(fc/was-called-on obj ctx f [args-matcher])</code></p>
+<p><code>(fc/was-called-once-on ctx obj f args-matcher)</code></p>
+<p><code>(fc/was-called-on obj ctx f args-matcher)</code></p>
 <p><code>(fc/was-not-called-on ctx obj f)</code></p>
 <h1 id="self-tests">Self-tests</h1>
 <p>Framework can perform "self-tests" in order to inform a user 
