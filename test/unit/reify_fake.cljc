@@ -55,7 +55,7 @@
       (is (= [cow "grass" "water"] (p/eat cow "grass" "water"))))))
 
 (f/-deftest
-  "arg matchers get correct args on call"
+  "args matchers get correct args on call"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
                             (eat :optional-fake [["grass" "water"] "ate as usual"
@@ -122,7 +122,7 @@
       (is (f/was-called (f/method cow p/speak) [cow])))))
 
 (f/-deftest
-  "recorded fake's arg matchers get correct args on call"
+  "recorded fake's args matchers get correct args on call"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
                             (eat :recorded-fake [["grass" "water"] "ate as usual"

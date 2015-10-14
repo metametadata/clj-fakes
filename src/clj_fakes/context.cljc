@@ -50,16 +50,23 @@
 (defprotocol ArgsMatcher
   (args-match? [this args] "Should return true or false."))
 
+(defprotocol ArgMatcher
+  (arg-matches? [this arg] "Should return true or false."))
+
 (extend-type #?(:clj  clojure.lang.Fn
                 :cljs function)
   ArgsMatcher
   (args-match? [this args]
-    (this args)))
+    (this args))
+
+  ArgMatcher
+  (arg-matches? [this arg]
+    (this arg)))
 
 (defn ^:no-doc -arg-matches?
   [matcher arg]
-  (if (fn? matcher)
-    (matcher arg)
+  (if (satisfies? ArgMatcher matcher)
+    (arg-matches? matcher arg)
     (= arg matcher)))
 
 (extend-type #?(:clj  clojure.lang.PersistentVector

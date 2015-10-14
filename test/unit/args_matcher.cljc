@@ -18,7 +18,7 @@
   (fc/args-match? matcher args))
 
 (f/-deftest
-  "function is a matcher"
+  "function is an args matcher"
   (is (match? (constantly true) [11 22]))
   (is (match? #(= [11 22] %) [11 22]))
 
@@ -27,7 +27,7 @@
   (is (not (match? #(= [11 22] %) [11 25]))))
 
 (f/-deftest
-  "vector is a matcher"
+  "vector is an args matcher"
   (are [v args] (match? v args)
                 [11 22] [11 22]
                 [] nil
@@ -39,7 +39,7 @@
                 [2 3 4] [2 3]
                 [1 2] nil)
 
-  (testing "vector elements can be functions"
+  (testing "vector elements can be functional arg matchers"
     (are [v args] (match? v args)
                   [100 even?] [100 2]
                   [100 even?] [100 10])
@@ -48,13 +48,15 @@
                   [100 odd?] [100 2]
                   [100 odd?] [100 10]))
 
-  (testing "'any matcher can be used to match any arg value in vector"
+  (testing "empty vector can be matched"
     (are [v args] (match? v args)
-                  [f/any? f/any? 2 f/any?] [100 200 2 300]
-                  [f/any? 2 f/any? f/any?] [3 2 3 2])))
+                  [] []
+                  [[]] [[]]
+                  [integer? []] [123 []]))
+  )
 
 (f/-deftest
-  "'any matcher matches everything"
+  "f/any? matcher matches everything"
   (are [args] (match? f/any? args)
               nil
               [4]

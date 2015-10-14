@@ -27,7 +27,7 @@ Clojure 1.7.0 and/or ClojureScript 1.7.28 or higher.
 Add this to your dependencies in project.clj:
 
 ```clj
-[clj-fakes "0.1.1-SNAPSHOT"]
+[clj-fakes "0.1.2-SNAPSHOT"]
 ```
 
 ## Examples

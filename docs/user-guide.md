@@ -216,15 +216,16 @@ in your macro.
 
 # Fake Configuration
 
-Fake config should contain pairs of argument matcher and return value:
+Fake config should contain pairs of [args matcher](#argument-matchinga) and return value:
 
 ```clj
 [args-matcher1 fn-or-value1
 args-matcher2 fn-or-value2 ...]
 ```
 
-On fake invocation argument matchers will be tested from top to bottom and 
-on the first match the specified value will be returned. If return value is a function than it will be called with passed arguments to generate the return value at runtime:
+On fake invocation arguments matchers will be tested from top to bottom and 
+on the first match the specified value will be returned. 
+If return value is a function than it will be called with passed arguments to generate the return value at runtime:
 
 ```clj
 (let [foo (f/fake [[1 2] 100
@@ -244,7 +245,7 @@ doesn't specify the config explicitly).
 
 # Argument Matching
 
-Argument matcher must implement an `fc/ArgsMatcher` protocol:
+Every arguments matcher must implement an `fc/ArgsMatcher` protocol:
 
 ```clj
 (defprotocol ArgsMatcher
@@ -252,9 +253,44 @@ Argument matcher must implement an `fc/ArgsMatcher` protocol:
 ```
 
 In most cases you won't need to create instances of this protocol manually 
-because framework provides functional and vector matchers which are useful in most cases.
+because framework provides vector and functional matchers which are useful in most cases.
 
-## Built-in matchers
+## Built-in Matchers
+
+### Vector matcher
+
+Vector matchers were already used all other this guide, they looks like this:
+
+```clj
+[arg-matcher-or-exact-value1 arg-matcher-or-exact-value2 ...]
+```
+
+Each vector element can be an expected value or an `fc/ArgMatcher` instance 
+(do not confuse with `fc/ArgsMatcher` which matches multiple arguments):
+ 
+```clj
+(defprotocol ArgMatcher
+  (arg-matches? [this arg] "Should return true or false."))
+```
+
+The framework conveniently extends `clojure.lang.Fn/function`
+with `ArgsMatcher` protocol so that you can use single-argument 
+functions as matchers. Let's look at the demo:
+
+```clj
+(let [foo (f/fake [[] "no args"
+                   [[]] "empty vector"
+                   [1 2] "1 2"
+                   [integer?] "integer"
+                   [string?] "string"])]
+  (foo) ; => "no args"
+  (foo []) ; => "empty vector"
+  (foo 1 2) ; => "1 2"
+  (foo 1 2 3) ; => exception: "Unexpected args are passed into fake: (1 2 3)"
+  (foo 123) ; => "integer"
+  (foo "hey")) ; => "string"
+```
+
 ### Functional matcher
 
 Functional matcher is a function which takes a vector of call arguments and returns true/false. 
@@ -277,36 +313,13 @@ It's actually implemented like this:
     (this args)))
 ```
 
-### Vector matcher
-
-Vector matchers were already used all other this guide, they looks like this:
-
-```clj
-[value-or-function1 value-or-function2 ...]
-```
-
-Let's look at the demo:
-
-```clj
-(let [foo (f/fake [[] "no args"
-                   [[]] "empty vector"
-                   [1 2] "1 2"
-                   [integer?] "integer"
-                   [str?] "string"])]
-  (foo) ; => "no args"
-  (foo []) ; => "empty vector"
-  (foo 1 2) ; => "1 2"
-  (foo 1 2 3) ; => exception: "Unexpected args are passed into fake: (1 2 3)"
-  (foo 123) ; => "integer"
-  (foo "hey")) ; => "string"
-```
-
 ### any?
 
 `(f/any? args)`
 `(fc/any? args)`
 
-This matcher always returns `true` for any input arguments:
+This matcher always returns `true` for any input arguments. 
+It can be used to match single and multiple arguments:
 
 ```clj
 (let [foo (f/fake [[1 2] "1 2"
