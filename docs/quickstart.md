@@ -12,7 +12,7 @@ framework in this documentation. To learn how to use it:
 * in ClojureScript: see [wiki](https://github.com/clojure/clojurescript/wiki/Testing) and 
 [doo](https://github.com/bensu/doo) plugin for running unit tests.
 
-2) Add framework dependency into `project.clj`:
+2) Add framework dependency into `project.clj` (the framework is hosted on [Clojars](https://clojars.org/clj-fakes)):
 
 ```clj
 :dependencies [...
