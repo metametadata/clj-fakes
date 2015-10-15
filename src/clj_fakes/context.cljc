@@ -77,10 +77,12 @@
         (and (= (count this) (count args))
              (every? true? (map -arg-matches? this args))))))
 
-(defn any?
-  "Matcher which matches any value."
-  [_]
-  true)
+(def any? ^{:doc "Matcher which matches any value."}
+  (reify ArgsMatcher
+    (args-match? [_ _args_] true)
+
+    ArgMatcher
+    (arg-matches? [_ _arg_] true)))
 
 (defn ^:no-doc -with-any-first-arg
   "Args matcher decorator which allows any first arg. The rest of the args will be checked by specified matcher.
