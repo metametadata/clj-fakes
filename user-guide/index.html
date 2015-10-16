@@ -135,7 +135,9 @@
     
         <li class="main "><a href="#argument-matching">Argument Matching</a></li>
         
-            <li><a href="#built-in-matchers">Built-in Matchers</a></li>
+            <li><a href="#vector-matcher">Vector Matcher</a></li>
+        
+            <li><a href="#any">any?</a></li>
         
     
         <li class="main "><a href="#protocol-fakes">Protocol Fakes</a></li>
@@ -284,8 +286,8 @@ which allows any arguments to be passed on invocation.</p>
 <p>Use <code>calls</code> function in order to get all recorded invocations for the specified 
 recorded fake. 
 It can also return all the recorded calls in the context if fake is not specified:</p>
-<pre><code class="clj">(let [foo (f/recorded-fake [[integer? integer?] #(+ %1 %2)])
-      bar (f/recorded-fake [[integer? integer?] #(* %1 %2)])]
+<pre><code class="clj">(let [foo (f/recorded-fake [[(f/arg integer?) (f/arg integer?)] #(+ %1 %2)])
+      bar (f/recorded-fake [[(f/arg integer?) (f/arg integer?)] #(* %1 %2)])]
   (foo 1 2)
   (bar 5 6)
   (foo 7 8)
@@ -302,7 +304,8 @@ It can also return all the recorded calls in the context if fake is not specifie
 </code></pre>
 
 <p>Recorded fake must be checked using one of the <a href="#assertions">assertions</a> provided by the framework or
-be marked as checked explicitly using <code>mark-checked</code> function; otherwise, self-test will raise an exception:</p>
+be marked as checked explicitly using <code>mark-checked</code> function; 
+otherwise, <a href="#unchecked-fakes">self-test</a> will raise an exception:</p>
 <pre><code class="clj">(f/with-fakes
   (f/recorded-fake)) ; =&gt; raises &quot;Self-test: no check performed on: recorded fake ...&quot;
 </code></pre>
@@ -357,56 +360,50 @@ doesn't specify the config explicitly).</p>
 </code></pre>
 
 <p>In most cases you won't need to create instances of this protocol manually 
-because framework provides vector and functional matchers which are useful in most cases.</p>
-<h2 id="built-in-matchers">Built-in Matchers</h2>
-<h3 id="vector-matcher">Vector matcher</h3>
-<p>Vector matchers were already used all other this guide, they looks like this:</p>
+because framework provides vector matchers which are useful in most cases.</p>
+<h2 id="vector-matcher">Vector Matcher</h2>
+<p>Vector matchers were already used all other this guide. 
+Each vector element can be an expected value or an <code>fc/ArgMatcher</code> instance:</p>
 <pre><code class="clj">[arg-matcher-or-exact-value1 arg-matcher-or-exact-value2 ...]
 </code></pre>
 
-<p>Each vector element can be an expected value or an <code>fc/ArgMatcher</code> instance 
-(do not confuse with <code>fc/ArgsMatcher</code> which matches multiple arguments):</p>
 <pre><code class="clj">(defprotocol ArgMatcher
   (arg-matches? [this arg] &quot;Should return true or false.&quot;))
 </code></pre>
 
-<p>The framework conveniently extends <code>clojure.lang.Fn/function</code>
-with <code>ArgsMatcher</code> protocol so that you can use single-argument 
-functions as matchers. Let's look at the demo:</p>
+<p>It is not recommended to extend existing types with <code>ArgMatcher</code> protocol; 
+instead, to make code more explicit and future-proof, 
+you should use an <code>arg</code> multimethod:</p>
 <pre><code class="clj">(let [foo (f/fake [[] &quot;no args&quot;
                    [[]] &quot;empty vector&quot;
                    [1 2] &quot;1 2&quot;
-                   [integer?] &quot;integer&quot;
-                   [string?] &quot;string&quot;])]
+                   [(f/arg integer?) (f/arg integer?)] &quot;two integers&quot;
+                   [(f/arg string?)] &quot;string&quot;])]
   (foo) ; =&gt; &quot;no args&quot;
   (foo []) ; =&gt; &quot;empty vector&quot;
   (foo 1 2) ; =&gt; &quot;1 2&quot;
   (foo 1 2 3) ; =&gt; exception: &quot;Unexpected args are passed into fake: (1 2 3)&quot;
-  (foo 123) ; =&gt; &quot;integer&quot;
+  (foo 100 200) ; =&gt; &quot;two integers&quot;
   (foo &quot;hey&quot;)) ; =&gt; &quot;string&quot;
 </code></pre>
 
-<h3 id="functional-matcher">Functional matcher</h3>
-<p>Functional matcher is a function which takes a vector of call arguments and returns true/false. 
-Example:</p>
-<pre><code class="clj">(let [foo (f/fake [#(odd? (count %)) &quot;odd number of args&quot;
-                   #(even? (count %)) &quot;even number of args&quot;])]
-  (foo 1 2) ; =&gt; &quot;even number of args&quot;
-  (foo 1 2 3)) ; =&gt; &quot;odd number of args&quot;
+<p>As you can see, the framework already supports functional argument matchers. 
+This feature is implemented like this:</p>
+<pre><code class="clj">(defmethod arg #?(:clj  clojure.lang.Fn
+                  :cljs function)
+  ; name is added for more readable stacktraces
+  functional-arg-matcher
+  [f]
+  (reify ArgMatcher
+    (arg-matches? [_ arg]
+      (f arg))))
 </code></pre>
 
-<p>It's actually implemented like this:</p>
-<pre><code class="clj">(extend-type #?(:clj  clojure.lang.Fn
-                :cljs function)
-  ArgsMatcher
-  (args-match? [this args]
-    (this args)))
-</code></pre>
-
-<h3 id="any">any?</h3>
-<p><code>(f/any? args)</code>
-<code>(fc/any? args)</code></p>
-<p>This matcher always returns <code>true</code> for any input arguments. 
+<p>You are encouraged to define your own argument matchers by extending <code>arg</code> multimethod in a similar way.</p>
+<h2 id="any">any?</h2>
+<p><code>(f/any? _)</code></p>
+<p><code>(fc/any? _)</code></p>
+<p>This special matcher always returns <code>true</code> for any input arguments. 
 It can be used to match single and multiple arguments:</p>
 <pre><code class="clj">(let [foo (f/fake [[1 2] &quot;1 2&quot;
                    [f/any? f/any? f/any?] &quot;three args&quot;
