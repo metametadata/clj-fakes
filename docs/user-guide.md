@@ -156,8 +156,8 @@ recorded fake.
 It can also return all the recorded calls in the context if fake is not specified:
 
 ```clj
-(let [foo (f/recorded-fake [[integer? integer?] #(+ %1 %2)])
-      bar (f/recorded-fake [[integer? integer?] #(* %1 %2)])]
+(let [foo (f/recorded-fake [[(f/arg integer?) (f/arg integer?)] #(+ %1 %2)])
+      bar (f/recorded-fake [[(f/arg integer?) (f/arg integer?)] #(* %1 %2)])]
   (foo 1 2)
   (bar 5 6)
   (foo 7 8)
@@ -174,7 +174,8 @@ It can also return all the recorded calls in the context if fake is not specifie
 ```
 
 Recorded fake must be checked using one of the [assertions](#assertions) provided by the framework or
-be marked as checked explicitly using `mark-checked` function; otherwise, self-test will raise an exception:
+be marked as checked explicitly using `mark-checked` function; 
+otherwise, [self-test](#unchecked-fakes) will raise an exception:
 
 ```clj
 (f/with-fakes
@@ -212,7 +213,6 @@ able to correctly determine fake function line numbers which is crucial for debu
 
 The framework will warn you if you accidentally use the version without asterisk 
 in your macro.
-
 
 # Fake Configuration
 
@@ -253,72 +253,63 @@ Every arguments matcher must implement an `fc/ArgsMatcher` protocol:
 ```
 
 In most cases you won't need to create instances of this protocol manually 
-because framework provides vector and functional matchers which are useful in most cases.
+because framework provides vector matchers which are useful in most cases.
 
-## Built-in Matchers
+## Vector Matcher
 
-### Vector matcher
-
-Vector matchers were already used all other this guide, they looks like this:
+Vector matchers were already used all other this guide. 
+Each vector element can be an expected value or an `fc/ArgMatcher` instance:
 
 ```clj
 [arg-matcher-or-exact-value1 arg-matcher-or-exact-value2 ...]
 ```
-
-Each vector element can be an expected value or an `fc/ArgMatcher` instance 
-(do not confuse with `fc/ArgsMatcher` which matches multiple arguments):
  
 ```clj
 (defprotocol ArgMatcher
   (arg-matches? [this arg] "Should return true or false."))
 ```
 
-The framework conveniently extends `clojure.lang.Fn/function`
-with `ArgsMatcher` protocol so that you can use single-argument 
-functions as matchers. Let's look at the demo:
+It is not recommended to extend existing types with `ArgMatcher` protocol; 
+instead, to make code more explicit and future-proof, 
+you should use an `arg` multimethod:
 
 ```clj
 (let [foo (f/fake [[] "no args"
                    [[]] "empty vector"
                    [1 2] "1 2"
-                   [integer?] "integer"
-                   [string?] "string"])]
+                   [(f/arg integer?) (f/arg integer?)] "two integers"
+                   [(f/arg string?)] "string"])]
   (foo) ; => "no args"
   (foo []) ; => "empty vector"
   (foo 1 2) ; => "1 2"
   (foo 1 2 3) ; => exception: "Unexpected args are passed into fake: (1 2 3)"
-  (foo 123) ; => "integer"
+  (foo 100 200) ; => "two integers"
   (foo "hey")) ; => "string"
 ```
 
-### Functional matcher
-
-Functional matcher is a function which takes a vector of call arguments and returns true/false. 
-Example:
+As you can see, the framework already supports functional argument matchers. 
+This feature is implemented like this:
 
 ```clj
-(let [foo (f/fake [#(odd? (count %)) "odd number of args"
-                   #(even? (count %)) "even number of args"])]
-  (foo 1 2) ; => "even number of args"
-  (foo 1 2 3)) ; => "odd number of args"
+(defmethod arg #?(:clj  clojure.lang.Fn
+                  :cljs function)
+  ; name is added for more readable stacktraces
+  functional-arg-matcher
+  [f]
+  (reify ArgMatcher
+    (arg-matches? [_ arg]
+      (f arg))))
 ```
 
-It's actually implemented like this:
+You are encouraged to define your own argument matchers by extending `arg` multimethod in a similar way.
 
-```clj
-(extend-type #?(:clj  clojure.lang.Fn
-                :cljs function)
-  ArgsMatcher
-  (args-match? [this args]
-    (this args)))
-```
+## any?
 
-### any?
+`(f/any? _)`
 
-`(f/any? args)`
-`(fc/any? args)`
+`(fc/any? _)`
 
-This matcher always returns `true` for any input arguments. 
+This special matcher always returns `true` for any input arguments. 
 It can be used to match single and multiple arguments:
 
 ```clj

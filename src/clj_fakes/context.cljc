@@ -53,15 +53,13 @@
 (defprotocol ArgMatcher
   (arg-matches? [this arg] "Should return true or false."))
 
-(extend-type #?(:clj  clojure.lang.Fn
-                :cljs function)
-  ArgsMatcher
-  (args-match? [this args]
-    (this args))
+(def ^{:doc "Matcher which matches any value. Implements both [[ArgsMatcher]] and [[ArgMatcher]]."}
+any?
+  (reify ArgsMatcher
+    (args-match? [_ _args_] true)
 
-  ArgMatcher
-  (arg-matches? [this arg]
-    (this arg)))
+    ArgMatcher
+    (arg-matches? [_ _arg_] true)))
 
 (defn ^:no-doc -arg-matches?
   [matcher arg]
@@ -77,21 +75,26 @@
         (and (= (count this) (count args))
              (every? true? (map -arg-matches? this args))))))
 
-(def any? ^{:doc "Matcher which matches any value."}
-  (reify ArgsMatcher
-    (args-match? [_ _args_] true)
+(defmulti arg "Creates an arg matcher from the passed value. Use `defmethod` to define new behavior."
+          class)
 
-    ArgMatcher
-    (arg-matches? [_ _arg_] true)))
+(defmethod arg #?(:clj  clojure.lang.Fn
+                  :cljs function)
+  ; name is added for more readable stacktraces
+  functional-arg-matcher
+  [f]
+  (reify ArgMatcher
+    (arg-matches? [_ arg]
+      (f arg))))
 
 (defn ^:no-doc -with-any-first-arg
   "Args matcher decorator which allows any first arg. The rest of the args will be checked by specified matcher.
   Returns a new matcher."
   [rest-args-matcher]
   {:pre [(satisfies? ArgsMatcher rest-args-matcher)]}
-  (fn wrapper
-    [args]
-    (args-match? rest-args-matcher (rest args))))
+  (reify ArgsMatcher
+    (args-match? [_ args]
+      (args-match? rest-args-matcher (rest args)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Utils
 (defn ^:no-doc -find-first

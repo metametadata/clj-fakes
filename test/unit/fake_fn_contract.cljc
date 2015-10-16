@@ -87,7 +87,7 @@
 
   (testing "first matching rule wins"
     (f/with-fakes
-      (let [foo (fake-fn [(constantly true) 1
+      (let [foo (fake-fn [f/any? 1
                           [2] 2
                           [3 4] 3])]
         (is (= 1 (foo)))
@@ -104,10 +104,5 @@
       (let [ctx (fc/context)
             foo (ctx-fake-fn ctx)]
         (is (not= (foo 1 2 3) (foo 1 2 3) (foo 100) (foo)))))
-
-    #_(testing "without config fake returns value of sensible type"
-      (f/with-fakes
-        (let [foo (fake-fn)]
-          (is (satisfies? fc/FakeReturnValue (foo))))))
     )
   )

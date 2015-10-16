@@ -13,6 +13,7 @@
      (:require-macros [clj-fakes.macro :refer [-cljs-env?]])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Re-exports for usage convenience
+(def arg fc/arg)
 (def any? fc/any?)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Core
