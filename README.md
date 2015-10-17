@@ -17,7 +17,7 @@ One of the unique features is the ability to find unused fakes in order to help 
 * Arrange-Act-Assert style testing
 
 ## Status
-Core functionality is ready but API is not stable yet. Documentation and more features are on the way.
+Core functionality is ready but API is not stable yet. More features are on the way.
 
 ## Requirements
 
