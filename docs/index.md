@@ -18,11 +18,3 @@ One of the unique features is the ability to find unused fakes in order to help 
 # Requirements
 
 Clojure 1.7.0 and/or ClojureScript 1.7.28 or higher.
-
-# Installation
-
-Add this to your dependencies in project.clj:
-
-```clj
-[clj-fakes "0.2.0-SNAPSHOT"]
-```
