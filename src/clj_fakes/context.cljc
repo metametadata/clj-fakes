@@ -102,7 +102,7 @@ any?
                 :cljs js/RegExp)
   ArgMatcher
   (arg-matches? [this arg]
-    (not (nil? (re-matches this arg)))))
+    (not (nil? (re-find this arg)))))
 
 (defn ^:no-doc -with-any-first-arg
   "Args matcher decorator which allows any first arg. The rest of the args will be checked by specified matcher.

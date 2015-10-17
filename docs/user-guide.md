@@ -301,7 +301,7 @@ which are implemented by extending function type like this:
 You are encouraged to define your own argument matchers in a similar way.
 
 The framework also supports *regex matchers* (using 
-[`re-matches`](https://clojuredocs.org/clojure.core/re-matches) under the hood), for example: `(f/arg #"abc.*")`.
+[`re-find`](https://clojuredocs.org/clojure.core/re-find) under the hood), for example: `(f/arg #"abc.*")`.
 
 ## any?
 

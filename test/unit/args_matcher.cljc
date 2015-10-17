@@ -51,13 +51,13 @@
   "regex is an arg matcher"
   (are [args] (args-match? [(f/arg #"abc.*")] args)
               ["abc"]
-              ["abcd"]
-              ["abc "])
+              ["1abcd"]
+              ["  abc "])
 
   (are [args] (not (args-match? [(f/arg #"abc.*")] args))
               ["ab"]
-              ["123abc4"]
-              [" abcd"]))
+              ["123ab4"]
+              [" "]))
 
 (f/-deftest
   "f/any? args matcher matches everything"
