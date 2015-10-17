@@ -48,23 +48,30 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Args matching
 (defprotocol ArgsMatcher
+  "Protocol for multiple args matching."
   (args-match? [this args] "Should return true or false."))
 
+(defprotocol ImplicitArgMatcher
+  "Most likely you shouldn't use this protocol.
+  Consider creating explicit custom matchers by implementing [[ArgMatcher]] protocol and using [[arg]] function."
+  (arg-matches-implicitly? [this arg] "Should return true or false."))
+
 (defprotocol ArgMatcher
+  "Protocol for explicit arg matchers."
   (arg-matches? [this arg] "Should return true or false."))
 
-(def ^{:doc "Matcher which matches any value. Implements both [[ArgsMatcher]] and [[ArgMatcher]]."}
+(def ^{:doc "Matcher which matches any value. Implements both [[ArgsMatcher]] and [[ImplicitArgMatcher]]."}
 any?
   (reify ArgsMatcher
     (args-match? [_ _args_] true)
 
-    ArgMatcher
-    (arg-matches? [_ _arg_] true)))
+    ImplicitArgMatcher
+    (arg-matches-implicitly? [_ _arg_] true)))
 
 (defn ^:no-doc -arg-matches?
   [matcher arg]
-  (if (satisfies? ArgMatcher matcher)
-    (arg-matches? matcher arg)
+  (if (satisfies? ImplicitArgMatcher matcher)
+    (arg-matches-implicitly? matcher arg)
     (= arg matcher)))
 
 (extend-type #?(:clj  clojure.lang.PersistentVector
@@ -75,17 +82,27 @@ any?
         (and (= (count this) (count args))
              (every? true? (map -arg-matches? this args))))))
 
-(defmulti arg "Creates an arg matcher from the passed value. Use `defmethod` to define new behavior."
-          class)
+(defn arg
+  "Creates an [[ImplicitArgMatcher]] from the specified [[ArgMatcher]] to be used in vector args matcher."
+  [matcher]
+  {:pre [(satisfies? ArgMatcher matcher)]}
+  (reify ImplicitArgMatcher
+    (arg-matches-implicitly? [_ arg]
+      (arg-matches? matcher arg))))
 
-(defmethod arg #?(:clj  clojure.lang.Fn
-                  :cljs function)
-  ; name is added for more readable stacktraces
-  functional-arg-matcher
-  [f]
-  (reify ArgMatcher
-    (arg-matches? [_ arg]
-      (f arg))))
+; functional arg matcher
+(extend-type #?(:clj  clojure.lang.Fn
+                :cljs function)
+  ArgMatcher
+  (arg-matches? [this arg]
+    (this arg)))
+
+; regex arg matcher
+(extend-type #?(:clj  java.util.regex.Pattern
+                :cljs js/RegExp)
+  ArgMatcher
+  (arg-matches? [this arg]
+    (not (nil? (re-matches this arg)))))
 
 (defn ^:no-doc -with-any-first-arg
   "Args matcher decorator which allows any first arg. The rest of the args will be checked by specified matcher.
