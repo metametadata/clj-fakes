@@ -258,20 +258,20 @@ because framework provides vector matchers which are useful in most cases.
 ## Vector Matcher
 
 Vector matchers were already used all other this guide. 
-Each vector element can be an expected value or an `fc/ArgMatcher` instance:
+Each vector element can be an expected value or an `fc/ImplicitArgMatcher` instance:
 
 ```clj
-[arg-matcher-or-exact-value1 arg-matcher-or-exact-value2 ...]
+[implicit-arg-matcher-or-exact-value1 implicit-arg-matcher-or-exact-value2 ...]
 ```
  
 ```clj
-(defprotocol ArgMatcher
-  (arg-matches? [this arg] "Should return true or false."))
+(defprotocol ImplicitArgMatcher
+  (arg-matches-implicitly? [this arg] "Should return true or false."))
 ```
 
-It is not recommended to extend existing types with `ArgMatcher` protocol; 
+It is not recommended to extend existing types with `ImplicitArgMatcher` protocol; 
 instead, to make code more explicit and future-proof, 
-you should use an `arg` multimethod:
+you should use an `arg` "adapter" function and pass it `ArgMatcher` instances:
 
 ```clj
 (let [foo (f/fake [[] "no args"
@@ -287,21 +287,21 @@ you should use an `arg` multimethod:
   (foo "hey")) ; => "string"
 ```
 
-As you can see, the framework already supports functional argument matchers. 
-This feature is implemented like this:
+As you can see, the framework already supports *functional argument matchers* 
+which are implemented by extending function type like this:
 
 ```clj
-(defmethod arg #?(:clj  clojure.lang.Fn
-                  :cljs function)
-  ; name is added for more readable stacktraces
-  functional-arg-matcher
-  [f]
-  (reify ArgMatcher
-    (arg-matches? [_ arg]
-      (f arg))))
+(extend-type #?(:clj  clojure.lang.Fn
+                :cljs function)
+  ArgMatcher
+  (arg-matches? [this arg]
+    (this arg)))
 ```
 
-You are encouraged to define your own argument matchers by extending `arg` multimethod in a similar way.
+You are encouraged to define your own argument matchers in a similar way.
+
+The framework also supports *regex matchers* (using 
+[`re-matches`](https://clojuredocs.org/clojure.core/re-matches) under the hood), for example: `(f/arg #"abc.*")`.
 
 ## any?
 
