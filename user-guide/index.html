@@ -363,17 +363,17 @@ doesn't specify the config explicitly).</p>
 because framework provides vector matchers which are useful in most cases.</p>
 <h2 id="vector-matcher">Vector Matcher</h2>
 <p>Vector matchers were already used all other this guide. 
-Each vector element can be an expected value or an <code>fc/ArgMatcher</code> instance:</p>
-<pre><code class="clj">[arg-matcher-or-exact-value1 arg-matcher-or-exact-value2 ...]
+Each vector element can be an expected value or an <code>fc/ImplicitArgMatcher</code> instance:</p>
+<pre><code class="clj">[implicit-arg-matcher-or-exact-value1 implicit-arg-matcher-or-exact-value2 ...]
 </code></pre>
 
-<pre><code class="clj">(defprotocol ArgMatcher
-  (arg-matches? [this arg] &quot;Should return true or false.&quot;))
+<pre><code class="clj">(defprotocol ImplicitArgMatcher
+  (arg-matches-implicitly? [this arg] &quot;Should return true or false.&quot;))
 </code></pre>
 
-<p>It is not recommended to extend existing types with <code>ArgMatcher</code> protocol; 
+<p>It is not recommended to extend existing types with <code>ImplicitArgMatcher</code> protocol; 
 instead, to make code more explicit and future-proof, 
-you should use an <code>arg</code> multimethod:</p>
+you should use an <code>arg</code> "adapter" function and pass it <code>ArgMatcher</code> instances:</p>
 <pre><code class="clj">(let [foo (f/fake [[] &quot;no args&quot;
                    [[]] &quot;empty vector&quot;
                    [1 2] &quot;1 2&quot;
@@ -387,19 +387,18 @@ you should use an <code>arg</code> multimethod:</p>
   (foo &quot;hey&quot;)) ; =&gt; &quot;string&quot;
 </code></pre>
 
-<p>As you can see, the framework already supports functional argument matchers. 
-This feature is implemented like this:</p>
-<pre><code class="clj">(defmethod arg #?(:clj  clojure.lang.Fn
-                  :cljs function)
-  ; name is added for more readable stacktraces
-  functional-arg-matcher
-  [f]
-  (reify ArgMatcher
-    (arg-matches? [_ arg]
-      (f arg))))
+<p>As you can see, the framework already supports <em>functional argument matchers</em> 
+which are implemented by extending function type like this:</p>
+<pre><code class="clj">(extend-type #?(:clj  clojure.lang.Fn
+                :cljs function)
+  ArgMatcher
+  (arg-matches? [this arg]
+    (this arg)))
 </code></pre>
 
-<p>You are encouraged to define your own argument matchers by extending <code>arg</code> multimethod in a similar way.</p>
+<p>You are encouraged to define your own argument matchers in a similar way.</p>
+<p>The framework also supports <em>regex matchers</em> (using 
+<a href="https://clojuredocs.org/clojure.core/re-matches"><code>re-matches</code></a> under the hood), for example: <code>(f/arg #"abc.*")</code>.</p>
 <h2 id="any">any?</h2>
 <p><code>(f/any? _)</code></p>
 <p><code>(fc/any? _)</code></p>
