@@ -338,7 +338,7 @@ in your macro.</p>
 args-matcher2 fn-or-value2 ...]
 </code></pre>
 
-<p>On fake invocation arguments matchers will be tested from top to bottom and 
+<p>On fake invocation matchers will be tested from top to bottom and 
 on the first match the specified value will be returned. 
 If return value is a function than it will be called with passed arguments to generate the return value at runtime:</p>
 <pre><code class="clj">(let [foo (f/fake [[1 2] 100
