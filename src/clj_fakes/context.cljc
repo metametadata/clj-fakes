@@ -228,6 +228,8 @@ any?
   "Creates an optional fake function which will not be checked by [[self-test-unused-fakes]],
   i.e. created fake is allowed to be never called.
 
+  Config is a vector of pairs: `[args-matcher1 fn-or-value1 args-matcher2 fn-or-value2 ...]`
+
   If `config` is not specified then fake will be created with [[default-fake-config]]."
   ([ctx] (optional-fake ctx default-fake-config))
   ([ctx config] {:pre [ctx]} (-optional-fake ctx (-config->f config))))
@@ -271,6 +273,8 @@ any?
    (defmacro fake
      "Creates a fake function. The created function must be called; otherwise, [[self-test-unused-fakes]] will fail.
 
+     Config is a vector of pairs: `[args-matcher1 fn-or-value1 args-matcher2 fn-or-value2 ...]`
+
      Use [[fake*]] in case this macro is called from another macro."
      [ctx config]
      `(fake* ~ctx ~&form ~config)))
@@ -291,6 +295,8 @@ any?
 #?(:clj
    (defmacro recorded-fake
      "Creates a fake function whose calls will be recorded.
+
+     Config is a vector of pairs: `[args-matcher1 fn-or-value1 args-matcher2 fn-or-value2 ...]`
 
      Ultimatelly, the created function must be marked checked (see [[mark-checked]]); otherwise, [[self-test-unchecked-fakes]] will fail.
 

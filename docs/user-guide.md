@@ -223,7 +223,7 @@ Fake config should contain pairs of [args matcher](#argument-matchinga) and retu
 args-matcher2 fn-or-value2 ...]
 ```
 
-On fake invocation arguments matchers will be tested from top to bottom and 
+On fake invocation matchers will be tested from top to bottom and 
 on the first match the specified value will be returned. 
 If return value is a function than it will be called with passed arguments to generate the return value at runtime:
 
