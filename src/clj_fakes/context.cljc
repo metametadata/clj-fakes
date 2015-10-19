@@ -326,7 +326,7 @@ any?
 
   If fake is not specified then it will return all the calls recorded in the context:
 
-  ```
+  ```clj
   [[recorded-fake1 call1]
    [recorded-fake2 call2]
    ...]
@@ -946,3 +946,16 @@ any?
   [ctx]
   (doseq [[_var_ unpatch-fn] (:unpatches @ctx)]
     (unpatch-fn)))
+
+;;;;;;;;;;;;;;;;;;;;;;;; Utils
+(defn cyclically
+  "Returns a function that:
+
+  1. takes any number of arguments;
+  2. on each call returns the next value from `coll`, cyclically."
+  [coll]
+  (let [vals (atom (cycle coll))]
+    (fn cyclical-fn [& _args_]
+      (let [result (first @vals)]
+        (swap! vals next)
+        result))))

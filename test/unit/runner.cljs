@@ -21,6 +21,7 @@
             [unit.original-val]
             [unit.unpatch]
             [unit.spy]
+            [unit.cyclically]
             ))
 
 (doo-tests
@@ -44,4 +45,5 @@
   'unit.original-val
   'unit.unpatch
   'unit.spy
+  'unit.cyclically
   )

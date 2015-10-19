@@ -15,6 +15,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;; Re-exports for usage convenience
 (def arg fc/arg)
 (def any? fc/any?)
+(def cyclically fc/cyclically)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Core
 (def ^{:doc "You can use this atom in your code but do not alter it directly; instead, always use framework API.

@@ -140,7 +140,7 @@ but this dependency is not really related to the test case:
 ```
 
 As you may have noticed, `config` argument can be omitted. 
-In such case fake will be created with [`(default-fake-config)`](#fake-configuration) 
+In such case fake will be created with [`default-fake-config`](#fake-configuration) 
 which allows any arguments to be passed on invocation.
 
 ## Recorded Fake
@@ -242,6 +242,23 @@ It accepts any number of arguments and returns a new unique
 instance of protocol `fc/FakeReturnValue` on each call.
 It is used by `optional-fake` and `recorded-fake` functions by default (i.e. when user 
 doesn't specify the config explicitly).
+
+## Helpers
+
+`(f/cyclically coll)`
+
+`(fc/cyclically coll)`
+
+This function can be used to implement iterator-style stubbing 
+when a fake returns a different value on each call:
+
+```clj
+(let [get-weekday (f/fake [["My event"] (f/cyclically [:monday :tuesday :wednesday])])]
+  (is (= :monday (get-weekday "My event")))
+  (is (= :tuesday (get-weekday "My event")))
+  (is (= :wednesday (get-weekday "My event")))
+  (is (= :monday (get-weekday "My event"))))
+```
 
 # Argument Matching
 
