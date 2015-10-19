@@ -132,6 +132,8 @@
     
         <li class="main "><a href="#fake-configuration">Fake Configuration</a></li>
         
+            <li><a href="#helpers">Helpers</a></li>
+        
     
         <li class="main "><a href="#argument-matching">Argument Matching</a></li>
         
@@ -277,7 +279,7 @@ but this dependency is not really related to the test case:</p>
 </code></pre>
 
 <p>As you may have noticed, <code>config</code> argument can be omitted. 
-In such case fake will be created with <a href="#fake-configuration"><code>(default-fake-config)</code></a> 
+In such case fake will be created with <a href="#fake-configuration"><code>default-fake-config</code></a> 
 which allows any arguments to be passed on invocation.</p>
 <h2 id="recorded-fake">Recorded Fake</h2>
 <p>Invocations of this fake are recorded so that they can later be asserted:</p>
@@ -353,6 +355,18 @@ If return value is a function than it will be called with passed arguments to ge
 instance of protocol <code>fc/FakeReturnValue</code> on each call.
 It is used by <code>optional-fake</code> and <code>recorded-fake</code> functions by default (i.e. when user 
 doesn't specify the config explicitly).</p>
+<h2 id="helpers">Helpers</h2>
+<p><code>(f/cyclically coll)</code></p>
+<p><code>(fc/cyclically coll)</code></p>
+<p>This function can be used to implement iterator-style stubbing 
+when a fake returns a different value on each call:</p>
+<pre><code class="clj">(let [get-weekday (f/fake [[&quot;My event&quot;] (f/cyclically [:monday :tuesday :wednesday])])]
+  (is (= :monday (get-weekday &quot;My event&quot;)))
+  (is (= :tuesday (get-weekday &quot;My event&quot;)))
+  (is (= :wednesday (get-weekday &quot;My event&quot;)))
+  (is (= :monday (get-weekday &quot;My event&quot;))))
+</code></pre>
+
 <h1 id="argument-matching">Argument Matching</h1>
 <p>Every arguments matcher must implement an <code>fc/ArgsMatcher</code> protocol:</p>
 <pre><code class="clj">(defprotocol ArgsMatcher
