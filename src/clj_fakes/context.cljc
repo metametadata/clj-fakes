@@ -2,9 +2,9 @@
   "API for working in explicit context."
   (:require [clojure.string :as string]
     #?@(:clj  [
+            [clj-fakes.reflection :as r]
             [clojure.pprint :as pprint]
             [cljs.analyzer :as a]
-            [clojure.reflect :as reflect]
             [clj-fakes.macro :refer :all]
                ]
         :cljs [[cljs.pprint :as pprint]
@@ -423,16 +423,6 @@ any?
          (symbol ns (name method-sym))))))
 
 #?(:clj
-   (defn ^:no-doc -resolves?
-     [env sym]
-     (if (-cljs-env? env)
-       ; ClojureScript
-       (not (nil? (:meta (a/resolve-var env sym))))
-
-       ; Clojure
-       (not (nil? (resolve sym))))))
-
-#?(:clj
    (defn ^:no-doc -emit-imp-value
      [form env ctx obj-id-sym protocol-sym
       [method-sym fake-type config :as _method-spec_]]
@@ -441,7 +431,7 @@ any?
                           ~obj-id-sym
                           ; if compiler cannot resolve a symbol then hash by its string repr instead of the value
                           ; if resolved symbol is really not a protocol/class it will fail later on reify macro expansion
-                          ~(if (-resolves? env method-full-sym)
+                          ~(if (r/-resolves? env method-full-sym)
                              method-full-sym
                              (str method-sym)))
            config (-add-any-first-arg-into-matchers config)]
@@ -467,83 +457,6 @@ any?
          `(optional-fake ~ctx default-fake-config)
 
          (assert nil (str "Unknown fake type specified: " fake-type))))))
-
-#?(:clj
-   (defn ^:no-doc -resolve-protocol-with-specs
-     "Returns a resolved protocol or nil if resolved object has no protocol specs."
-     [env protocol-sym]
-     (if (-cljs-env? env)
-       ; ClojureScript
-       (let [protocol (a/resolve-var env protocol-sym)]
-         (when (not (nil? (-> protocol :meta :protocol-info)))
-           protocol))
-
-       ; Clojure
-       (let [protocol (resolve protocol-sym)]
-         (when (instance? clojure.lang.Var protocol)
-           protocol)))))
-
-#?(:clj
-   (defn ^:no-doc -resolves-to-Object?
-     [env sym]
-     (if (-cljs-env? env)
-       ; ClojureScript
-       (= 'Object sym)
-
-       ; Clojure
-       (= Object (resolve sym)))))
-
-#?(:clj
-   (defn ^:no-doc -protocol-methods
-     "Portable reflection helper. Returns different structures for different hosts.
-     Protocol must be already resolved."
-     [env protocol]
-     (if (-cljs-env? env)
-       ; ClojureScript
-       (-> protocol :meta :protocol-info :methods)
-
-       ; Clojure
-       (-> protocol deref :sigs vals))))
-
-#?(:clj
-   (defn ^:no-doc -protocol-method-name
-     "Portable reflection helper."
-     [env protocol-method]
-     (if (-cljs-env? env)
-       ; ClojureScript
-       (first protocol-method)
-
-       ; Clojure
-       (:name protocol-method))))
-
-#?(:clj
-   (defn ^:no-doc -protocol-method-argslist
-     "Portable reflection helper."
-     [env protocol-method]
-     (if (-cljs-env? env)
-       ; ClojureScript
-       (second protocol-method)
-
-       ; Clojure
-       (:arglists protocol-method))))
-
-#?(:clj
-   (defn ^:no-doc -reflect-interface-or-object
-     "Raises an exception if cannot reflect on specified symbol."
-     [env interface-sym]
-     (assert (not (-cljs-env? env)) "Works only in Clojure for reflection on Java interfaces and Object class.")
-     (if (-resolves-to-Object? env interface-sym)
-       ; Object
-       (reflect/reflect Object)
-
-       ; Java interface?
-       (try
-         (reflect/type-reflect interface-sym)
-
-         ; error
-         (catch Exception e
-           (assert nil (str "Unknown protocol or interface: " interface-sym
-                            ". Underlying exception: " (pr-str e))))))))
 
 #?(:clj
    (defn ^:no-doc -remove-meta
@@ -589,11 +502,11 @@ any?
      If protocol is a Java Object or interface then args will be hinted which is needed
      to support overloaded methods."
      [env protocol-sym method-sym]
-     (if-let [protocol (-resolve-protocol-with-specs env protocol-sym)]
+     (if-let [protocol (r/-resolve-protocol-with-specs env protocol-sym)]
        ; protocol
-       (let [methods (-protocol-methods env protocol)
-             method (-find-first #(= method-sym (-protocol-method-name env %)) methods)]
-         (map -fix-arglist (-protocol-method-argslist env method)))
+       (let [methods (r/-protocol-methods env protocol)
+             method (-find-first #(= method-sym (r/-protocol-method-name env %)) methods)]
+         (map -fix-arglist (r/-protocol-method-argslist env method)))
 
        ; not a protocol
        (if (-cljs-env? env)
@@ -601,7 +514,7 @@ any?
          (assert nil (str "Unknown protocol: " protocol-sym))
 
          ; Clojure - Object, Java interface or error
-         (let [interface (-reflect-interface-or-object env protocol-sym)
+         (let [interface (r/-reflect-interface-or-object env protocol-sym)
                members (filter #(and (= method-sym (:name %))
                                      (not (contains? (:flags %) :varargs)))
                                (:members interface))]
@@ -614,11 +527,11 @@ any?
      [env protocol-sym method-sym]
      ; no hint is needed in ClojureScript or for Clojure protocol methods
      (if (or (-cljs-env? env)
-             (-resolve-protocol-with-specs env protocol-sym))
+             (r/-resolve-protocol-with-specs env protocol-sym))
        method-sym
 
        ; Object, Java interface or error
-       (let [interface (-reflect-interface-or-object env protocol-sym)
+       (let [interface (r/-reflect-interface-or-object env protocol-sym)
              members (:members interface)
              member (-find-first #(= method-sym (:name %)) members)]
          (-with-hint (:return-type member) method-sym)))))
@@ -708,9 +621,9 @@ any?
      "Generates nice specs for all methods from the specified protocol.
      Does nothing for Java interfaces and unresolved symbols."
      [env protocol-sym]
-     (when-let [protocol (-resolve-protocol-with-specs env protocol-sym)]
-       (let [methods (-protocol-methods env protocol)
-             nice-specs (map #(vector (-protocol-method-name env %) :-nice-fake) methods)]
+     (when-let [protocol (r/-resolve-protocol-with-specs env protocol-sym)]
+       (let [methods (r/-protocol-methods env protocol)
+             nice-specs (map #(vector (r/-protocol-method-name env %) :-nice-fake) methods)]
          nice-specs))))
 
 #?(:clj
