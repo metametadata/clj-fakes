@@ -8,7 +8,7 @@ One of the unique features is the ability to find unused fakes in order to help 
 ## Features
 * All test doubles are named "fakes" to simplify terminology
 * Fakes can be created for:
-  * protocol instances
+  * protocol and Java interface instances
   * functions
 * "Nice" and "strict" protocol fakes are supported
 * Monkey patching is supported to fake implicit dependencies
