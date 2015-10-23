@@ -19,20 +19,20 @@
 
   (testing "passes if function was called once"
     (f/with-fakes
-      (let [foo (f/recorded-fake [f/any? nil])]
+      (let [foo (f/recorded-fake)]
         (foo)
         (is (was-called-fn foo [])))))
 
   (testing "throws if function was not called at all"
     (f/with-fakes
-      (let [foo (f/recorded-fake [f/any? nil])]
+      (let [foo (f/recorded-fake)]
         (f/-is-error-thrown
           expected-exc-re-on-no-call
           (was-called-fn foo [])))))
 
   (testing "args matcher can be specified"
     (f/with-fakes
-      (let [foo (f/recorded-fake [f/any? nil])]
+      (let [foo (f/recorded-fake)]
         (foo 2 3)
         (is (was-called-fn foo (reify fc/ArgsMatcher
                                 (args-match? [_ args]

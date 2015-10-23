@@ -15,7 +15,7 @@
 (f/-deftest
   "passes if function was never called"
   (f/with-fakes
-    (let [foo (f/recorded-fake [f/any? nil])]
+    (let [foo (f/recorded-fake)]
       (is (f/was-not-called foo)))))
 
 (f/-deftest

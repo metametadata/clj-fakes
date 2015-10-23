@@ -20,7 +20,7 @@
 (f/-deftest
   "passes if function was called several times"
   (f/with-fakes
-    (let [foo (f/recorded-fake [f/any? nil])]
+    (let [foo (f/recorded-fake)]
       (foo)
       (foo 2)
       (foo 3)

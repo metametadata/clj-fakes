@@ -20,7 +20,7 @@
 (f/-deftest
   "throws if function was called more than once"
   (f/with-fakes
-    (let [foo (f/recorded-fake [f/any? nil])]
+    (let [foo (f/recorded-fake)]
       (foo)
       (foo 2)
       (f/-is-error-thrown

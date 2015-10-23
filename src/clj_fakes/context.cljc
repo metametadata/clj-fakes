@@ -115,6 +115,7 @@ any?
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Utils
 (defn ^:no-doc -find-first
+  "Returns nil if element wasn't found."
   [pred coll]
   (first (filter pred coll)))
 
@@ -785,6 +786,42 @@ any?
   (let [k-calls (calls ctx k)]
     (or (empty? k-calls)
         (throw (ex-info (str "Function is expected to be never called. Actual calls: " (pr-str k-calls) ".") {})))))
+
+(defn -find-and-take-after
+  "Returns the first found element and the seq of elements after it.
+  Returns [nil _] if element was not found."
+  [pred coll]
+  (let [s (drop-while (complement pred) coll)]
+    [(first s) (rest s)]))
+
+(defn -call-matches?
+  [k args-matcher [f {:keys [args]} :as _call_]]
+  (and (= k f)
+       (args-match? args-matcher args)))
+
+(defn were-called-in-order
+  ""
+  [ctx & fns-and-matchers]
+  {:pre [ctx
+         (even? (count fns-and-matchers))
+         (every? (partial -recorded? ctx) (take-nth 2 fns-and-matchers))
+         (every? #(satisfies? ArgsMatcher %) (take-nth 2 (rest fns-and-matchers)))]}
+  ; loop over provided pairs
+  (loop [fn-matcher-pairs (partition 2 fns-and-matchers)
+         unchecked-calls (calls ctx)]
+    (when-let [[k args-matcher] (first fn-matcher-pairs)]
+      (mark-checked ctx k)
+
+      ; find matched call
+      (let [[matched-call rest-unchecked-calls] (-find-and-take-after (partial -call-matches? k args-matcher)
+                                                                      unchecked-calls)]
+        ; not found error
+        (when (nil? matched-call)
+          (throw (ex-info (str "TODO: call was not found: " k " " args-matcher) {})))
+
+        ; otherwise, check next pair
+        (recur (rest fn-matcher-pairs) rest-unchecked-calls))))
+  true)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Assertions for protocol methods
 (defn method-was-called-once

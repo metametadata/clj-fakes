@@ -131,6 +131,10 @@ Also see [[with-fakes]] macro."}
   [k]
   (fc/was-not-called *context* k))
 
+(defn were-called-in-order
+  [& fns-and-matchers]
+  (apply fc/were-called-in-order *context* fns-and-matchers))
+
 ;;;;;;;;;;;;;;;;;;;;;;;; Assertions for protocol methods
 (defn method-was-called-once
   [f obj args-matcher]

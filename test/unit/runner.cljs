@@ -11,6 +11,7 @@
             [unit.was-called-once]
             [unit.was-called]
             [unit.was-not-called]
+            [unit.were-called-in-order]
             [unit.reify-fake]
             [unit.reify-nice-fake]
             [unit.positions]
@@ -35,6 +36,7 @@
   'unit.was-called-once
   'unit.was-called
   'unit.was-not-called
+  'unit.were-called-in-order
   'unit.reify-fake
   'unit.reify-nice-fake
   'unit.positions
