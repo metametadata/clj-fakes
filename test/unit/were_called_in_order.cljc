@@ -82,3 +82,41 @@
         #"^TODO"
         (f/were-called-in-order
           foo [100 200 300])))))
+
+(f/-deftest
+  "passes when function was called once"
+  (f/with-fakes
+    (let [foo (f/recorded-fake)]
+      (foo)
+      (is (f/were-called-in-order foo [])))))
+
+(f/-deftest
+  "(integration) passes with args-matches when three functions were called"
+  (f/with-fakes
+    (let [foo (f/recorded-fake)
+          bar (f/recorded-fake)
+          baz (f/recorded-fake)]
+      (foo 1 2 3)
+      (foo 4)
+      (bar 100 200)
+      (baz 300)
+      (bar 400 500 600)
+
+      (is (f/were-called-in-order
+            foo [1 2 3]
+            foo [4]))
+
+      (is (f/were-called-in-order
+            foo [1 2 3]
+            bar [400 500 600]))
+
+      (is (f/were-called-in-order
+            baz [300]
+            bar [400 500 600]))
+
+      (is (f/were-called-in-order
+            foo [1 2 3]
+            foo [(f/arg integer?)]
+            bar [100 200]
+            baz [300]
+            bar [400 500 600])))))

@@ -803,6 +803,7 @@ any?
   ""
   [ctx & fns-and-matchers]
   {:pre [ctx
+         (pos? (count fns-and-matchers))
          (even? (count fns-and-matchers))
          (every? (partial -recorded? ctx) (take-nth 2 fns-and-matchers))
          (every? #(satisfies? ArgsMatcher %) (take-nth 2 (rest fns-and-matchers)))]}
