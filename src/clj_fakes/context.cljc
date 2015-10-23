@@ -800,7 +800,16 @@ any?
        (args-match? args-matcher args)))
 
 (defn were-called-in-order
-  ""
+  "Checks that recorded fakes were called in specified order with the specified args.
+  It does not check that there were not other calls.
+
+  Syntax:
+  ```
+  (were-called-in-order ctx
+    f1 args-matcher1
+    f2 args-matcher2
+    ...)
+   ```"
   [ctx & fns-and-matchers]
   {:pre [ctx
          (pos? (count fns-and-matchers))

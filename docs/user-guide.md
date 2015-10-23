@@ -519,6 +519,9 @@ Each function either returns `true` or raises an exception with additional detai
 `(f/was-not-called f)`
 - checks that function was never called.
 
+`(f/were-called-in-order f1 args-matcher1 f2 args-matcher2 ...)`
+- checks that functions were called in specified order (but it doesn't guarantee there were no other calls).
+
 The set of similar functions is defined for [protocol methods](#calls-assertions):
 
 `(f/method-was-called-once f obj args-matcher)`
@@ -534,6 +537,8 @@ Of course, all these functions can be called with an explicit context:
 `(fc/was-called ctx f args-matcher)`
 
 `(fc/was-not-called ctx f)`
+
+`(fc/were-called-in-order ctx f1 args-matcher1 f2 args-matcher2 ...)`
 
 `(fc/method-was-called-once ctx f obj args-matcher)`
 
