@@ -809,7 +809,8 @@ any?
          (every? #(satisfies? ArgsMatcher %) (take-nth 2 (rest fns-and-matchers)))]}
   ; loop over provided pairs
   (loop [fn-matcher-pairs (partition 2 fns-and-matchers)
-         unchecked-calls (calls ctx)]
+         unchecked-calls (calls ctx)
+         step 1]
     (when-let [[k args-matcher] (first fn-matcher-pairs)]
       (mark-checked ctx k)
 
@@ -818,10 +819,12 @@ any?
                                                                       unchecked-calls)]
         ; not found error
         (when (nil? matched-call)
-          (throw (ex-info (str "TODO: call was not found: " k " " args-matcher) {})))
+          (throw (ex-info (str "Could not find a call satisfying step #" step) {})))
 
         ; otherwise, check next pair
-        (recur (rest fn-matcher-pairs) rest-unchecked-calls))))
+        (recur (rest fn-matcher-pairs)
+               rest-unchecked-calls
+               (inc step)))))
   true)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Assertions for protocol methods

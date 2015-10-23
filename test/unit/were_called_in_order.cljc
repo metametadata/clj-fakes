@@ -27,7 +27,7 @@
   (f/with-fakes
     (let [foo (f/recorded-fake)]
       (f/-is-error-thrown
-        #"^TODO"
+        #"^Could not find a call satisfying step #1"
         (f/were-called-in-order
           foo [])))))
 
@@ -39,7 +39,7 @@
       (foo)
 
       (f/-is-error-thrown
-        #"^TODO"
+        #"^Could not find a call satisfying step #2"
         (f/were-called-in-order
           foo []
           bar [])))))
@@ -53,7 +53,7 @@
       (foo)
 
       (f/-is-error-thrown
-        #"^TODO"
+        #"^Could not find a call satisfying step #2"
         (f/were-called-in-order
           foo []
           bar [])))))
@@ -66,7 +66,7 @@
       (foo)
 
       (f/-is-error-thrown
-        #"^TODO"
+        #"^Could not find a call satisfying step #3"
         (f/were-called-in-order
           foo []
           foo []
@@ -79,7 +79,7 @@
       (foo 1 2 3)
 
       (f/-is-error-thrown
-        #"^TODO"
+        #"^Could not find a call satisfying step #1"
         (f/were-called-in-order
           foo [100 200 300])))))
 
