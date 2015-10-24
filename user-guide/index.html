@@ -508,9 +508,9 @@ or more method fakes:</p>
 
 <p>Available fake types:</p>
 <ul>
-<li><code>:fake</code></li>
-<li><code>:optional-fake</code></li>
-<li><code>:recorded-fake</code></li>
+<li><code>:fake</code> (see <a href="#fake">Fake</a>)</li>
+<li><code>:optional-fake</code> (see <a href="#optional-fake">Optional Fake</a>)</li>
+<li><code>:recorded-fake</code> (see <a href="#recorded-fake">Recorded Fake</a>)</li>
 </ul>
 <p>As with function fakes, config can be omitted for <code>:optional-fake</code> and <code>:recorded-fake</code>:</p>
 <pre><code class="clj">(defprotocol AnimalProtocol
@@ -536,8 +536,8 @@ or more method fakes:</p>
   (charAt :recorded-fake [f/any? \a]))
 </code></pre>
 
-<p>While protocol methods always have a first <code>this</code> argument, 
-method config must not try to match this argument (there is no sense to do it).
+<p>Although protocol methods always have a first <code>this</code> argument, 
+method configs must not try to match this argument. 
 However, the return value function will receive all the arguments on invocation, 
 including <code>this</code>:</p>
 <pre><code class="clj">(let [monkey (f/reify-fake p/AnimalProtocol
@@ -562,14 +562,14 @@ helper function:</p>
 </code></pre>
 
 <p>Notice how object name <code>cow</code> is duplicated at the last line. In order to get 
-rid of such duplications there are additional <code>method-was-called-*</code> functions defined. 
+rid of such duplications there are additional <code>method-*</code> assertions defined. 
 So the last expression can be rewritten like this:</p>
 <pre><code class="clj">(is (f/method-was-called-once p/speak cow []))
 </code></pre>
 
 <p>For the list of all available assertion functions see <a href="#assertions">Assertions</a>.</p>
 <p>There's a quirk when Java interface method is faked: you will need to use its
-string representation in <code>method</code>/<code>method-was-called-*</code>:</p>
+string representation in <code>method</code>/<code>method-*</code>:</p>
 <pre><code class="clj">(let [foo (f/reify-fake clojure.lang.IFn
                         (invoke :recorded-fake))]
   (foo 1 2 3)
@@ -609,6 +609,7 @@ Each function either returns <code>true</code> or raises an exception with addit
 <p><code>(f/method-was-called-once f obj args-matcher)</code></p>
 <p><code>(f/method-was-called f obj args-matcher)</code></p>
 <p><code>(f/method-was-not-called f obj)</code></p>
+<p><code>(f/methods-were-called-in-order f1 obj1 args-matcher1 f2 obj2 args-matcher2 ...)</code></p>
 <p>Of course, all these functions can be called with an explicit context:</p>
 <p><code>(fc/was-called-once ctx f args-matcher)</code></p>
 <p><code>(fc/was-called ctx f args-matcher)</code></p>
@@ -617,6 +618,7 @@ Each function either returns <code>true</code> or raises an exception with addit
 <p><code>(fc/method-was-called-once ctx f obj args-matcher)</code></p>
 <p><code>(fc/method-was-called ctx f obj args-matcher)</code></p>
 <p><code>(fc/method-was-not-called ctx f obj)</code></p>
+<p><code>(fc/methods-were-called-in-order ctx f1 obj1 args-matcher1 f2 obj2 args-matcher2 ...)</code></p>
 <h1 id="self-tests">Self-tests</h1>
 <p>Framework can perform "self-tests" in order to inform a user 
 early on that some fakes (including protocol method fakes) are potentially used inappropriately.</p>
@@ -670,10 +672,13 @@ and also records its calls:</p>
 
 <p>Monkey patching is not thread-safe because it changes variable 
 in all threads 
-(underlying implementation uses <a href="https://clojuredocs.org/clojure.core/alter-var-root"><code>alter-var-root</code></a>/<a href="https://github.com/cljsinfo/cljs-api-docs/blob/catalog/refs/special/setBANG.md"><code>set!</code></a>).</p>
+(underlying implementation uses 
+<a href="https://clojuredocs.org/clojure.core/alter-var-root"><code>alter-var-root</code></a>/<a href="https://github.com/cljsinfo/cljs-api-docs/blob/catalog/refs/special/setBANG.md"><code>set!</code></a>).</p>
 <h1 id="references">References</h1>
-<p>The API was mainly inspired by <a href="http://www.jmock.org/">jMock</a> and <a href="https://docs.python.org/3/library/unittest.mock.html">unittest.mock</a> frameworks with
-design decisions loosely based on the <a href="http://osherove.com/blog/2013/11/23/fifteen-things-i-look-for-in-an-isolation-framework.html">"Fifteen things I look for in an Isolation framework" by Roy Osherove</a>.</p>
+<p>The API was mainly inspired by <a href="http://www.jmock.org/">jMock</a> and 
+<a href="https://docs.python.org/3/library/unittest.mock.html">unittest.mock</a> frameworks with
+design decisions loosely based on the 
+<a href="http://osherove.com/blog/2013/11/23/fifteen-things-i-look-for-in-an-isolation-framework.html">"Fifteen things I look for in an Isolation framework" by Roy Osherove</a>.</p>
 <p>Some alternative frameworks with isolation capabilities:</p>
 <ul>
 <li><a href="https://github.com/bguthrie/shrubbery">shrubbery</a></li>
@@ -681,8 +686,8 @@ design decisions loosely based on the <a href="http://osherove.com/blog/2013/11/
 <li><a href="https://github.com/marick/Midje">Midje</a></li>
 <li><a href="https://github.com/slagyr/speclj">speclj</a></li>
 </ul>
-<p>Also take at look at the article <a href="http://blog.josephwilk.net/clojure/isolating-external-dependencies-in-clojure.html">"Isolating External Dependencies in Clojure" by Joseph Wilk</a>
-which discusses different approaches to mocking in Clojure.</p>
+<p>Also take at look at the article 
+<a href="http://blog.josephwilk.net/clojure/isolating-external-dependencies-in-clojure.html">"Isolating External Dependencies in Clojure" by Joseph Wilk</a>.</p>
 <p>For more detailed information about unit testing, TDD and test double patterns I'd recommend the books below:</p>
 <ul>
 <li>"Test Driven Development: By Example" by Kent Beck</li>
