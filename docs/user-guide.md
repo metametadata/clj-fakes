@@ -394,9 +394,9 @@ protocol-or-interface-or-Object
 
 Available fake types:
 
-* `:fake`
-* `:optional-fake`
-* `:recorded-fake`
+* `:fake` (see [Fake](#fake))
+* `:optional-fake` (see [Optional Fake](#optional-fake))
+* `:recorded-fake` (see [Recorded Fake](#recorded-fake))
 
 As with function fakes, config can be omitted for `:optional-fake` and `:recorded-fake`:
 
@@ -424,8 +424,8 @@ As with function fakes, config can be omitted for `:optional-fake` and `:recorde
   (charAt :recorded-fake [f/any? \a]))
 ```
 
-While protocol methods always have a first `this` argument, 
-method config must not try to match this argument (there is no sense to do it).
+Although protocol methods always have a first `this` argument, 
+method configs must not try to match this argument. 
 However, the return value function will receive all the arguments on invocation, 
 including `this`:
 
@@ -458,7 +458,7 @@ It can be used in combination with existing `calls` and `was-called-*` functions
 ```
 
 Notice how object name `cow` is duplicated at the last line. In order to get 
-rid of such duplications there are additional `method-was-called-*` functions defined. 
+rid of such duplications there are additional `method-*` assertions defined. 
 So the last expression can be rewritten like this:
 
 ```clj
@@ -468,7 +468,7 @@ So the last expression can be rewritten like this:
 For the list of all available assertion functions see [Assertions](#assertions).
 
 There's a quirk when Java interface method is faked: you will need to use its
-string representation in `method`/`method-was-called-*`:
+string representation in `method`/`method-*`:
 
 ```clj
 (let [foo (f/reify-fake clojure.lang.IFn
@@ -530,6 +530,8 @@ The set of similar functions is defined for [protocol methods](#calls-assertions
 
 `(f/method-was-not-called f obj)`
 
+`(f/methods-were-called-in-order f1 obj1 args-matcher1 f2 obj2 args-matcher2 ...)`
+
 Of course, all these functions can be called with an explicit context:
 
 `(fc/was-called-once ctx f args-matcher)`
@@ -545,6 +547,8 @@ Of course, all these functions can be called with an explicit context:
 `(fc/method-was-called ctx f obj args-matcher)`
 
 `(fc/method-was-not-called ctx f obj)`
+
+`(fc/methods-were-called-in-order ctx f1 obj1 args-matcher1 f2 obj2 args-matcher2 ...)`
 
 # Self-tests
 
@@ -626,11 +630,14 @@ and also records its calls:
 
 Monkey patching is not thread-safe because it changes variable 
 in all threads 
-(underlying implementation uses [`alter-var-root`](https://clojuredocs.org/clojure.core/alter-var-root)/[`set!`](https://github.com/cljsinfo/cljs-api-docs/blob/catalog/refs/special/setBANG.md)).
+(underlying implementation uses 
+[`alter-var-root`](https://clojuredocs.org/clojure.core/alter-var-root)/[`set!`](https://github.com/cljsinfo/cljs-api-docs/blob/catalog/refs/special/setBANG.md)).
 
 # References
-The API was mainly inspired by [jMock](http://www.jmock.org/) and [unittest.mock](https://docs.python.org/3/library/unittest.mock.html) frameworks with
-design decisions loosely based on the ["Fifteen things I look for in an Isolation framework" by Roy Osherove](http://osherove.com/blog/2013/11/23/fifteen-things-i-look-for-in-an-isolation-framework.html).
+The API was mainly inspired by [jMock](http://www.jmock.org/) and 
+[unittest.mock](https://docs.python.org/3/library/unittest.mock.html) frameworks with
+design decisions loosely based on the 
+["Fifteen things I look for in an Isolation framework" by Roy Osherove](http://osherove.com/blog/2013/11/23/fifteen-things-i-look-for-in-an-isolation-framework.html).
 
 Some alternative frameworks with isolation capabilities:
 
@@ -639,8 +646,8 @@ Some alternative frameworks with isolation capabilities:
 * [Midje](https://github.com/marick/Midje)
 * [speclj](https://github.com/slagyr/speclj)
 
-Also take at look at the article ["Isolating External Dependencies in Clojure" by Joseph Wilk](http://blog.josephwilk.net/clojure/isolating-external-dependencies-in-clojure.html)
-which discusses different approaches to mocking in Clojure.
+Also take at look at the article 
+["Isolating External Dependencies in Clojure" by Joseph Wilk](http://blog.josephwilk.net/clojure/isolating-external-dependencies-in-clojure.html).
  
 For more detailed information about unit testing, TDD and test double patterns I'd recommend the books below:
 

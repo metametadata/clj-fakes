@@ -18,6 +18,7 @@
             [unit.method-was-called]
             [unit.method-was-called-once]
             [unit.method-was-not-called]
+            [unit.methods-were-called-in-order]
             [unit.patch]
             [unit.original-val]
             [unit.unpatch]
@@ -43,6 +44,7 @@
   'unit.method-was-called
   'unit.method-was-called-once
   'unit.method-was-not-called
+  'unit.methods-were-called-in-order
   'unit.patch
   'unit.original-val
   'unit.unpatch

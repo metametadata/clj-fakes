@@ -787,6 +787,11 @@ any?
     (or (empty? k-calls)
         (throw (ex-info (str "Function is expected to be never called. Actual calls: " (pr-str k-calls) ".") {})))))
 
+(defn -take-nth-from-group
+  "Partitions collection by group-len and returns a lazy seq of every nth element from each partition."
+  [n group-len coll]
+  (take-nth group-len (drop (dec n) coll)))
+
 (defn -find-and-take-after
   "Returns the first found element and the seq of elements after it.
   Returns [nil _] if element was not found."
@@ -814,8 +819,8 @@ any?
   {:pre [ctx
          (pos? (count fns-and-matchers))
          (even? (count fns-and-matchers))
-         (every? (partial -recorded? ctx) (take-nth 2 fns-and-matchers))
-         (every? #(satisfies? ArgsMatcher %) (take-nth 2 (rest fns-and-matchers)))]}
+         (every? (partial -recorded? ctx) (-take-nth-from-group 1 2 fns-and-matchers))
+         (every? #(satisfies? ArgsMatcher %) (-take-nth-from-group 2 2 fns-and-matchers))]}
   ; loop over provided pairs
   (loop [fn-matcher-pairs (partition 2 fns-and-matchers)
          unchecked-calls (calls ctx)
@@ -828,7 +833,9 @@ any?
                                                                       unchecked-calls)]
         ; not found error
         (when (nil? matched-call)
-          (throw (ex-info (str "Could not find a call satisfying step #" step) {})))
+          (throw (ex-info (str "Could not find a call satisfying step #" step
+                               ":\n" (-fake->str ctx "recorded fake" k)
+                               "\nargs matcher: " args-matcher) {})))
 
         ; otherwise, check next pair
         (recur (rest fn-matcher-pairs)
@@ -854,6 +861,29 @@ any?
   [ctx f obj]
   {:pre [ctx f obj]}
   (was-not-called ctx (method ctx obj f)))
+
+(defn methods-were-called-in-order
+  "[[were-called-in-order]] for protocol method fakes.
+
+  Syntax:
+  ```
+  (methods-were-called-in-order ctx
+    f1 obj1 args-matcher1
+    f2 obj2 args-matcher2
+    ...)
+  ```"
+  [ctx & fns-objs-and-matchers]
+  {:pre [ctx
+         (pos? (count fns-objs-and-matchers))
+         (zero? (rem (count fns-objs-and-matchers) 3))
+         (every? #(not (nil? %)) (-take-nth-from-group 1 3 fns-objs-and-matchers))
+         (every? #(not (nil? %)) (-take-nth-from-group 2 3 fns-objs-and-matchers))
+         (every? #(satisfies? ArgsMatcher %) (-take-nth-from-group 3 3 fns-objs-and-matchers))
+         ]}
+  (let [fns-and-matchers (mapcat (fn [[f obj args-matcher]]
+                                   [(method ctx obj f) (-with-any-first-arg args-matcher)])
+                                 (partition 3 fns-objs-and-matchers))]
+    (apply were-called-in-order ctx fns-and-matchers)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Monkey patching
 (defn ^:no-doc -save-original-val!

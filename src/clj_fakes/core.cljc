@@ -148,6 +148,10 @@ Also see [[with-fakes]] macro."}
   [f obj]
   (fc/method-was-not-called *context* f obj))
 
+(defn methods-were-called-in-order
+  [& fns-objs-and-matchers]
+  (apply fc/methods-were-called-in-order *context* fns-objs-and-matchers))
+
 ;;;;;;;;;;;;;;;;;;;;;;;; Monkey patching
 #?(:clj
    (defmacro patch!
