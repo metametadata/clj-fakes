@@ -120,3 +120,17 @@
             bar [100 200]
             baz [300]
             bar [400 500 600])))))
+
+(f/-deftest
+  "specifies step details on exception"
+  (f/with-fakes
+    (let [foo (f/recorded-fake)]
+      (foo 1 2 3)
+
+      (f/-is-error-thrown
+        #?(:clj
+           #"^Could not find a call satisfying step #1:\nrecorded fake from unit/were_called_in_order\.cljc, 127:15\nargs matcher: \[100 200\]"
+           :cljs
+           #"^Could not find a call satisfying step #1:\nrecorded fake from test/unit/were_called_in_order\.cljc, 127:15\nargs matcher: \[100 200\]")
+        (f/were-called-in-order
+          foo [100 200])))))
