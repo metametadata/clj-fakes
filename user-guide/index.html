@@ -370,7 +370,8 @@ when a fake returns a different value on each call:</p>
 <h1 id="argument-matching">Argument Matching</h1>
 <p>Every arguments matcher must implement an <code>fc/ArgsMatcher</code> protocol:</p>
 <pre><code class="clj">(defprotocol ArgsMatcher
-  (args-match? [this args] &quot;Should return true or false.&quot;))
+  (args-match? [this args] &quot;Should return true or false.&quot;)
+  (args-matcher-&gt;str [this] &quot;Should return a string for debug messages.&quot;))
 </code></pre>
 
 <p>In most cases you won't need to create instances of this protocol manually 
@@ -382,12 +383,13 @@ Each vector element can be an expected value or an <code>fc/ImplicitArgMatcher</
 </code></pre>
 
 <pre><code class="clj">(defprotocol ImplicitArgMatcher
-  (arg-matches-implicitly? [this arg] &quot;Should return true or false.&quot;))
+  (arg-matches-implicitly? [this arg] &quot;Should return true or false.&quot;)
+  (arg-matcher-&gt;str [this] &quot;Should return a string for debug messages.&quot;))
 </code></pre>
 
 <p>It is not recommended to extend existing types with <code>ImplicitArgMatcher</code> protocol; 
 instead, to make code more explicit and future-proof, 
-you should use an <code>arg</code> "adapter" function and pass it <code>ArgMatcher</code> instances:</p>
+you should use an <code>arg</code> "adapter" macro and pass it <code>ArgMatcher</code> instances:</p>
 <pre><code class="clj">(let [foo (f/fake [[] &quot;no args&quot;
                    [[]] &quot;empty vector&quot;
                    [1 2] &quot;1 2&quot;
