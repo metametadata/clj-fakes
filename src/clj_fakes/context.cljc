@@ -49,24 +49,30 @@
 ;;;;;;;;;;;;;;;;;;;;;;;; Args matching
 (defprotocol ArgsMatcher
   "Protocol for multiple args matching."
-  (args-match? [this args] "Should return true or false."))
+  (args-match? [this args] "Should return true or false.")
+  (args-matcher->str [this] "Should return a string for debug messages."))
 
 (defprotocol ImplicitArgMatcher
   "Most likely you shouldn't use this protocol.
-  Consider creating explicit custom matchers by implementing [[ArgMatcher]] protocol and using [[arg]] function."
-  (arg-matches-implicitly? [this arg] "Should return true or false."))
+  Consider creating explicit custom matchers by implementing [[ArgMatcher]] protocol and using [[arg]] macro."
+  (arg-matches-implicitly? [this arg] "Should return true or false.")
+  (arg-matcher->str [this] "Should return a string for debug messages."))
 
 (defprotocol ArgMatcher
-  "Protocol for explicit arg matchers."
+  "Protocol for explicit arg matchers.
+
+  Also see: [[arg]]."
   (arg-matches? [this arg] "Should return true or false."))
 
 (def ^{:doc "Matcher which matches any value. Implements both [[ArgsMatcher]] and [[ImplicitArgMatcher]]."}
 any?
-  (reify ArgsMatcher
+  (reify
+    ArgsMatcher
     (args-match? [_ _args_] true)
 
     ImplicitArgMatcher
-    (arg-matches-implicitly? [_ _arg_] true)))
+    (arg-matches-implicitly? [_ _arg_] true)
+    (arg-matcher->str [this] "<any?>")))
 
 (defn ^:no-doc -arg-matches?
   [matcher arg]
@@ -77,32 +83,46 @@ any?
 (extend-type #?(:clj  clojure.lang.PersistentVector
                 :cljs cljs.core.PersistentVector)
   ArgsMatcher
-  (args-match? [this args]
+  (args-match?
+    [this args]
     (or (and (empty? this) (empty? args))
         (and (= (count this) (count args))
-             (every? true? (map -arg-matches? this args))))))
+             (every? true? (map -arg-matches? this args)))))
 
-(defn arg
-  "Creates an [[ImplicitArgMatcher]] from the specified [[ArgMatcher]] to be used in vector args matcher."
-  [matcher]
-  {:pre [(satisfies? ArgMatcher matcher)]}
+  (args-matcher->str
+    [this]
+    (str "["
+         (clojure.string/join " " (map #(if (satisfies? ImplicitArgMatcher %)
+                                         (arg-matcher->str %)
+                                         (str %))
+                                       this))
+         "]")))
+
+(defn arg*
+  "The same as [[arg]] macro, but string for printing the matcher must be specified explicitly."
+  [matcher matcher-str]
+  {:pre [(satisfies? ArgMatcher matcher) (string? matcher-str)]}
   (reify ImplicitArgMatcher
-    (arg-matches-implicitly? [_ arg]
-      (arg-matches? matcher arg))))
+    (arg-matches-implicitly? [_ arg] (arg-matches? matcher arg))
+    (arg-matcher->str [_] matcher-str)))
+
+#?(:clj
+   (defmacro arg
+     "Creates an [[ImplicitArgMatcher]] from the specified [[ArgMatcher]] to be used in vector args matcher."
+     [matcher]
+     `(arg* ~matcher ~(str "<" matcher ">"))))
 
 ; functional arg matcher
 (extend-type #?(:clj  clojure.lang.Fn
                 :cljs function)
   ArgMatcher
-  (arg-matches? [this arg]
-    (this arg)))
+  (arg-matches? [this arg] (this arg)))
 
 ; regex arg matcher
 (extend-type #?(:clj  java.util.regex.Pattern
                 :cljs js/RegExp)
   ArgMatcher
-  (arg-matches? [this arg]
-    (not (nil? (re-find this arg)))))
+  (arg-matches? [this arg] (not (nil? (re-find this arg)))))
 
 (defn ^:no-doc -with-any-first-arg
   "Args matcher decorator which allows any first arg. The rest of the args will be checked by specified matcher.
@@ -110,8 +130,14 @@ any?
   [rest-args-matcher]
   {:pre [(satisfies? ArgsMatcher rest-args-matcher)]}
   (reify ArgsMatcher
-    (args-match? [_ args]
-      (args-match? rest-args-matcher (rest args)))))
+    (args-match?
+      [_ args]
+      (args-match? rest-args-matcher (rest args)))
+
+    (args-matcher->str
+      [_]
+      (str "first: " (arg-matcher->str any?)
+           ", rest: " (args-matcher->str rest-args-matcher)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Utils
 (defn ^:no-doc -find-first
@@ -240,7 +266,7 @@ any?
      "Emits code with call to specified fake-fn with correct position arg.
      Line and column are retrieved from macro's &form var which must be passed explicitly.
      Filepath is retrieved from a dummy var metadata.
-     Works in Clojure and ClojureScript but can produce slightly different filepaths."
+     Works in Clojure and ClojureScript, but can produce slightly different filepaths."
      [fake-fn ctx form & args]
      (assert (meta form)
              (str "Meta must be defined in order to detect fake position. "
@@ -258,7 +284,7 @@ any?
             (~fake-fn ~ctx position# ~@args))))))
 
 (defn ^:no-doc -fake**
-  "This function is the same as fake macro but position must be passed explicitly."
+  "This function is the same as fake macro, but position must be passed explicitly."
   [ctx position config]
   (-fake ctx position (-config->f config)))
 
@@ -281,7 +307,7 @@ any?
      `(fake* ~ctx ~&form ~config)))
 
 (defn ^:no-doc -recorded-fake**
-  "This function is the same as recorded-fake macro but position must be passed explicitly."
+  "This function is the same as recorded-fake macro, but position must be passed explicitly."
   ([ctx position] (-recorded-fake** ctx position default-fake-config))
   ([ctx position config] (-recorded ctx position (-config->f config))))
 
@@ -312,7 +338,7 @@ any?
 
 #?(:clj
    (defmacro ^:no-doc -recorded-fake-as
-     "The same as [[recorded-fake]] but fake will be stored into context by specified key instead of its value.
+     "The same as [[recorded-fake]], but fake will be stored into context by specified key instead of its value.
 
      E.g. it is used in [[reify-fake]] in order to emulate recording calls on the protocol method.
      `form` must be passed if this macro is called from another macro in order to correctly determine position."
@@ -684,7 +710,7 @@ any?
 
 #?(:clj
    (defmacro reify-fake
-     "Works similarly to `reify` macro but implements methods in terms of fake functions.
+     "Works similarly to `reify` macro, but implements methods in terms of fake functions.
      Created instance will raise an exception on calling protocol method which is not defined.
 
      Supported fake types: `:optional-fake`, `:fake`, `:recorded-fake`.
@@ -703,7 +729,7 @@ any?
 
 #?(:clj
    (defmacro reify-nice-fake
-     "Works similarly to [[reify-fake]] but automatically generates `:optional-fake`
+     "Works similarly to [[reify-fake]], but automatically generates `:optional-fake`
      implementations for methods which are not explicitly defined by user.
 
      It cannot yet automatically fake Java interface and `Object` methods."
@@ -759,9 +785,9 @@ any?
                       {}))
 
       (nil? matched-call)
-      (throw (ex-info (str "Function was never called with the expected args. "
-                           "Args matcher: " (pr-str args-matcher) ". "
-                           "Actual calls: " (with-out-str (pprint/pprint k-calls)))
+      (throw (ex-info (str "Function was never called with the expected args.\n"
+                           "Args matcher: " (args-matcher->str args-matcher) ".\n"
+                           "Actual calls:\n" (with-out-str (pprint/pprint k-calls)))
                       {}))
 
       :else true)))
@@ -785,21 +811,21 @@ any?
   (mark-checked ctx k)
   (let [k-calls (calls ctx k)]
     (or (empty? k-calls)
-        (throw (ex-info (str "Function is expected to be never called. Actual calls: " (pr-str k-calls) ".") {})))))
+        (throw (ex-info (str "Function is expected to be never called. Actual calls:\n" (pr-str k-calls) ".") {})))))
 
-(defn -take-nth-from-group
+(defn ^:no-doc -take-nth-from-group
   "Partitions collection by group-len and returns a lazy seq of every nth element from each partition."
   [n group-len coll]
   (take-nth group-len (drop (dec n) coll)))
 
-(defn -find-and-take-after
+(defn ^:no-doc -find-and-take-after
   "Returns the first found element and the seq of elements after it.
   Returns [nil _] if element was not found."
   [pred coll]
   (let [s (drop-while (complement pred) coll)]
     [(first s) (rest s)]))
 
-(defn -call-matches?
+(defn ^:no-doc -call-matches?
   [k args-matcher [f {:keys [args]} :as _call_]]
   (and (= k f)
        (args-match? args-matcher args)))
@@ -835,7 +861,7 @@ any?
         (when (nil? matched-call)
           (throw (ex-info (str "Could not find a call satisfying step #" step
                                ":\n" (-fake->str ctx "recorded fake" k)
-                               "\nargs matcher: " args-matcher) {})))
+                               "\nargs matcher: " (args-matcher->str args-matcher)) {})))
 
         ; otherwise, check next pair
         (recur (rest fn-matcher-pairs)

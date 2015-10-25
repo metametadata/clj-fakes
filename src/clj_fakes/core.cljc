@@ -13,7 +13,10 @@
      (:require-macros [clj-fakes.macro :refer [-cljs-env?]])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Re-exports for usage convenience
-(def arg fc/arg)
+#?(:clj
+   (defmacro arg [matcher]
+     `(fc/arg ~matcher)))
+
 (def any? fc/any?)
 (def cyclically fc/cyclically)
 
@@ -21,7 +24,7 @@
 (def ^{:doc "You can use this atom in your code but do not alter it directly; instead, always use framework API.
 
 Also see [[with-fakes]] macro."}
-  ^:dynamic *context* nil)
+^:dynamic *context* nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Macros - with-fakes
 (defn with-fakes*

@@ -24,7 +24,7 @@
     (let [foo (f/recorded-fake [f/any? nil])]
       (foo 5)
       (f/-is-error-thrown
-        #"^Function is expected to be never called\. Actual calls: \[\{:args \(5\), :return-value nil\}\]\."
+        #"^Function is expected to be never called\. Actual calls:\n\[\{:args \(5\), :return-value nil\}\]\."
         (f/was-not-called foo)))))
 
 (f/-deftest
@@ -34,5 +34,5 @@
       (foo)
       (foo 2)
       (f/-is-error-thrown
-        #"^Function is expected to be never called\. Actual calls: \[\{:args nil, :return-value nil\} \{:args \(2\), :return-value nil\}\]\."
+        #"^Function is expected to be never called\. Actual calls:\n\[\{:args nil, :return-value nil\} \{:args \(2\), :return-value nil\}\]\."
         (f/was-not-called foo)))))

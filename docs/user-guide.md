@@ -266,7 +266,8 @@ Every arguments matcher must implement an `fc/ArgsMatcher` protocol:
 
 ```clj
 (defprotocol ArgsMatcher
-  (args-match? [this args] "Should return true or false."))
+  (args-match? [this args] "Should return true or false.")
+  (args-matcher->str [this] "Should return a string for debug messages."))
 ```
 
 In most cases you won't need to create instances of this protocol manually 
@@ -283,12 +284,13 @@ Each vector element can be an expected value or an `fc/ImplicitArgMatcher` insta
  
 ```clj
 (defprotocol ImplicitArgMatcher
-  (arg-matches-implicitly? [this arg] "Should return true or false."))
+  (arg-matches-implicitly? [this arg] "Should return true or false.")
+  (arg-matcher->str [this] "Should return a string for debug messages."))
 ```
 
 It is not recommended to extend existing types with `ImplicitArgMatcher` protocol; 
 instead, to make code more explicit and future-proof, 
-you should use an `arg` "adapter" function and pass it `ArgMatcher` instances:
+you should use an `arg` "adapter" macro and pass it `ArgMatcher` instances:
 
 ```clj
 (let [foo (f/fake [[] "no args"

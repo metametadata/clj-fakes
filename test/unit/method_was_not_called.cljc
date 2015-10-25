@@ -27,7 +27,7 @@
       (p/speak cow 5)
       (f/-is-error-thrown
         ; message is too complicated to assert here fully
-        #"^Function is expected to be never called\. .*\."
+        #"^Function is expected to be never called. Actual calls:\n.*\."
         (f/method-was-not-called p/speak cow)))))
 
 (f/-deftest
@@ -38,5 +38,5 @@
       (p/speak cow)
       (p/speak cow 2)
       (f/-is-error-thrown
-        #"^Function is expected to be never called\. .*\."
+        #"^Function is expected to be never called\. Actual calls:\n.*\."
         (f/method-was-not-called p/speak cow)))))

@@ -34,8 +34,7 @@
     (are [v args] (args-match? v args)
                   [] []
                   [[]] [[]]
-                  [(f/arg integer?) []] [123 []]))
-  )
+                  [(f/arg integer?) []] [123 []])))
 
 (f/-deftest
   "function is an arg matcher"
