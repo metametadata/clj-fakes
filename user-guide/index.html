@@ -238,7 +238,7 @@ can be used to define and assert a behavior of an explicit functional dependency
 
 <p>If passed arguments cannot be <a href="#argument-matching">matched</a> using specified 
 config then the exception will be raised:</p>
-<pre><code class="clj">(foo 100 200) ; =&gt; raises &quot;Unexpected args are passed into fake: (100 200)&quot;
+<pre><code class="clj">(foo 100 200) ; =&gt; raises &quot;Unexpected args are passed into fake: (100 200) ...&quot;
 </code></pre>
 
 <p>A fake is assumed to be called at least once inside the context; otherwise, <a href="#self-tests">self-test</a> exception 
@@ -398,7 +398,7 @@ you should use an <code>arg</code> "adapter" macro and pass it <code>ArgMatcher<
   (foo) ; =&gt; &quot;no args&quot;
   (foo []) ; =&gt; &quot;empty vector&quot;
   (foo 1 2) ; =&gt; &quot;1 2&quot;
-  (foo 1 2 3) ; =&gt; exception: &quot;Unexpected args are passed into fake: (1 2 3)&quot;
+  (foo 1 2 3) ; =&gt; exception: &quot;Unexpected args are passed into fake: (1 2 3) ...&quot;
   (foo 100 200) ; =&gt; &quot;two integers&quot;
   (foo &quot;hey&quot;)) ; =&gt; &quot;string&quot;
 </code></pre>
