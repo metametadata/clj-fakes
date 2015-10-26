@@ -344,9 +344,11 @@ args-matcher2 fn-or-value2 ...]
 on the first match the specified value will be returned. 
 If return value is a function than it will be called with passed arguments to generate the return value at runtime:</p>
 <pre><code class="clj">(let [foo (f/fake [[1 2] 100
-                   [3 4] #(+ %1 %2)])]
+                   [3 4] #(+ %1 %2)
+                   [5 6] (fn [_ _] (throw (ex-info &quot;wow&quot; {})))])]
   (foo 1 2) ; =&gt; 100
-  (foo 3 4)) ; =&gt; 7
+  (foo 3 4) ; =&gt; 7
+  (foo 5 6)) ; =&gt; raises &quot;wow&quot; exception
 </code></pre>
 
 <p>There's one built-in config in the framework:</p>
