@@ -8,7 +8,7 @@
 
   :plugins [[lein-cljsbuild "1.0.6"]
             [com.jakemccrary/lein-test-refresh "0.10.0"]
-            [lein-doo "0.1.4"]
+            [lein-doo "0.1.6-SNAPSHOT"]
             [codox "0.8.13"]]
 
   :source-paths ["src" "test"]

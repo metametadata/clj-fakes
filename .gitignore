@@ -14,4 +14,5 @@ pom.xml.asc
 /.idea
 /site
 /resources
+/out
 .DS_Store
