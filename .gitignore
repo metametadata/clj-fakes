@@ -15,4 +15,5 @@ pom.xml.asc
 /site
 /resources
 /out
+/clj-fakes.iml
 .DS_Store
