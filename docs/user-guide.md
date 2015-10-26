@@ -89,7 +89,7 @@ If passed arguments cannot be [matched](#argument-matching) using specified
 config then the exception will be raised:
 
 ```clj
-(foo 100 200) ; => raises "Unexpected args are passed into fake: (100 200)"
+(foo 100 200) ; => raises "Unexpected args are passed into fake: (100 200) ..."
 ```
 
 A fake is assumed to be called at least once inside the context; otherwise, [self-test](#self-tests) exception 
@@ -301,7 +301,7 @@ you should use an `arg` "adapter" macro and pass it `ArgMatcher` instances:
   (foo) ; => "no args"
   (foo []) ; => "empty vector"
   (foo 1 2) ; => "1 2"
-  (foo 1 2 3) ; => exception: "Unexpected args are passed into fake: (1 2 3)"
+  (foo 1 2 3) ; => exception: "Unexpected args are passed into fake: (1 2 3) ..."
   (foo 100 200) ; => "two integers"
   (foo "hey")) ; => "string"
 ```

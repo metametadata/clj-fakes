@@ -145,6 +145,18 @@ any?
   [pred coll]
   (first (filter pred coll)))
 
+(defn ^:no-doc -find-and-take-after
+  "Returns the first found element and the seq of elements after it.
+  Returns [nil _] if element was not found."
+  [pred coll]
+  (let [s (drop-while (complement pred) coll)]
+    [(first s) (rest s)]))
+
+(defn ^:no-doc -take-nth-from-group
+  "Partitions collection by group-len and returns a lazy seq of every nth element from each partition."
+  [n group-len coll]
+  (take-nth group-len (drop (dec n) coll)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;; Fakes - core
 (defn ^:no-doc -config->f
   "Constructs a function from a config vector:
@@ -162,7 +174,10 @@ any?
                                     config-pairs)
           return-value (second matched-rule)]
       (if (nil? matched-rule)
-        (throw (ex-info (str "Unexpected args are passed into fake: " args) {}))
+        (throw (ex-info (str "Unexpected args are passed into fake: " args
+                             ".\nSupported args matchers:\n"
+                             (clojure.string/join "\n" (map args-matcher->str (-take-nth-from-group 1 2 config))))
+                        {}))
         (if (fn? return-value)
           (apply return-value args)
           return-value)))))
@@ -791,8 +806,8 @@ any?
 
       (nil? matched-call)
       (throw (ex-info (str "Function was never called with the expected args.\n"
-                           "Args matcher: " (args-matcher->str args-matcher) ".\n"
-                           "Actual calls:\n" (with-out-str (pprint/pprint k-calls)))
+                           "Args matcher: " (args-matcher->str args-matcher)
+                           ".\nActual calls:\n" (with-out-str (pprint/pprint k-calls)))
                       {}))
 
       :else true)))
@@ -817,18 +832,6 @@ any?
   (let [k-calls (calls ctx k)]
     (or (empty? k-calls)
         (throw (ex-info (str "Function is expected to be never called. Actual calls:\n" (pr-str k-calls) ".") {})))))
-
-(defn ^:no-doc -take-nth-from-group
-  "Partitions collection by group-len and returns a lazy seq of every nth element from each partition."
-  [n group-len coll]
-  (take-nth group-len (drop (dec n) coll)))
-
-(defn ^:no-doc -find-and-take-after
-  "Returns the first found element and the seq of elements after it.
-  Returns [nil _] if element was not found."
-  [pred coll]
-  (let [s (drop-while (complement pred) coll)]
-    [(first s) (rest s)]))
 
 (defn ^:no-doc -call-matches?
   [k args-matcher [f {:keys [args]} :as _call_]]

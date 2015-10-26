@@ -27,31 +27,35 @@
   (testing "matcher recieves fake's call args"
     (f/with-fakes
       (let [foo (fake-fn [(reify fc/ArgsMatcher
-                            (args-match? [_ args] (= [5 6] args)))
+                            (args-match? [_ args] (= [5 6] args))
+                            (args-matcher->str [_] "<custom matcher>"))
                           #(* %1 %2)])]
         (is (= 30 (foo 5 6))))))
 
   (testing "works in explicit context"
     (let [ctx (fc/context)
           foo (ctx-fake-fn ctx [(reify fc/ArgsMatcher
-                                  (args-match? [_ args] (= [5 6] args)))
+                                  (args-match? [_ args] (= [5 6] args))
+                                  (args-matcher->str [_] "<custom matcher>"))
                                 #(* %1 %2)])]
       (is (= 30 (foo 5 6)))))
 
   (testing "matcher recieves nil on no call args"
     (f/with-fakes
       (let [foo (fake-fn [(reify fc/ArgsMatcher
-                            (args-match? [_ args] (nil? args)))
+                            (args-match? [_ args] (nil? args))
+                            (args-matcher->str [_] "<custom matcher>"))
                           500])]
         (is (= 500 (foo))))))
 
   (testing "calling fake on unsupported args raises an exception"
     (f/with-fakes
       (let [foo (fake-fn [(reify fc/ArgsMatcher
-                            (args-match? [_ _] false))
+                            (args-match? [_ _] false)
+                            (args-matcher->str [_] "<custom matcher>"))
                           (fn [_ _])])]
         (f/-is-error-thrown
-          #"^Unexpected args are passed into fake: \(2 3\)"
+          #"^Unexpected args are passed into fake: \(2 3\).\nSupported args matchers:\n<custom matcher>"
           (foo 2 3)))))
 
   (testing "fake can return a fixed value instead of calling a function"
@@ -82,7 +86,7 @@
       (let [foo (fake-fn [[11 22] 1
                           [8 4] 2])]
         (f/-is-error-thrown
-          #"^Unexpected args are passed into fake: \(100 100\)"
+          #"^Unexpected args are passed into fake: \(100 100\).\nSupported args matchers:\n\[11 22\]\n\[8 4\]"
           (foo 100 100)))))
 
   (testing "first matching rule wins"

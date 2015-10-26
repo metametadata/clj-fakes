@@ -21,7 +21,12 @@
 
 (defn is-faked
   [method & args]
-  (is (instance? clj_fakes.context.FakeReturnValue (apply method args)))
+  ; strings are compared instead of values, because, presumably, 'lein test-refresh' plugin incorrectly reloads deftype
+  ; and tests start failing on every change to contex.cljc
+  (is (= #?(:clj  "clj_fakes.context.FakeReturnValue"
+            :cljs "clj-fakes.context/FakeReturnValue")
+         (pr-str (type (apply method args)))))
+
   (is (not= (apply method args)
             (apply method args))))
 
