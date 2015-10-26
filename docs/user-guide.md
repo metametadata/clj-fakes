@@ -239,7 +239,7 @@ There's one built-in config in the framework:
 `fc/default-fake-config`
 
 It accepts any number of arguments and returns a new unique 
-instance of protocol `fc/FakeReturnValue` on each call.
+instance of type `FakeReturnValue` on each call.
 It is used by `optional-fake` and `recorded-fake` functions by default (i.e. when user 
 doesn't specify the config explicitly).
 

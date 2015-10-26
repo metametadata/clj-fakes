@@ -231,14 +231,19 @@ any?
   {:pre [ctx (-recorded? ctx k)]}
   (swap! ctx update-in [:unchecked-fakes] #(remove #{k} %)))
 
-(defprotocol FakeReturnValue
-  "Empty protocol with meaningful name for creating unique return values.")
-
 (defn ^:no-doc -set-desc
   "Saves a description for the specified fake. It can be later used for debugging."
   [ctx k desc]
   {:pre [ctx k]}
   (swap! ctx assoc-in [:fake-descs k] desc))
+
+; Type with meaningful name for creating unique return values
+(deftype FakeReturnValue []
+  Object
+  ; make debug output less noisy
+  (toString [_] ""))
+
+(alter-meta! #'->FakeReturnValue assoc :no-doc true)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Fakes - API
 (defn ^:no-doc -position
@@ -248,8 +253,8 @@ any?
   (get (:positions @ctx) f))
 
 (def default-fake-config
-  "With this config fake will return a new [[FakeReturnValue]] for any combination of args."
-  [any? (fn [& _] (reify FakeReturnValue))])
+  "With this config fake will return a new `FakeReturnValue` type instance for any combination of args."
+  [any? (fn [& _] (FakeReturnValue.))])
 
 (defn optional-fake
   "Creates an optional fake function which will not be checked by [[self-test-unused-fakes]],

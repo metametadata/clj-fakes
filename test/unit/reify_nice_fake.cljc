@@ -21,7 +21,7 @@
 
 (defn is-faked
   [method & args]
-  (is (satisfies? fc/FakeReturnValue (apply method args)))
+  (is (instance? clj_fakes.context.FakeReturnValue (apply method args)))
   (is (not= (apply method args)
             (apply method args))))
 
@@ -105,7 +105,7 @@
   "Object/toString cannot be automatically reified"
   (f/with-fakes
     (let [foo (f/reify-nice-fake Object)]
-      (is (not (satisfies? fc/FakeReturnValue (.toString foo)))))))
+      (is (not (instance? clj_fakes.context.FakeReturnValue (.toString foo)))))))
 
 #?(:clj
    (f/-deftest
