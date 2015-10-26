@@ -229,9 +229,11 @@ If return value is a function than it will be called with passed arguments to ge
 
 ```clj
 (let [foo (f/fake [[1 2] 100
-                   [3 4] #(+ %1 %2)])]
+                   [3 4] #(+ %1 %2)
+                   [5 6] (fn [_ _] (throw (ex-info "wow" {})))])]
   (foo 1 2) ; => 100
-  (foo 3 4)) ; => 7
+  (foo 3 4) ; => 7
+  (foo 5 6)) ; => raises "wow" exception
 ```
 
 There's one built-in config in the framework:
