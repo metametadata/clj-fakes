@@ -2,17 +2,17 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Introduction\n\n\nclj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.\n\n\nOne of the unique features is the ability to find unused fakes in order to help you write more concise test cases.\n\n\nFeatures\n\n\n\n\nAll test doubles are named \"fakes\" to simplify terminology\n\n\nFakes can be created for:\n\n\nprotocol and Java interface instances\n\n\nfunctions\n\n\n\n\n\n\n\"Nice\" and \"strict\" protocol fakes are supported\n\n\nMonkey patching is supported to fake implicit dependencies\n\n\nSelf-testing: automatically checks for unused fakes\n\n\nTest runner agnostic\n\n\nArrange-Act-Assert style testing\n\n\n\n\nRequirements\n\n\nClojure 1.7.0 and/or ClojureScript 1.7.28 or higher.", 
+            "text": "Introduction\n\n\nclj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.\n\n\nFeatures\n\n\n\n\nAll test doubles are named \"fakes\" to simplify terminology\n\n\nFakes can be created for:\n\n\nprotocol and Java interface instances\n\n\nfunctions\n\n\n\"Nice\" and \"strict\" protocol fakes are supported\n\n\nMonkey patching is supported to fake implicit dependencies\n\n\nSelf-testing: automatically checks for unused fakes\n\n\nTest runner agnostic\n\n\nArrange-Act-Assert style testing\n\n\n\n\nRequirements\n\n\nClojure 1.7.0 and/or ClojureScript 1.7.28 or higher.", 
             "title": "Home"
         }, 
         {
             "location": "/#introduction", 
-            "text": "clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.  One of the unique features is the ability to find unused fakes in order to help you write more concise test cases.", 
+            "text": "clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.", 
             "title": "Introduction"
         }, 
         {
             "location": "/#features", 
-            "text": "All test doubles are named \"fakes\" to simplify terminology  Fakes can be created for:  protocol and Java interface instances  functions    \"Nice\" and \"strict\" protocol fakes are supported  Monkey patching is supported to fake implicit dependencies  Self-testing: automatically checks for unused fakes  Test runner agnostic  Arrange-Act-Assert style testing", 
+            "text": "All test doubles are named \"fakes\" to simplify terminology  Fakes can be created for:  protocol and Java interface instances  functions  \"Nice\" and \"strict\" protocol fakes are supported  Monkey patching is supported to fake implicit dependencies  Self-testing: automatically checks for unused fakes  Test runner agnostic  Arrange-Act-Assert style testing", 
             "title": "Features"
         }, 
         {
