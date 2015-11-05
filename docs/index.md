@@ -5,8 +5,8 @@ clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating
 # Features
 * All test doubles are named "fakes" to simplify terminology
 * Fakes can be created for:
-  * protocol and Java interface instances
-  * functions
+    * protocol and Java interface instances
+    * functions
 * "Nice" and "strict" protocol fakes are supported
 * Monkey patching is supported to fake implicit dependencies
 * Self-testing: automatically checks for unused fakes
