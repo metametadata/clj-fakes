@@ -203,10 +203,10 @@ Also see [[with-fakes]] macro."}
    (defmacro ^:no-doc -is-error-thrown
      "(is (thrown-with-msg? ...)) for general exceptions in Clojure/ClojureScript."
      [re expr]
-     `(-is-exception-thrown java.lang.Exception js/Error ~re ~expr)))
+     `(-is-exception-thrown Exception js/Error ~re ~expr)))
 
 #?(:clj
    (defmacro ^:no-doc -is-assertion-error-thrown
      "(is (thrown-with-msg? ...)) for assert exceptions in Clojure/ClojureScript."
      [re expr]
-     `(-is-exception-thrown java.lang.AssertionError js/Error ~re ~expr)))
+     `(-is-exception-thrown AssertionError js/Error ~re ~expr)))

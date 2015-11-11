@@ -6,6 +6,7 @@
                [clj-fakes.core :as f]
                [clj-fakes.context :as fc]
                [unit.fixtures.protocols :as p :refer [AnimalProtocol]]
+               ;[unit.fixtures.java ]
                )]
       :cljs [(:require
                [cljs.test :refer-macros [is testing deftest]]
