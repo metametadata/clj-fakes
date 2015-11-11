@@ -198,8 +198,8 @@ any?
   [ctx position f]
   {:pre [ctx position (fn? f)]}
   (letfn [(wrapper [& args]
-                   (-mark-used ctx wrapper)
-                   (apply f args))]
+            (-mark-used ctx wrapper)
+            (apply f args))]
     (swap! ctx assoc-in [:positions wrapper] position)
     (swap! ctx update-in [:unused-fakes] conj wrapper)
     wrapper))
@@ -221,10 +221,10 @@ any?
   {:pre  [ctx position (fn? f)]
    :post [(fn? %)]}
   (letfn [(wrapper [& args]
-                   (let [return-value (apply f args)]
-                     (-record-call ctx (or k wrapper) {:args         args
-                                                       :return-value return-value})
-                     return-value))]
+            (let [return-value (apply f args)]
+              (-record-call ctx (or k wrapper) {:args         args
+                                                :return-value return-value})
+              return-value))]
     (swap! ctx update-in [:recorded-fakes] conj (or k wrapper))
     (swap! ctx assoc-in [:positions (or k wrapper)] position)
     (swap! ctx update-in [:unchecked-fakes] conj (or k wrapper))
@@ -542,22 +542,26 @@ any?
            (map #(-with-hint % (-arg %)) (rest arglist)))))
 
 #?(:clj
-   (defn ^:no-doc -method-arglists
-     "Given protocol and method returns all allowed method arglists:
-     [[...] ...]
+   (defn ^:no-doc -method-signatures
+     "Given a protocol and a method returns all allowed method signatures:
+     ({:method-sym ...
+       :arglist [...]} ...)
 
-     If protocol is a Java Object or interface then args will be hinted which is needed
-     to support overloaded methods."
+     If protocol is a Java Object or interface then method sym and args will be hinted (which is needed
+     to support overloaded methods)."
      [env protocol-sym method-sym]
      (if-let [protocol (r/-resolve-protocol-with-specs env protocol-sym)]
        ; protocol
        (let [methods (r/-protocol-methods env protocol)
-             method (-find-first #(= method-sym (r/-protocol-method-name env %)) methods)]
-         (map -fix-arglist (r/-protocol-method-argslist env method)))
+             method (-find-first #(= method-sym (r/-protocol-method-name env %)) methods)
+             arglists (map -fix-arglist (r/-protocol-method-arglist env method))]
+         (map #(-> {:method-sym method-sym
+                    :arglist    %})
+              arglists))
 
        ; not a protocol
        (if (-cljs-env? env)
-         ; ClojureScript - error (note that Object is not supported yet)
+         ; ClojureScript - error (note that Object is not yet supported either)
          (assert nil (str "Unknown protocol: " protocol-sym))
 
          ; Clojure - Object, Java interface or error
@@ -565,34 +569,20 @@ any?
                members (filter #(and (= method-sym (:name %))
                                      (not (contains? (:flags %) :varargs)))
                                (:members interface))]
-           (mapv #(-fix-arglist-with-hints protocol-sym
-                                           (into ['this] (:parameter-types %)))
-                 members))))))
-
-#?(:clj
-   (defn ^:no-doc -hinted-method-sym
-     [env protocol-sym method-sym]
-     ; no hint is needed in ClojureScript or for Clojure protocol methods
-     (if (or (-cljs-env? env)
-             (r/-resolve-protocol-with-specs env protocol-sym))
-       method-sym
-
-       ; Object, Java interface or error
-       (let [interface (r/-reflect-interface-or-object env protocol-sym)
-             members (:members interface)
-             member (-find-first #(= method-sym (:name %)) members)]
-         (-with-hint (:return-type member) method-sym)))))
+           (map (fn [{:keys [return-type parameter-types] :as _member_}]
+                  {:method-sym (-with-hint return-type method-sym)
+                   :arglist    (-fix-arglist-with-hints protocol-sym (into ['this] parameter-types))})
+                members))))))
 
 #?(:clj
    (defn ^:no-doc -method-imp
      "Generates an implementation for the specified method.
      {:imp-sym ...
       :imp-value ...
-      :method-sym ...
-      :arglists ...}
+      :signatures ({:method-sym ... :arglist ...} ...)}
 
-      If protocol is a Java interface then method will be have type hints which is needed
-      to support overloaded methods."
+      If protocol is a Java interface then method signature(s) will have type hints (it is needed
+      to support overloaded methods)."
      [form env ctx obj-id-sym protocol-sym
       [method-sym _fake-type_ _config_ :as method-spec]]
      (let [imp-sym (gensym "imp")
@@ -601,21 +591,19 @@ any?
                        obj-id-sym
                        protocol-sym
                        method-spec)
-           arglists (-method-arglists env protocol-sym method-sym)]
-       (assert (seq arglists) (str "Unknown method: " protocol-sym "/" method-sym))
+           signatures (-method-signatures env protocol-sym method-sym)]
+       (assert (seq signatures) (str "Unknown method: " protocol-sym "/" method-sym))
 
        {:imp-sym    imp-sym
         :imp-value  imp-value
-        :method-sym (-hinted-method-sym env protocol-sym method-sym)
-        :arglists   arglists})))
+        :signatures signatures})))
 
 #?(:clj
    (defn ^:no-doc -method-imps-for-protocol
      "Returns a list of maps:
       ({:imp-sym ...
        :imp-value ...
-       :method-sym ...
-       :arglists ...} ...)"
+       :signatures ...} ...)"
      [form env ctx obj-id-sym protocol-sym method-specs]
      (map (partial -method-imp form env ctx obj-id-sym protocol-sym) method-specs)))
 
@@ -624,14 +612,12 @@ any?
      "Produces a helper map:
      {protocol-sym -> [{:imp-sym ...
                         :imp-value ...
-                        :method-sym ...
-                        :arglists [[...] ...]}
-                       ...]
-      ...}"
+                        :signatures ...} ...] ...}"
      [form env ctx obj-id-sym protocol-method-specs]
      (into {}
-           (map (fn [[p s]]
-                  (vector p (-method-imps-for-protocol form env ctx obj-id-sym p s)))
+           (map (fn [[protocol-sym method-specs]]
+                  (vector protocol-sym
+                          (-method-imps-for-protocol form env ctx obj-id-sym protocol-sym method-specs)))
                 protocol-method-specs))))
 
 #?(:clj
@@ -645,11 +631,11 @@ any?
 
 #?(:clj
    (defn ^:no-doc -emit-method-specs
-     [{:keys [method-sym arglists imp-sym] :as _method-imp_}]
-     (map (fn [arglist]
+     [{:keys [imp-sym signatures] :as _method-imp_}]
+     (map (fn [{:keys [method-sym arglist]}]
             `(~method-sym ~arglist
                (~imp-sym ~@(map -remove-meta arglist))))
-          arglists)))
+          signatures)))
 
 #?(:clj
    (defn ^:no-doc -emit-protocol-specs
@@ -695,7 +681,7 @@ any?
 
 #?(:clj
    (defmacro ^:no-doc -reify-fake*
-     [ctx form env nice? & specs]
+     [ctx form env debug? nice? & specs]
      (let [obj-id-sym (gensym "obj-id")
            obj-sym (gensym "obj")
            parsed-specs (-parse-specs specs)
@@ -703,14 +689,17 @@ any?
                                    (-add-nice-specs env parsed-specs)
                                    parsed-specs)
            protocol-method-imps (-generate-protocol-method-imps form env ctx obj-id-sym protocol-method-specs)
-           r `(let [~obj-id-sym (gensym "obj-id")
-                    ~@(-emit-imp-bindings protocol-method-imps)
-                    ~obj-sym (reify ~@(-emit-specs protocol-method-imps))]
-                (-register-obj-id ~ctx ~obj-sym ~obj-id-sym)
-                ~obj-sym)]
-       ;(set! *print-meta* true)
-       ;(PP r) (PP "--")
-       r)))
+           result `(let [~obj-id-sym (gensym "obj-id")
+                         ~@(-emit-imp-bindings protocol-method-imps)
+                         ~obj-sym (reify ~@(-emit-specs protocol-method-imps))]
+                     (-register-obj-id ~ctx ~obj-sym ~obj-id-sym)
+                     ~obj-sym)]
+       (when debug?
+         (set! *print-meta* true)
+         (PP result)
+         (PP "--")
+         (set! *print-meta* false))
+       result)))
 
 #?(:clj
    (defmacro reify-fake*
@@ -718,7 +707,13 @@ any?
 
      `form` is needed to correctly determine fake positions, `env` is needed to determine target language."
      [ctx form env & specs]
-     `(-reify-fake* ~ctx ~form ~env false ~@specs)))
+     `(-reify-fake* ~ctx ~form ~env false false ~@specs)))
+
+#?(:clj
+   (defmacro ^:no-doc -reify-fake-debug*
+     "The same as reify-fake* but with logging to console turned on. Was added for debugging."
+     [ctx form env & specs]
+     `(-reify-fake* ~ctx ~form ~env true false ~@specs)))
 
 #?(:clj
    (defmacro reify-nice-fake*
@@ -726,7 +721,7 @@ any?
 
      `form` is needed to correctly determine fake positions, `env` is needed to determine target language."
      [ctx form env & specs]
-     `(-reify-fake* ~ctx ~form ~env true ~@specs)))
+     `(-reify-fake* ~ctx ~form ~env false true ~@specs)))
 
 #?(:clj
    (defmacro reify-fake

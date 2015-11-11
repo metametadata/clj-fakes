@@ -6,8 +6,9 @@
                [clj-fakes.core :as f]
                [clj-fakes.context :as fc]
                [unit.fixtures.protocols :as p :refer [AnimalProtocol]]
-               ;[unit.fixtures.java ]
-               )]
+               )
+             (:import [interop InterfaceFixture])
+             ]
       :cljs [(:require
                [cljs.test :refer-macros [is testing deftest]]
                [clj-fakes.core :as f :include-macros true]
@@ -234,6 +235,29 @@
                                            [my-char-seq] expected2]))]
          (is (= expected1 (.append foo \a)))
          (is (= expected2 (.append foo my-char-seq)))))))
+
+#?(:clj
+   (f/-deftest
+     "overloaded java interface method with different return types can be reified with optional fake"
+     (f/with-fakes
+       (let [foo (f/reify-fake
+                   interop.InterfaceFixture
+                   (overloadedMethodWithDifferentReturnTypes :optional-fake [[\a] 100
+                                                                             [\b] 200
+                                                                             [314] 300
+                                                                             [3.14] 400
+                                                                             ["bar"] "500"
+                                                                             [] "600"
+                                                                             [true] "700"
+                                                                             [100 200] true]))]
+         (is (= 100 (.overloadedMethodWithDifferentReturnTypes foo \a)))
+         (is (= 200 (.overloadedMethodWithDifferentReturnTypes foo \b)))
+         (is (= 300 (.overloadedMethodWithDifferentReturnTypes foo 314)))
+         (is (= 400 (.overloadedMethodWithDifferentReturnTypes foo 3.14)))
+         (is (= "500" (.overloadedMethodWithDifferentReturnTypes foo "bar")))
+         (is (= "600" (.overloadedMethodWithDifferentReturnTypes foo)))
+         (is (= "700" (.overloadedMethodWithDifferentReturnTypes foo true)))
+         (is (= true (.overloadedMethodWithDifferentReturnTypes foo 100 200)))))))
 
 ; TODO:
 ;#?(:clj

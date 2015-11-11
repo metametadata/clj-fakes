@@ -368,12 +368,12 @@ which features are currently supported:
 Feature                                    | `reify-fake` | `reify-nice-fake` 
 -                                          | -            | -            
 Fake protocol method (explicitly)          | Yes          | Yes 
-Fake protocol method (auto)                | -            | Yes
-Support overloaded protocol methods        | Yes          | Yes
 Fake Java interface method (explicitly)    | Yes          | Yes
-Fake Java interface method (auto)          | -            | No
 Fake Object method (explicitly)            | Yes          | Yes
+Fake protocol method (auto)                | -            | Yes
+Fake Java interface method (auto)          | -            | No
 Fake Object method (auto)                  | -            | No
+Support overloaded methods                 | Yes          | Yes
 Object can be reified with any new methods | No           | No
 
 ## Syntax

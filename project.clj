@@ -12,7 +12,7 @@
             [codox "0.8.13"]]
 
   :source-paths ["src" "test"]
-  :java-source-paths ["test/fixtures/java"]
+  :java-source-paths ["test/unit/fixtures/interop"]
 
   :clean-targets ^{:protect false} [:target-path "resources/public/js/"]
 

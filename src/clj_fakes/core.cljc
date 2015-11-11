@@ -108,6 +108,12 @@ Also see [[with-fakes]] macro."}
      `(reify-fake* ~&form ~&env ~@specs)))
 
 #?(:clj
+   (defmacro ^:no-doc reify-fake-debug
+     "Helper for debugging."
+     [& specs]
+     `(fc/-reify-fake-debug* *context* ~&form ~&env ~@specs)))
+
+#?(:clj
    (defmacro reify-nice-fake*
      [form env & specs]
      `(fc/reify-nice-fake* *context* ~form ~env ~@specs)))

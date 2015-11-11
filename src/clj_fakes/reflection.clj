@@ -56,7 +56,7 @@
     ; Clojure
     (:name protocol-method)))
 
-(defn -protocol-method-argslist
+(defn -protocol-method-arglist
   "Portable reflection helper."
   [env protocol-method]
   (if (-cljs-env? env)
