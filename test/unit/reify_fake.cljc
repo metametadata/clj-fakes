@@ -224,11 +224,15 @@
    (f/-deftest
      "java.lang.Appendable/append (overloaded method) can be reified with optional fake"
      (f/with-fakes
-       (let [expected (new StringBuffer)
+       (let [my-char-seq "123"
+             expected1 (new StringBuffer)
+             expected2 (new StringBuffer)
              foo (f/reify-fake
                    java.lang.Appendable
-                   (append :optional-fake [[\a] expected]))]
-         (is (= expected (.append foo \a)))))))
+                   (append :optional-fake [[\a] expected1
+                                           [my-char-seq] expected2]))]
+         (is (= expected1 (.append foo \a)))
+         (is (= expected2 (.append foo my-char-seq)))))))
 
 ; TODO:
 ;#?(:clj
