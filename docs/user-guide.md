@@ -647,6 +647,7 @@ Some alternative frameworks with isolation capabilities:
 
 * [shrubbery](https://github.com/bguthrie/shrubbery)
 * [clj-mock](https://github.com/EchoTeam/clj-mock)
+* [conjure](https://github.com/amitrathore/conjure)
 * [Midje](https://github.com/marick/Midje)
 * [speclj](https://github.com/slagyr/speclj)
 
