@@ -22,7 +22,23 @@ Clojure 1.7.0 and/or ClojureScript 1.7.28 or higher.
 Add this to your dependencies in project.clj:
 
 ```clj
-[clj-fakes "0.3.0-SNAPSHOT"]
+[clj-fakes "0.3.0"]
+```
+
+Require framework namespace in your unit test source file:
+
+```clj
+; Clojure
+(ns unit.example
+  (:require
+    ; ...
+    [clj-fakes.core :as f]))
+
+; ClojureScript
+(ns unit.example
+  (:require
+    ; ...
+    [clj-fakes.core :as f :include-macros true]))
 ```
 
 ## Examples
@@ -76,7 +92,12 @@ Add this to your dependencies in project.clj:
 ```
 
 ## Documentation
-More documentation can be found at [the project site](http://metametadata.github.io/clj-fakes/).
+More documentation can be found at [the project site](http://metametadata.github.io/clj-fakes/):
+
+* [Quickstart](http://metametadata.github.io/clj-fakes/quickstart/)
+* [User Guide](http://metametadata.github.io/clj-fakes/user-guide/)
+* [API Reference](http://metametadata.github.io/clj-fakes/api/)
+* [Developer Guide](http://metametadata.github.io/clj-fakes/dev-guide/)
 
 ## License
 Copyright © 2015 Yuri Govorushchenko.
