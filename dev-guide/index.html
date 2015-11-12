@@ -128,9 +128,8 @@
 
 <h1 id="tests">Tests</h1>
 <p>Autorun Clojure tests: <code>lein test-refresh</code></p>
-<p>Run ClojureScript tests: <code>lein clean &amp;&amp; lein doo phantom test once</code>
+<p>Run ClojureScript tests: <code>lein clean &amp;&amp; lein doo rhino test once</code>
 (clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)</p>
-<p>Autorun ClojureScript tests: <code>fswatch -o ./src ./test | xargs -n1 -I{} sh -c 'echo wait.... &amp;&amp; lein clean &amp;&amp; lein doo rhino test once'</code></p>
 <h1 id="documentation">Documentation</h1>
 <p>Project uses <a href="http://www.mkdocs.org/">MkDocs</a> to generate documentation static site and 
 <a href="https://github.com/weavejester/codox">Codox</a> for API reference.</p>
