@@ -152,12 +152,12 @@
         }, 
         {
             "location": "/dev-guide/", 
-            "text": "Tests\n\n\nAutorun Clojure tests: \nlein test-refresh\n\n\nRun ClojureScript tests: \nlein clean \n lein doo rhino test once\n\n(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)\n\n\nDocumentation\n\n\nProject uses \nMkDocs\n to generate documentation static site and \n\nCodox\n for API reference.\n\n\nServe site locally with automatic build: \nmkdocs serve\n\n\nBuild site and API docs into site folder: \nmkdocs build --clean \n lein doc\n\n\nDeploying\n\n\nDeploy to Clojars: \nlein deploy clojars\n\n\nDeploy site to gh-pages branch: \nghp-import -p site", 
+            "text": "Tests\n\n\nAutorun Clojure tests: \nlein test-refresh\n\n\nRun ClojureScript tests: \nlein clean \n lein doo rhino test once\n\n(clean is needed because there's an \nissue\n: plugin does not seem to recompile macros)\n\n\nDocumentation\n\n\nProject uses \nMkDocs\n to generate documentation static site and \n\nCodox\n for API reference.\n\n\nServe site locally with automatic build: \nmkdocs serve\n\n\nBuild site and API docs into site folder: \nmkdocs build --clean \n lein doc\n\n\nDeploying\n\n\nDeploy to Clojars: \nlein deploy clojars\n\n\nDeploy site to gh-pages branch: \nghp-import -p site", 
             "title": "Developer Guide"
         }, 
         {
             "location": "/dev-guide/#tests", 
-            "text": "Autorun Clojure tests:  lein test-refresh  Run ClojureScript tests:  lein clean   lein doo rhino test once \n(clean is needed because there's an issue: ClojureScript plugin does not seem to recompile macros)", 
+            "text": "Autorun Clojure tests:  lein test-refresh  Run ClojureScript tests:  lein clean   lein doo rhino test once \n(clean is needed because there's an  issue : plugin does not seem to recompile macros)", 
             "title": "Tests"
         }, 
         {
