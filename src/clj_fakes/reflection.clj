@@ -1,13 +1,18 @@
 (ns clj-fakes.reflection
   (:require [clj-fakes.macro :refer :all]
-            [cljs.analyzer :as a]
             [clojure.reflect :as reflect]))
+
+(defn -cljs-resolve
+  "Alternative way to call cljs.analyzer/resolve-var.
+  It's needed to be able to compile the library in the Clojure-only project."
+  [env sym]
+  ((ns-resolve 'cljs.analyzer 'resolve-var) env sym))
 
 (defn -resolves?
   [env sym]
   (if (-cljs-env? env)
     ; ClojureScript
-    (not (nil? (:meta (a/resolve-var env sym))))
+    (not (nil? (:meta (-cljs-resolve env sym))))
 
     ; Clojure
     (not (nil? (resolve sym)))))
@@ -17,7 +22,7 @@
   [env protocol-sym]
   (if (-cljs-env? env)
     ; ClojureScript
-    (let [protocol (a/resolve-var env protocol-sym)]
+    (let [protocol (-cljs-resolve env protocol-sym)]
       (when-not (nil? (-> protocol :meta :protocol-info))
         protocol))
 

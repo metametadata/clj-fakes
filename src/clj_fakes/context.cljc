@@ -4,7 +4,6 @@
     #?@(:clj  [
             [clj-fakes.reflection :as r]
             [clojure.pprint :as pprint]
-            [cljs.analyzer :as a]
             [clj-fakes.macro :refer :all]
                ]
         :cljs [[cljs.pprint :as pprint]
@@ -460,7 +459,7 @@ any?
      [env protocol-sym method-sym]
      (if (-cljs-env? env)
        ; ClojureScript
-       (let [protocol-var (a/resolve-var env protocol-sym)]
+       (let [protocol-var (r/-cljs-resolve env protocol-sym)]
          (symbol (namespace (:name protocol-var)) (name method-sym)))
 
        ; Clojure

@@ -1,10 +1,10 @@
-(defproject clj-fakes "0.3.0"
+(defproject clj-fakes "0.4.0-SNAPSHOT"
   :description "An isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier."
   :url "https://github.com/metametadata/clj-fakes"
   :license {:name "MIT" :url "http://opensource.org/licenses/MIT"}
 
   :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/clojurescript "1.7.28"]]
+                 [org.clojure/clojurescript "1.7.28" :scope "provided"]]
 
   :plugins [[lein-cljsbuild "1.0.6"]
             [com.jakemccrary/lein-test-refresh "0.11.0"]
