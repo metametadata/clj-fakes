@@ -4,17 +4,17 @@
   :license {:name "MIT" :url "http://opensource.org/licenses/MIT"}
 
   :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/clojurescript "1.7.122"]]
+                 [org.clojure/clojurescript "1.7.28"]]
 
   :plugins [[lein-cljsbuild "1.0.6"]
             [com.jakemccrary/lein-test-refresh "0.11.0"]
-            [lein-doo "0.1.6-SNAPSHOT"]
+            [lein-doo "0.1.6"]
             [codox "0.8.13"]]
 
   :source-paths ["src" "test"]
   :java-source-paths ["test/unit/fixtures/interop"]
 
-  :clean-targets ^{:protect false} [:target-path "resources/public/js/"]
+  :clean-targets ^{:protect false} [:target-path "resources/public/js/" "out"]
 
   :test-refresh {:notify-command ["terminal-notifier" "-title" "Tests" "-message"]
                  :quiet          true}
