@@ -678,6 +678,11 @@ and also records its calls:</p>
 in all threads 
 (underlying implementation uses 
 <a href="https://clojuredocs.org/clojure.core/alter-var-root"><code>alter-var-root</code></a>/<a href="https://github.com/cljsinfo/cljs-api-docs/blob/catalog/refs/special/setBANG.md"><code>set!</code></a>).</p>
+<p>Starting from Clojure 1.8, if <a href="http://clojure.org/reference/compilation#directlinking">direct linking</a> is enabled:</p>
+<ul>
+<li>you have to add <code>^:redef</code> metadata key to functions which you patch;</li>
+<li>you can't patch core functions (e.g. <code>println</code>).</li>
+</ul>
 <h1 id="references">References</h1>
 <p>The API was mainly inspired by <a href="http://www.jmock.org/">jMock</a> and 
 <a href="https://docs.python.org/3/library/unittest.mock.html">unittest.mock</a> frameworks with
