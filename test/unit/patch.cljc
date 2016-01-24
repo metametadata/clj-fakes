@@ -84,7 +84,7 @@
     (is (= 123 (funcs/sum 2 3)))))
 
 (f/-deftest
-  "println can be patched"
+  "println can be patched (this test will fail in Clojure 1.8 with enabled direct linking)"
   (f/with-fakes
     (f/patch! #'println (constantly 123))
     (is (= 123 (println "YOU SHOULDN'T SEE IT")))))

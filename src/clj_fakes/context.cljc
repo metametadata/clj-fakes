@@ -71,7 +71,7 @@ any?
 
     ImplicitArgMatcher
     (arg-matches-implicitly? [_ _arg_] true)
-    (arg-matcher->str [this] "<any?>")))
+    (arg-matcher->str [_] "<any?>")))
 
 (defn ^:no-doc -arg-matches?
   [matcher arg]
@@ -659,16 +659,18 @@ any?
          nice-specs))))
 
 #?(:clj
-   (defn ^:no-doc -not-yet-in-specs [specs [nice-method-sym :as _spec_]]
+   (defn ^:no-doc -not-yet-in-specs?
+     [specs [nice-method-sym :as _spec_]]
      (nil?
        (-find-first (fn [[method-sym :as _spec_]]
                       (= method-sym nice-method-sym))
                     specs))))
 
 #?(:clj
-   (defn ^:no-doc -add-nice-specs-for-protocol [env [protocol-sym parsed-specs :as _parsed_spec_]]
+   (defn ^:no-doc -add-nice-specs-for-protocol
+     [env [protocol-sym parsed-specs :as _parsed_spec_]]
      (let [nice-specs (-nice-specs env protocol-sym)
-           auto-specs (filter (partial -not-yet-in-specs parsed-specs) nice-specs)
+           auto-specs (filter (partial -not-yet-in-specs? parsed-specs) nice-specs)
            new-specs (concat parsed-specs auto-specs)]
        [protocol-sym new-specs])))
 
@@ -764,8 +766,8 @@ any?
   "Raises an exception when some fake was never called after its creation."
   [ctx]
   {:pre [ctx]}
-  (if-let [descriptions (not-empty (map (partial -fake->str ctx "non-optional fake")
-                                        (:unused-fakes @ctx)))]
+  (when-let [descriptions (not-empty (map (partial -fake->str ctx "non-optional fake")
+                                          (:unused-fakes @ctx)))]
     (throw (ex-info (str "Self-test: no call detected for:\n"
                          (string/join "\n" descriptions))
                     {}))))
@@ -774,8 +776,8 @@ any?
   "Raises an exception if some recorded fake was never marked checked, i.e. you forgot to assert its calls."
   [ctx]
   {:pre [ctx]}
-  (if-let [descriptions (not-empty (map (partial -fake->str ctx "recorded fake")
-                                        (:unchecked-fakes @ctx)))]
+  (when-let [descriptions (not-empty (map (partial -fake->str ctx "recorded fake")
+                                          (:unchecked-fakes @ctx)))]
     (throw (ex-info (str "Self-test: no check performed on:\n"
                          (string/join "\n" descriptions))
                     {}))))

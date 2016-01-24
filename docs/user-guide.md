@@ -637,6 +637,11 @@ in all threads
 (underlying implementation uses 
 [`alter-var-root`](https://clojuredocs.org/clojure.core/alter-var-root)/[`set!`](https://github.com/cljsinfo/cljs-api-docs/blob/catalog/refs/special/setBANG.md)).
 
+Starting from Clojure 1.8, if [direct linking](http://clojure.org/reference/compilation#directlinking) is enabled:
+
+* you have to add `^:redef` metadata key to functions which you patch;
+* you can't patch core functions (e.g. `println`).
+
 # References
 The API was mainly inspired by [jMock](http://www.jmock.org/) and 
 [unittest.mock](https://docs.python.org/3/library/unittest.mock.html) frameworks with
