@@ -9,7 +9,7 @@
   :plugins [[lein-cljsbuild "1.0.6"]
             [com.jakemccrary/lein-test-refresh "0.11.0"]
             [lein-doo "0.1.6"]
-            [codox "0.8.13"]]
+            [lein-codox "0.9.4"]]
 
   :source-paths ["src" "test"]
   :java-source-paths ["test/unit/fixtures/interop"]
@@ -25,11 +25,9 @@
                                   :main          'unit.runner
                                   :optimizations :whitespace}}}}
 
-  :codox {
-          :src-dir-uri               "https://github.com/metametadata/clj-fakes/blob/master/"
-          :src-linenum-anchor-prefix "L"
-          :sources                   ["src"]
-          :exclude                   [clj-fakes.macro clj-fakes.reflection]
-          :output-dir                "site/api"
-          :defaults                  {:doc/format :markdown}
-          :project                   {:name "clj-fakes" :description ""}})
+  :codox {:source-uri   "https://github.com/metametadata/clj-fakes/blob/master/{filepath}#L{line}"
+          :source-paths ["src"]
+          :namespaces   [clj-fakes.core clj-fakes.context]
+          :output-path  "site/api"
+          :metadata     {:doc/format :markdown}
+          :project      {:name "clj-fakes" :description ""}})

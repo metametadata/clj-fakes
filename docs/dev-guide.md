@@ -12,7 +12,7 @@ Project uses [MkDocs](http://www.mkdocs.org/) to generate documentation static s
 
 Serve site locally with automatic build: `mkdocs serve`
 
-Build site and API docs into site folder: `mkdocs build --clean && lein doc`
+Build site and API docs into site folder: `mkdocs build --clean && lein codox`
 
 # Deploying
 
