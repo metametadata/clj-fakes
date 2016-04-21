@@ -7,7 +7,7 @@ Run ClojureScript tests: `lein clean && lein doo rhino test once`
 
 # Documentation
 
-Project uses [MkDocs](http://www.mkdocs.org/) to generate documentation static site and 
+Project uses [MkDocs](http://www.mkdocs.org/) with [Cinder](https://github.com/chrissimpkins/cinder) theme to generate documentation static site and 
 [Codox](https://github.com/weavejester/codox) for API reference.
 
 Serve site locally with automatic build: `mkdocs serve`
