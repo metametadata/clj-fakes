@@ -4,22 +4,23 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">   
-    <link rel="shortcut icon" href="../img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Project documentation for clj-fakes framework.">   
+    <link rel="shortcut icon" href="./img/favicon.ico">
 
-    <title>Quickstart - clj-fakes</title>
+    <title>clj-fakes</title>
 
-    <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+    <link href="./css/bootstrap-custom.min.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.018/css/hack.min.css">
     <link href='//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700,700italic&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
     <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
-    <link href="../css/base.css" rel="stylesheet">
-    <link href="../css/cinder.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/highlight.css">
+    <link href="./css/base.css" rel="stylesheet">
+    <link href="./css/cinder.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/highlight.css">
 
 
-    <link href="../custom.css" rel="stylesheet">
+    <link href="./custom.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -57,7 +58,7 @@
             
 
             <!-- Main title -->
-            <a class="navbar-brand" href="..">clj-fakes</a>
+            <a class="navbar-brand" href=".">clj-fakes</a>
         </div>
 
         <!-- Expanded navigation -->
@@ -68,31 +69,31 @@
                 
                 
                     <li >
-                        <a href="..">Home</a>
-                    </li>
-                
-                
-                
-                    <li class="active">
-                        <a href="./">Quickstart</a>
+                        <a href=".">Home</a>
                     </li>
                 
                 
                 
                     <li >
-                        <a href="../user-guide/">User Guide</a>
+                        <a href="quickstart/">Quickstart</a>
                     </li>
                 
                 
                 
                     <li >
-                        <a href="../api/">API Reference</a>
+                        <a href="user-guide/">User Guide</a>
                     </li>
                 
                 
                 
                     <li >
-                        <a href="../dev-guide/">Developer Guide</a>
+                        <a href="api/">API Reference</a>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="dev-guide/">Developer Guide</a>
                     </li>
                 
                 
@@ -106,13 +107,13 @@
                     </a>
                 </li>
                 
-                    <li >
-                        <a rel="next" href="..">
+                    <li class="disabled">
+                        <a rel="next" >
                             <i class="fa fa-arrow-left"></i> Previous
                         </a>
                     </li>
-                    <li >
-                        <a rel="prev" href="../user-guide/">
+                    <li class="disabled">
+                        <a rel="prev" >
                             Next <i class="fa fa-arrow-right"></i>
                         </a>
                     </li>
@@ -134,56 +135,16 @@
 
     <div class="container">
         
-        <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-    
-        <li class="first-level active"><a href="#quickstart">Quickstart</a></li>
-        
-    
-    </ul>
-</div></div>
-        <div class="col-md-9" role="main">
 
-<h1 id="quickstart">Quickstart</h1>
-<p>1) I assume your Clojure/ClojureScript project is automated using <a href="http://leiningen.org/">Leiningen</a> and 
-already has unit tests implemented with some unit testing framework. </p>
-<p>I will use a built-in
-<a href="http://clojure.github.io/clojure/clojure.test-api.html">clojure.test/cljs.test</a> 
-framework in this documentation. To learn how to use it:</p>
-<ul>
-<li>in Clojure: see <a href="https://github.com/technomancy/leiningen/blob/master/doc/TUTORIAL.md#tests">Leiningen tutorial</a> and
- <a href="https://github.com/jakemcc/lein-test-refresh">lein-test-refresh</a> plugin;</li>
-<li>in ClojureScript: see <a href="https://github.com/clojure/clojurescript/wiki/Testing">wiki</a> and 
-<a href="https://github.com/bensu/doo">doo</a> plugin for running unit tests.</li>
-</ul>
-<p>2) Add framework dependency into <code>project.clj</code> (the framework is hosted on <a href="https://clojars.org/clj-fakes">Clojars</a>):</p>
-<pre><code class="clj">:dependencies [...
-               [clj-fakes &quot;&lt;insert here the latest version from Clojars&gt;&quot;]]
-</code></pre>
+    <div class="row-fluid">
+      <div id="main-content" class="span12">
+        <h1 id="404-page-not-found" style="text-align: center">404</h1>
+        <p style="text-align: center"><strong>Page not found</strong></p>
+        <p style="text-align: center"><a href=".">Home</a></p>
+      </div>
+    </div>
 
-<p>3) Require framework namespace in your unit test source file:</p>
-<pre><code class="clj">; Clojure
-(ns unit.example
-  (:require
-    ; ...
-    [clojure.test :refer :all]
-    [clj-fakes.core :as f]))
 
-; ClojureScript
-(ns unit.example
-  (:require
-    ; ...
-    [cljs.test :refer-macros [is deftest]]
-    [clj-fakes.core :as f :include-macros true]))
-</code></pre>
-
-<p>4) Now you can write a simple unit test which creates and calls a fake function:</p>
-<pre><code class="clj">(deftest fakes-work
-  (f/with-fakes
-    (let [hello (f/fake [[] &quot;hello, world&quot;])]
-      (is (= &quot;hello, world&quot; (hello))))))
-</code></pre></div>
-        
     </div>
 
     <footer class="col-md-12 text-center">
@@ -192,15 +153,15 @@ framework in this documentation. To learn how to use it:</p>
         <small>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p></small>
     </footer>
 
-    <script src="../js/jquery-1.10.2.min.js"></script>
-    <script src="../js/bootstrap-3.0.3.min.js"></script>
-    <script src="../js/highlight.pack.js"></script>
+    <script src="./js/jquery-1.10.2.min.js"></script>
+    <script src="./js/bootstrap-3.0.3.min.js"></script>
+    <script src="./js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
     <script>
-    var base_url = '..';
+    var base_url = '.';
     </script>
-    <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
-    <script src="../js/base.js"></script>
+    <script data-main="./mkdocs/js/search.js" src="./mkdocs/js/require.js"></script>
+    <script src="./js/base.js"></script>
 
     <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
         <div class="modal-dialog">
