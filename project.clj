@@ -3,7 +3,7 @@
   :url "https://github.com/metametadata/clj-fakes"
   :license {:name "MIT" :url "http://opensource.org/licenses/MIT"}
 
-  :dependencies [[org.clojure/clojure "1.7.0"]
+  :dependencies [[org.clojure/clojure "1.7.0" :scope "provided"]
                  [org.clojure/clojurescript "1.7.28" :scope "provided"]]
 
   :plugins [[lein-cljsbuild "1.0.6"]
@@ -29,5 +29,4 @@
           :source-paths ["src"]
           :namespaces   [clj-fakes.core clj-fakes.context]
           :output-path  "site/api"
-          :metadata     {:doc/format :markdown}
-          :project      {:name "clj-fakes" :description ""}})
+          :metadata     {:doc/format :markdown}})
