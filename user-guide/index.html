@@ -351,7 +351,7 @@ otherwise, <a href="#unchecked-fakes">self-test</a> will raise an exception:</p>
 <pre><code class="clj">(f/with-fakes
   (let [foo (f/recorded-fake)]
     (foo)
-    (f/was-called foo []))) ; =&gt; ok, self-test will pass
+    (is (f/was-called foo [])))) ; =&gt; ok, self-test will pass
 </code></pre>
 
 <pre><code class="clj">(f/with-fakes
