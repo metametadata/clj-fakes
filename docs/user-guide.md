@@ -369,7 +369,7 @@ Feature                                    | `reify-fake` | `reify-nice-fake`
 -                                          | -            | -            
 Fake protocol method (explicitly)          | Yes          | Yes 
 Fake Java interface method (explicitly)    | Yes          | Yes
-Fake Object method (explicitly)            | Yes          | Yes
+Fake Object method (explicitly)            | Clojure: Yes, ClojureScript: No | Clojure: Yes, ClojureScript: No
 Fake protocol method (auto)                | -            | Yes
 Fake Java interface method (auto)          | -            | No
 Fake Object method (auto)                  | -            | No
