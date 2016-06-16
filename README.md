@@ -4,15 +4,17 @@ clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating
 [![Clojars Project](https://img.shields.io/clojars/v/clj-fakes.svg)](https://clojars.org/clj-fakes)
 
 ## Features
-* All test doubles are named "fakes" to simplify terminology
+* All test doubles are named "fakes" to simplify terminology.
 * Fakes can be created for:
-  * protocol and Java interface instances
-  * functions
-* "Nice" and "strict" protocol fakes are supported
-* Monkey patching is supported to fake implicit dependencies
-* Self-testing: automatically checks for unused fakes
-* Test runner agnostic
-* Arrange-Act-Assert style testing
+    * protocol and Java interface instances
+    * functions
+* "Nice" and "strict" protocol fakes are supported.
+* Monkey patching is supported to fake implicit dependencies.
+* Functions for asserting recorded calls.
+* Self-testing: automatically checks for unused fakes.
+* Informative error messages.
+* Test runner agnostic.
+* Arrange-Act-Assert style testing.
 
 ## Requirements
 
