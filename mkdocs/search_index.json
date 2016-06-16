@@ -2,23 +2,58 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Introduction\n\n\nclj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.\n\n\nFeatures\n\n\n\n\nAll test doubles are named \"fakes\" to simplify terminology\n\n\nFakes can be created for:\n\n\nprotocol and Java interface instances\n\n\nfunctions\n\n\n\n\n\n\n\"Nice\" and \"strict\" protocol fakes are supported\n\n\nMonkey patching is supported to fake implicit dependencies\n\n\nSelf-testing: automatically checks for unused fakes\n\n\nTest runner agnostic\n\n\nArrange-Act-Assert style testing\n\n\n\n\nRequirements\n\n\nClojure 1.7.0 and/or ClojureScript 1.7.28 or higher.", 
-            "title": "Home"
+            "text": "clj-fakes\n\n\nclj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.\n\n\n\n\nFeatures\n\n\n\n\nAll test doubles are named \"fakes\" to simplify terminology\n\n\nFakes can be created for:\n\n\nprotocol and Java interface instances\n\n\nfunctions\n\n\n\"Nice\" and \"strict\" protocol fakes are supported\n\n\nMonkey patching is supported to fake implicit dependencies\n\n\nSelf-testing: automatically checks for unused fakes\n\n\nTest runner agnostic\n\n\nArrange-Act-Assert style testing\n\n\n\n\nRequirements\n\n\nClojure 1.7.0 and/or ClojureScript 1.7.28 or higher.\n\n\nInstallation\n\n\nAdd this to your dependencies in project.clj:\n\n\n[clj-fakes \n0.4.0\n]\n\n\n\n\nRequire framework namespace in your unit test source file:\n\n\n; Clojure\n(ns unit.example\n  (:require\n    ; ...\n    [clj-fakes.core :as f]))\n\n; ClojureScript\n(ns unit.example\n  (:require\n    ; ...\n    [clj-fakes.core :as f :include-macros true]))\n\n\n\n\nExamples\n\n\nFake protocol instance with recorded method (aka mock object)\n\n\n(defprotocol AnimalProtocol\n  (speak [this name]))\n; ...\n\n(deftest example\n  (f/with-fakes\n    ; create fake instance of specified protocol\n    (let [cow (f/reify-fake p/AnimalProtocol\n                            ; ask framework to record method calls\n                            (speak :recorded-fake))]\n      ; call method on fake object\n      (p/speak cow \nBob\n)\n\n      ; assert that method was called with specified args\n      (is (f/method-was-called p/speak cow [\nBob\n])))))\n\n\n\n\nPatch a function\n\n\n(deftest example\n  (f/with-fakes\n    (f/patch! #'funcs/sum (f/fake [[1 2] \nfoo\n\n                                   [3 4] \nbar\n]))\n    (is (= \nfoo\n (funcs/sum 1 2)))\n    (is (= \nbar\n (funcs/sum 3 4))))\n\n  ; patching is reverted on exiting with-fakes block\n  (is (= 3 (funcs/sum 1 2))))\n\n\n\n\nSelf-tests\n\n\n(f/with-fakes\n  (f/fake [f/any? nil]))\n; will raise \nSelf-test: no call detected for: non-optional fake ...\n\n\n\n\n\n(f/with-fakes\n  (f/recorded-fake))\n; will raise \nSelf-test: no check performed on: recorded fake ...\n\n\n\n\n\nDocumentation\n\n\nMore documentation can be found at \nthe project site\n:\n\n\n\n\nQuickstart\n\n\nUser Guide\n\n\nAPI Reference\n\n\nDeveloper Guide\n\n\n\n\nLicense\n\n\nCopyright \u00a9 2015 Yuri Govorushchenko.\n\n\nReleased under an MIT license.", 
+            "title": "Readme"
         }, 
         {
-            "location": "/#introduction", 
+            "location": "/#clj-fakes", 
             "text": "clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.", 
-            "title": "Introduction"
+            "title": "clj-fakes"
         }, 
         {
             "location": "/#features", 
-            "text": "All test doubles are named \"fakes\" to simplify terminology  Fakes can be created for:  protocol and Java interface instances  functions    \"Nice\" and \"strict\" protocol fakes are supported  Monkey patching is supported to fake implicit dependencies  Self-testing: automatically checks for unused fakes  Test runner agnostic  Arrange-Act-Assert style testing", 
+            "text": "All test doubles are named \"fakes\" to simplify terminology  Fakes can be created for:  protocol and Java interface instances  functions  \"Nice\" and \"strict\" protocol fakes are supported  Monkey patching is supported to fake implicit dependencies  Self-testing: automatically checks for unused fakes  Test runner agnostic  Arrange-Act-Assert style testing", 
             "title": "Features"
         }, 
         {
             "location": "/#requirements", 
             "text": "Clojure 1.7.0 and/or ClojureScript 1.7.28 or higher.", 
             "title": "Requirements"
+        }, 
+        {
+            "location": "/#installation", 
+            "text": "Add this to your dependencies in project.clj:  [clj-fakes  0.4.0 ]  Require framework namespace in your unit test source file:  ; Clojure\n(ns unit.example\n  (:require\n    ; ...\n    [clj-fakes.core :as f]))\n\n; ClojureScript\n(ns unit.example\n  (:require\n    ; ...\n    [clj-fakes.core :as f :include-macros true]))", 
+            "title": "Installation"
+        }, 
+        {
+            "location": "/#examples", 
+            "text": "", 
+            "title": "Examples"
+        }, 
+        {
+            "location": "/#fake-protocol-instance-with-recorded-method-aka-mock-object", 
+            "text": "(defprotocol AnimalProtocol\n  (speak [this name]))\n; ...\n\n(deftest example\n  (f/with-fakes\n    ; create fake instance of specified protocol\n    (let [cow (f/reify-fake p/AnimalProtocol\n                            ; ask framework to record method calls\n                            (speak :recorded-fake))]\n      ; call method on fake object\n      (p/speak cow  Bob )\n\n      ; assert that method was called with specified args\n      (is (f/method-was-called p/speak cow [ Bob ])))))", 
+            "title": "Fake protocol instance with recorded method (aka mock object)"
+        }, 
+        {
+            "location": "/#patch-a-function", 
+            "text": "(deftest example\n  (f/with-fakes\n    (f/patch! #'funcs/sum (f/fake [[1 2]  foo \n                                   [3 4]  bar ]))\n    (is (=  foo  (funcs/sum 1 2)))\n    (is (=  bar  (funcs/sum 3 4))))\n\n  ; patching is reverted on exiting with-fakes block\n  (is (= 3 (funcs/sum 1 2))))", 
+            "title": "Patch a function"
+        }, 
+        {
+            "location": "/#self-tests", 
+            "text": "(f/with-fakes\n  (f/fake [f/any? nil]))\n; will raise  Self-test: no call detected for: non-optional fake ...   (f/with-fakes\n  (f/recorded-fake))\n; will raise  Self-test: no check performed on: recorded fake ...", 
+            "title": "Self-tests"
+        }, 
+        {
+            "location": "/#documentation", 
+            "text": "More documentation can be found at  the project site :   Quickstart  User Guide  API Reference  Developer Guide", 
+            "title": "Documentation"
+        }, 
+        {
+            "location": "/#license", 
+            "text": "Copyright \u00a9 2015 Yuri Govorushchenko.  Released under an MIT license.", 
+            "title": "License"
         }, 
         {
             "location": "/quickstart/", 
@@ -152,7 +187,7 @@
         }, 
         {
             "location": "/dev-guide/", 
-            "text": "Tests\n\n\nAutorun Clojure tests: \nlein test-refresh\n\n\nRun ClojureScript tests: \nlein clean \n lein doo rhino test once\n\n(clean is needed because there's an \nissue\n: plugin does not seem to recompile macros)\n\n\nDocumentation\n\n\nProject uses \nMkDocs\n with \nCinder\n theme to generate documentation static site and \n\nCodox\n for API reference.\n\n\nServe site locally with automatic build: \nmkdocs serve\n\n\nBuild site and API docs into site folder: \nmkdocs build --clean \n lein codox\n\n\nDeploying\n\n\nDeploy to Clojars: \nlein deploy clojars\n\n\nDeploy site to gh-pages branch: \nghp-import -p site", 
+            "text": "Tests\n\n\nAutorun Clojure tests: \nlein test-refresh\n\n\nRun ClojureScript tests: \nlein clean \n lein doo rhino test once\n\n(clean is needed because there's an \nissue\n: plugin does not seem to recompile macros)\n\n\nDocumentation\n\n\nProject uses \nMkDocs\n with \nCinder\n theme to generate documentation static site and \n\nCodox\n for API reference.\nTasks are scripted using \nPyInvoke\n.\n\n\nServe site pages locally with automatic build (but it won't work for index page): \nmkdocs serve\n\n\nBuild only site pages: \ninv mkdocs\n\n\nBuild API reference into site folder: \ninv api\n\n\nBuild the whole site: \ninv site\n\n\nDeploying\n\n\nDeploy to Clojars: \nlein deploy clojars\n\n\nDeploy site to gh-pages branch: \nghp-import -p site", 
             "title": "Developer Guide"
         }, 
         {
@@ -162,7 +197,7 @@
         }, 
         {
             "location": "/dev-guide/#documentation", 
-            "text": "Project uses  MkDocs  with  Cinder  theme to generate documentation static site and  Codox  for API reference.  Serve site locally with automatic build:  mkdocs serve  Build site and API docs into site folder:  mkdocs build --clean   lein codox", 
+            "text": "Project uses  MkDocs  with  Cinder  theme to generate documentation static site and  Codox  for API reference.\nTasks are scripted using  PyInvoke .  Serve site pages locally with automatic build (but it won't work for index page):  mkdocs serve  Build only site pages:  inv mkdocs  Build API reference into site folder:  inv api  Build the whole site:  inv site", 
             "title": "Documentation"
         }, 
         {
