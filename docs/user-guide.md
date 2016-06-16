@@ -186,7 +186,7 @@ otherwise, [self-test](#unchecked-fakes) will raise an exception:
 (f/with-fakes
   (let [foo (f/recorded-fake)]
     (foo)
-    (f/was-called foo []))) ; => ok, self-test will pass
+    (is (f/was-called foo [])))) ; => ok, self-test will pass
 ```
 
 ```clj
