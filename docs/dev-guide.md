@@ -9,10 +9,15 @@ Run ClojureScript tests: `lein clean && lein doo rhino test once`
 
 Project uses [MkDocs](http://www.mkdocs.org/) with [Cinder](https://github.com/chrissimpkins/cinder) theme to generate documentation static site and 
 [Codox](https://github.com/weavejester/codox) for API reference.
+Tasks are scripted using [PyInvoke](http://www.pyinvoke.org/).
 
-Serve site locally with automatic build: `mkdocs serve`
+Serve site pages locally with automatic build (but it won't work for index page): `mkdocs serve`
 
-Build site and API docs into site folder: `mkdocs build --clean && lein codox`
+Build only site pages: `inv mkdocs`
+
+Build API reference into site folder: `inv api`
+
+Build the whole site: `inv site`
 
 # Deploying
 

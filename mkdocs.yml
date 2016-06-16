@@ -6,7 +6,7 @@ repo_url: https://github.com/metametadata/clj-fakes/
 theme: cinder
 
 pages:
-- Home: 'index.md'
+- Readme: 'index.md'
 - Quickstart: 'quickstart.md'
 - User Guide: 'user-guide.md'
 - API Reference: 'api/index.md'
