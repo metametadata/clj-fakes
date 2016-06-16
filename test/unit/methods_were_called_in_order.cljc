@@ -56,6 +56,9 @@
             p/eat cow ["grass" "cola"]
             p/speak cow ["John" "Alice"])))))
 
+(def this-file-re-pattern #?(:clj  "unit/methods_were_called_in_order\\.cljc"
+                             :cljs "test/unit/methods_were_called_in_order\\.cljc"))
+
 (f/-deftest
   "throws if different functions were not called in expected order"
   (f/with-fakes
@@ -67,7 +70,11 @@
       (p/eat dog "dog food" "water")
 
       (f/-is-error-thrown
-        #"^Could not find a call satisfying step #2"
+        (re-pattern (str "^Could not find a call satisfying step #2:\n"
+                         "recorded fake from "
+                         this-file-re-pattern
+                         ", 65:15 \\(p/AnimalProtocol, speak\\)\n"
+                         "args matcher: first: <any\\?>, rest: \\[Bob\\]$"))
         (f/methods-were-called-in-order
           p/eat dog ["dog food" "water"]
           p/speak cow ["Bob"])))))
