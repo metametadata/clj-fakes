@@ -123,9 +123,10 @@ any?
   ArgMatcher
   (arg-matches? [this arg] (not (nil? (re-find this arg)))))
 
-(defn ^:no-doc -with-any-first-arg
-  "Args matcher decorator which allows any first arg. The rest of the args will be checked by specified matcher.
-  Returns a new matcher."
+(defn ^:no-doc -with-any-this-arg
+  "Args matcher decorator which allows any 'this' arg (it is a first arg).
+   The rest of the args will be checked by specified matcher.
+   Returns a new matcher."
   [rest-args-matcher]
   {:pre [(satisfies? ArgsMatcher rest-args-matcher)]}
   (reify ArgsMatcher
@@ -135,8 +136,7 @@ any?
 
     (args-matcher->str
       [_]
-      (str "first: " (arg-matcher->str any?)
-           ", rest: " (args-matcher->str rest-args-matcher)))))
+      (str "<this> " (args-matcher->str rest-args-matcher)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Utils
 (defn ^:no-doc -find-first
@@ -409,15 +409,15 @@ any?
   {:pre [ctx obj (or (fn? f) (string? f))]}
   (-method-hash (-obj->id ctx obj) f))
 
-(defn ^:no-doc -with-any-first-arg-config
-  "Applies -with-any-first-arg to all args-matchers in config. Returns a new config."
+(defn ^:no-doc -with-any-this-arg-config
+  "Applies -with-any-this-arg to all args-matchers in config. Returns a new config."
   [config]
   {:pre  [(vector? config)]
    :post [#(vector? %)]}
   (into []
         (map-indexed (fn [i x]
                        (if (even? i)
-                         (-with-any-first-arg x)
+                         (-with-any-this-arg x)
                          x))
                      config)))
 
@@ -435,7 +435,7 @@ any?
      Nil config is bypassed."
      [config]
      (when-not (nil? config)
-       `(-with-any-first-arg-config ~config))))
+       `(-with-any-this-arg-config ~config))))
 
 #?(:clj
    (defn ^:no-doc -looks-like-method-spec?
@@ -878,13 +878,13 @@ any?
   "[[was-called-once]] for protocol method fakes."
   [ctx f obj args-matcher]
   {:pre [ctx f obj (satisfies? ArgsMatcher args-matcher)]}
-  (was-called-once ctx (method ctx obj f) (-with-any-first-arg args-matcher)))
+  (was-called-once ctx (method ctx obj f) (-with-any-this-arg args-matcher)))
 
 (defn method-was-called
   "[[was-called]] for protocol method fakes."
   [ctx f obj args-matcher]
   {:pre [ctx f obj (satisfies? ArgsMatcher args-matcher)]}
-  (was-called ctx (method ctx obj f) (-with-any-first-arg args-matcher)))
+  (was-called ctx (method ctx obj f) (-with-any-this-arg args-matcher)))
 
 (defn method-was-not-called
   "[[was-not-called]] for protocol method fakes."
@@ -911,7 +911,7 @@ any?
          (every? #(satisfies? ArgsMatcher %) (-take-nth-from-group 3 3 fns-objs-and-matchers))
          ]}
   (let [fns-and-matchers (mapcat (fn [[f obj args-matcher]]
-                                   [(method ctx obj f) (-with-any-first-arg args-matcher)])
+                                   [(method ctx obj f) (-with-any-this-arg args-matcher)])
                                  (partition 3 fns-objs-and-matchers))]
     (apply were-called-in-order ctx fns-and-matchers)))
 

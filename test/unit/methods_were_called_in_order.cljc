@@ -74,7 +74,7 @@
                          "recorded fake from "
                          this-file-re-pattern
                          ", 65:15 \\(p/AnimalProtocol, speak\\)\n"
-                         "args matcher: first: <any\\?>, rest: \\[Bob\\]$"))
+                         "args matcher: <this> \\[Bob\\]$"))
         (f/methods-were-called-in-order
           p/eat dog ["dog food" "water"]
           p/speak cow ["Bob"])))))
