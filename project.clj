@@ -6,6 +6,9 @@
   :dependencies [[org.clojure/clojure "1.7.0" :scope "provided"]
                  [org.clojure/clojurescript "1.7.28" :scope "provided"]]
 
+  ; fixes codox task dependency conflicts
+  :profiles {:codox {:dependencies [[org.clojure/clojurescript "1.7.189"]]}}
+
   :plugins [[lein-cljsbuild "1.0.6"]
             [com.jakemccrary/lein-test-refresh "0.15.0"]
             [lein-doo "0.1.6"]
