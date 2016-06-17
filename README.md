@@ -1,4 +1,6 @@
 # clj-fakes
+
+[![Join the chat at https://gitter.im/metametadata/clj-fakes](https://badges.gitter.im/metametadata/clj-fakes.svg)](https://gitter.im/metametadata/clj-fakes?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.
 
 [![Clojars Project](https://img.shields.io/clojars/v/clj-fakes.svg)](https://clojars.org/clj-fakes)
