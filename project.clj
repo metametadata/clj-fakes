@@ -19,6 +19,8 @@
   :test-refresh {:notify-command ["terminal-notifier" "-title" "Tests" "-message"]
                  :quiet          true}
 
+  :repositories {"clojars" {:sign-releases false}}
+
   :cljsbuild
   {:builds {:test {:source-paths ["src" "test" "test/unit" "test/unit/fixtures"]
                    :compiler     {:output-to     "resources/public/js/testable.js"
