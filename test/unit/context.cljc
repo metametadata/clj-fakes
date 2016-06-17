@@ -2,15 +2,16 @@
   #?@(:clj  [
              (:require
                [clojure.test :refer :all]
+               [unit.utils :as u]
                [clj-fakes.core :as f])]
       :cljs [(:require
                [cljs.test :refer-macros [is testing]]
                [clj-fakes.core :as f :include-macros true])
-             ]))
+             (:require-macros [unit.utils :as u])]))
 
 (def my-var 111)
 
-(f/-deftest
+(u/-deftest
   "context executes its body and returns last expression"
   (let [x (atom 100)
         return-val (f/with-fakes
@@ -18,7 +19,7 @@
                      (inc @x))]
     (is (= return-val 201))))
 
-(f/-deftest
+(u/-deftest
   "contexts can nest"
   (f/with-fakes
     (is (= 111 my-var))
@@ -32,7 +33,7 @@
 
     (is (= "parent context" my-var))))
 
-(f/-deftest
+(u/-deftest
   "function can be used instead of a macro"
   (f/with-fakes*
     (fn [] (is (= 111 my-var))

@@ -2,20 +2,19 @@
   #?@(:clj  [
              (:require
                [clojure.test :refer :all]
+               [unit.utils :as u]
                [clj-fakes.core :as f]
-               [clj-fakes.context :as fc]
-               )]
+               [clj-fakes.context :as fc])]
       :cljs [(:require
                [cljs.test :refer-macros [is testing]]
                [clj-fakes.core :as f :include-macros true]
-               [clj-fakes.context :as fc :include-macros true]
-               )
-             ]))
+               [clj-fakes.context :as fc :include-macros true])
+             (:require-macros [unit.utils :as u])]))
 
 (def my-var1 111)
 (def my-var2 222)
 
-(f/-deftest
+(u/-deftest
   "var can be unpatched explicitly"
   (let [original-val my-var1]
     (f/with-fakes
@@ -36,7 +35,7 @@
     (fc/unpatch! ctx #'my-var1)
     (is (= original-val my-var1))))
 
-(f/-deftest
+(u/-deftest
   "var can be unpatched twice in a row"
   (let [original-val my-var1]
     (f/with-fakes
@@ -49,7 +48,7 @@
 
     (is (= original-val my-var1) "just in case")))
 
-(f/-deftest
+(u/-deftest
   "var can be patched/unpatched several times"
   (let [original-val my-var1]
     (f/with-fakes
@@ -70,14 +69,14 @@
 
     (is (= original-val my-var1) "just in case")))
 
-(f/-deftest
+(u/-deftest
   "raises if key is not found"
   (f/with-fakes
-    (f/-is-assertion-error-thrown
+    (u/-is-assertion-error-thrown
       #"^Assert failed: Specified var is not patched\n"
       (f/unpatch! #'my-var1))))
 
-(f/-deftest
+(u/-deftest
   "all vars can be unpatched at once"
   (let [original-val1 my-var1
         original-val2 my-var2]

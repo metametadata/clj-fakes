@@ -2,15 +2,14 @@
   #?@(:clj  [
              (:require
                [clojure.test :refer :all]
+               [unit.utils :as u]
                [clj-fakes.core :as f]
-               [clj-fakes.context :as fc]
-               )]
+               [clj-fakes.context :as fc])]
       :cljs [(:require
                [cljs.test :refer-macros [is testing]]
                [clj-fakes.core :as f :include-macros true]
-               [clj-fakes.context :as fc :include-macros true]
-               )
-             ]))
+               [clj-fakes.context :as fc :include-macros true])
+             (:require-macros [unit.utils :as u])]))
 
 (defn testing-fake-fn-contract
   "Parametrized test which defines a contract for all function fakes.
@@ -54,7 +53,7 @@
                             (args-match? [_ _] false)
                             (args-matcher->str [_] "<custom matcher>"))
                           (fn [_ _])])]
-        (f/-is-error-thrown
+        (u/-is-error-thrown
           #"^Unexpected args are passed into fake: \(2 3\).\nSupported args matchers:\n<custom matcher>"
           (foo 2 3)))))
 
@@ -85,7 +84,7 @@
     (f/with-fakes
       (let [foo (fake-fn [[11 22] 1
                           [8 4] 2])]
-        (f/-is-error-thrown
+        (u/-is-error-thrown
           #"^Unexpected args are passed into fake: \(100 100\).\nSupported args matchers:\n\[11 22\]\n\[8 4\]"
           (foo 100 100)))))
 

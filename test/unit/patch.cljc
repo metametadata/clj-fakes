@@ -2,31 +2,28 @@
   #?@(:clj  [
              (:require
                [clojure.test :refer :all]
+               [unit.utils :as u]
                [clj-fakes.core :as f]
-               [clj-fakes.context :as fc]
-               [unit.fixtures.functions :as funcs]
-               )]
+               [unit.fixtures.functions :as funcs])]
       :cljs [(:require
                [cljs.test :refer-macros [is testing]]
                [clj-fakes.core :as f :include-macros true]
-               [clj-fakes.context :as fc :include-macros true]
-               [unit.fixtures.functions :as funcs]
-               )
-             ]))
+               [unit.fixtures.functions :as funcs])
+             (:require-macros [unit.utils :as u])]))
 
 (def my-var1 111)
 (def my-var2 222)
 
 (defrecord MyRecord [field])
 
-(f/-deftest
+(u/-deftest
   "var can be patched inside the context"
   (f/with-fakes
     (is (not= 200 my-var1))
     (f/patch! #'my-var1 200)
     (is (= 200 my-var1))))
 
-(f/-deftest
+(u/-deftest
   "patched var is recovered on exiting mocking context"
   (let [original-val my-var1]
     (f/with-fakes
@@ -34,7 +31,7 @@
 
     (is (= original-val my-var1))))
 
-(f/-deftest
+(u/-deftest
   "fully qualified single patched var is recovered on exiting mocking context"
   (let [original-val my-var1]
     (f/with-fakes
@@ -42,10 +39,10 @@
 
     (is (= original-val my-var1))))
 
-(f/-deftest
+(u/-deftest
   "patched var is recovered on exiting mocking context because of exception"
   (let [original-val my-var1]
-    (f/-is-error-thrown
+    (u/-is-error-thrown
       #"expected exception"
       (try
         (f/with-fakes
@@ -54,7 +51,7 @@
 
     (is (= original-val my-var1))))
 
-(f/-deftest
+(u/-deftest
   "two patched vars are recovered on exiting mocking context"
   (let [original-val1 my-var1
         original-val2 my-var2]
@@ -65,7 +62,7 @@
     (is (= original-val1 my-var1))
     (is (= original-val2 my-var2))))
 
-(f/-deftest
+(u/-deftest
   "var can be patched more than once and be recovered"
   (let [original-val my-var1]
     (f/with-fakes
@@ -76,20 +73,20 @@
 
     (is (= original-val my-var1))))
 
-(f/-deftest
+(u/-deftest
   "function can be patched inside the context"
   (f/with-fakes
     (is (not= 123 (funcs/sum 2 3)))
     (f/patch! #'funcs/sum (constantly 123))
     (is (= 123 (funcs/sum 2 3)))))
 
-(f/-deftest
+(u/-deftest
   "println can be patched (this test will fail in Clojure 1.8 with enabled direct linking)"
   (f/with-fakes
     (f/patch! #'println (constantly 123))
     (is (= 123 (println "YOU SHOULDN'T SEE IT")))))
 
-(f/-deftest
+(u/-deftest
   "variadic function can be patched"
   (f/with-fakes
     (f/patch! #'funcs/variadic (constantly 200))
@@ -99,13 +96,13 @@
     (is (= 200 (funcs/variadic 1 2)))
     (is (= 200 (funcs/variadic 1 2 3 4 5 6 7)))))
 
-(f/-deftest
+(u/-deftest
   "multimethod can be patched"
   (f/with-fakes
     (f/patch! #'funcs/fib (constantly 200))
     (is (= [200 200 200 200 200] (map funcs/fib (range 5))))))
 
-(f/-deftest
+(u/-deftest
   "var can be patched with a fake"
   (f/with-fakes
     (f/patch! #'funcs/sum (f/fake [[1 2] "foo"
@@ -113,13 +110,13 @@
     (is (= "foo" (funcs/sum 1 2)))
     (is (= "bar" (funcs/sum 3 4)))))
 
-(f/-deftest
+(u/-deftest
   "record instantiation using -> can be patched"
   (f/with-fakes
     (f/patch! #'->MyRecord (constantly 123))
     (is (= 123 (->MyRecord {:field 111})))))
 
-(f/-deftest
+(u/-deftest
   "record instantiation using map-> can be patched"
   (f/with-fakes
     (f/patch! #'map->MyRecord (constantly 123))

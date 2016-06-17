@@ -4,10 +4,8 @@
     #?@(:clj  [
             [clj-fakes.reflection :as r]
             [clojure.pprint :as pprint]
-            [clj-fakes.macro :refer :all]
-               ]
-        :cljs [[cljs.pprint :as pprint]
-               ]))
+            [clj-fakes.macro :refer :all]]
+        :cljs [[cljs.pprint :as pprint]]))
   #?(:cljs
      (:require-macros [clj-fakes.macro :refer [-cljs-env? P PP]])))
 
@@ -91,10 +89,10 @@ any?
   (args-matcher->str
     [this]
     (str "["
-         (clojure.string/join " " (map #(if (satisfies? ImplicitArgMatcher %)
-                                         (arg-matcher->str %)
-                                         (str %))
-                                       this))
+         (string/join " " (map #(if (satisfies? ImplicitArgMatcher %)
+                                 (arg-matcher->str %)
+                                 (str %))
+                               this))
          "]")))
 
 (defn arg*
@@ -175,7 +173,7 @@ any?
       (if (nil? matched-rule)
         (throw (ex-info (str "Unexpected args are passed into fake: " args
                              ".\nSupported args matchers:\n"
-                             (clojure.string/join "\n" (map args-matcher->str (-take-nth-from-group 1 2 config))))
+                             (string/join "\n" (map args-matcher->str (-take-nth-from-group 1 2 config))))
                         {}))
         (if (fn? return-value)
           (apply return-value args)

@@ -2,15 +2,14 @@
   #?@(:clj  [
              (:require
                [clojure.test :refer :all]
-               [clj-fakes.core :as f]
-               )]
+               [unit.utils :as u]
+               [clj-fakes.core :as f])]
       :cljs [(:require
                [cljs.test :refer-macros [is testing]]
-               [clj-fakes.core :as f :include-macros true]
-               )
-             ]))
+               [clj-fakes.core :as f :include-macros true])
+             (:require-macros [unit.utils :as u])]))
 
-(f/-deftest
+(u/-deftest
   "passes when function was called twice"
   (f/with-fakes
     (let [foo (f/recorded-fake)]
@@ -22,29 +21,29 @@
             foo []
             foo [])))))
 
-(f/-deftest
+(u/-deftest
   "throws if function was not called"
   (f/with-fakes
     (let [foo (f/recorded-fake)]
-      (f/-is-error-thrown
+      (u/-is-error-thrown
         #"^Could not find a call satisfying step #1"
         (f/were-called-in-order
           foo [])))))
 
-(f/-deftest
+(u/-deftest
   "throws if other function was not called"
   (f/with-fakes
     (let [foo (f/recorded-fake)
           bar (f/recorded-fake)]
       (foo)
 
-      (f/-is-error-thrown
+      (u/-is-error-thrown
         #"^Could not find a call satisfying step #2"
         (f/were-called-in-order
           foo []
           bar [])))))
 
-(f/-deftest
+(u/-deftest
   "throws if different functions were not called in expected order"
   (f/with-fakes
     (let [foo (f/recorded-fake)
@@ -52,45 +51,45 @@
       (bar)
       (foo)
 
-      (f/-is-error-thrown
+      (u/-is-error-thrown
         #"^Could not find a call satisfying step #2"
         (f/were-called-in-order
           foo []
           bar [])))))
 
-(f/-deftest
+(u/-deftest
   "throws if function was called less times than expected"
   (f/with-fakes
     (let [foo (f/recorded-fake)]
       (foo)
       (foo)
 
-      (f/-is-error-thrown
+      (u/-is-error-thrown
         #"^Could not find a call satisfying step #3"
         (f/were-called-in-order
           foo []
           foo []
           foo [])))))
 
-(f/-deftest
+(u/-deftest
   "throws if function was not called with specified args"
   (f/with-fakes
     (let [foo (f/recorded-fake)]
       (foo 1 2 3)
 
-      (f/-is-error-thrown
+      (u/-is-error-thrown
         #"^Could not find a call satisfying step #1"
         (f/were-called-in-order
           foo [100 200 300])))))
 
-(f/-deftest
+(u/-deftest
   "passes when function was called once"
   (f/with-fakes
     (let [foo (f/recorded-fake)]
       (foo)
       (is (f/were-called-in-order foo [])))))
 
-(f/-deftest
+(u/-deftest
   "(integration) passes with args-matches when three functions were called"
   (f/with-fakes
     (let [foo (f/recorded-fake)
@@ -121,16 +120,16 @@
             baz [300]
             bar [400 500 600])))))
 
-(f/-deftest
+(u/-deftest
   "specifies step details on exception"
   (f/with-fakes
     (let [foo (f/recorded-fake)]
       (foo 1 2 3)
 
-      (f/-is-error-thrown
+      (u/-is-error-thrown
         #?(:clj
-           #"^Could not find a call satisfying step #1:\nrecorded fake from unit/were_called_in_order\.cljc, 127:15\nargs matcher: \[100 <string\?>\]"
+           #"^Could not find a call satisfying step #1:\nrecorded fake from unit/were_called_in_order\.cljc, 126:15\nargs matcher: \[100 <string\?>\]"
            :cljs
-           #"^Could not find a call satisfying step #1:\nrecorded fake from test/unit/were_called_in_order\.cljc, 127:15\nargs matcher: \[100 <string\?>\]")
+           #"^Could not find a call satisfying step #1:\nrecorded fake from test/unit/were_called_in_order\.cljc, 126:15\nargs matcher: \[100 <string\?>\]")
         (f/were-called-in-order
           foo [100 (f/arg string?)])))))

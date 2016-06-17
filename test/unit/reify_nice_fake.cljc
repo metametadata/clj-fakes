@@ -2,6 +2,7 @@
   #?@(:clj  [
              (:require
                [clojure.test :refer :all]
+               [unit.utils :as u]
                [clj-fakes.core :as f]
                [clj-fakes.context :as fc]
                [unit.fixtures.protocols :as p :refer [AnimalProtocol]]
@@ -10,9 +11,8 @@
                [cljs.test :refer-macros [is testing]]
                [clj-fakes.core :as f :include-macros true]
                [clj-fakes.context :as fc :include-macros true]
-               [unit.fixtures.protocols :as p :refer [AnimalProtocol]]
-               )
-             ]))
+               [unit.fixtures.protocols :as p :refer [AnimalProtocol]])
+             (:require-macros [unit.utils :as u])]))
 
 (defprotocol LocalProtocol
   (bar [this] [this x y])
@@ -30,7 +30,7 @@
   (is (not= (apply method args)
             (apply method args))))
 
-(f/-deftest
+(u/-deftest
   "methods from same-namespace-protocol can be automatically faked"
   (f/with-fakes
     (let [foo (f/reify-nice-fake LocalProtocol)]
@@ -39,25 +39,25 @@
       (is-faked baz foo 100)
       (is-faked qux foo 1 2 3))))
 
-(f/-deftest
+(u/-deftest
   "method from fully-qualified protocol can be automatically faked"
   (f/with-fakes
     (let [cow (f/reify-nice-fake p/AnimalProtocol)]
       (is-faked p/speak cow))))
 
-(f/-deftest
+(u/-deftest
   "method from refered protocol can be automatically faked"
   (f/with-fakes
     (let [cow (f/reify-nice-fake AnimalProtocol)]
       (is-faked p/speak cow))))
 
-(f/-deftest
+(u/-deftest
   "works in explicit context"
   (let [ctx (fc/context)
         cow (fc/reify-nice-fake ctx AnimalProtocol)]
     (is-faked p/speak cow)))
 ;
-;(f/-deftest
+;(u/-deftest
 ;  "method with arglists can be automatically reified even if one of arglists is faked explicitly"
 ;  (f/with-fakes
 ;    (let [foo (f/reify-nice-fake LocalProtocol
@@ -65,7 +65,7 @@
 ;      (is (= "bar" (bar foo)))
 ;      (is-faked bar foo 1 2))))
 
-(f/-deftest
+(u/-deftest
   "several protocols can be automatically reified"
   (f/with-fakes
     (let [cow (f/reify-nice-fake p/AnimalProtocol
@@ -81,9 +81,9 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Java interface
 #?(:clj
-   (f/-deftest
+   (u/-deftest
      "IFn cannot be automatically reified"
-     (f/-is-exception-thrown
+     (u/-is-exception-thrown
        java.lang.AbstractMethodError
        "n/a"
        #""
@@ -92,7 +92,7 @@
            (foo 1 2 3 4))))))
 
 #?(:clj
-   (f/-deftest
+   (u/-deftest
      "java.lang.CharSequence can be explicitly reified alongside automatically reified protocol"
      (f/with-fakes
        (let [foo (f/reify-nice-fake
@@ -106,14 +106,14 @@
          (is-faked p/scan foo)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Object
-(f/-deftest
+(u/-deftest
   "Object/toString cannot be automatically reified"
   (f/with-fakes
     (let [foo (f/reify-nice-fake Object)]
       (is (not (instance? clj_fakes.context.FakeReturnValue (.toString foo)))))))
 
 #?(:clj
-   (f/-deftest
+   (u/-deftest
      "Object/toString can be explicitly reified alongside automatically reified protocol"
      (f/with-fakes
        (let [foo (f/reify-nice-fake Object
@@ -127,7 +127,7 @@
          (is-faked p/scan foo)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; integration
-(f/-deftest
+(u/-deftest
   "several protocols can be automatically reified and be partially explicitly faked"
   (f/with-fakes
     (let [cow (f/reify-nice-fake p/AnimalProtocol

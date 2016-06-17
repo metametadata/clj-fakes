@@ -2,15 +2,14 @@
   #?@(:clj  [
              (:require
                [clojure.test :refer :all]
+               [unit.utils :as u]
                [clj-fakes.core :as f]
-               [clj-fakes.context :as fc]
-               )]
+               [clj-fakes.context :as fc])]
       :cljs [(:require
                [cljs.test :refer-macros [is testing]]
                [clj-fakes.core :as f :include-macros true]
-               [clj-fakes.context :as fc :include-macros true]
-               )
-             ]))
+               [clj-fakes.context :as fc :include-macros true])
+             (:require-macros [unit.utils :as u])]))
 
 (defn testing-was-called-fn-contract
   "Parametrized test which defines a contract for was-called-* funcs.
@@ -26,7 +25,7 @@
   (testing "throws if function was not called at all"
     (f/with-fakes
       (let [foo (f/recorded-fake)]
-        (f/-is-error-thrown
+        (u/-is-error-thrown
           expected-exc-re-on-no-call
           (was-called-fn foo [])))))
 
@@ -35,14 +34,14 @@
       (let [foo (f/recorded-fake)]
         (foo 2 3)
         (is (was-called-fn foo (reify fc/ArgsMatcher
-                                (args-match? [_ args]
-                                  (= [2 3] args))))))))
+                                 (args-match? [_ args]
+                                   (= [2 3] args))))))))
 
   (testing "throws if function was never called with specified args"
     (f/with-fakes
       (let [foo (f/recorded-fake [f/any? nil])]
         (foo 2 3)
-        (f/-is-error-thrown
+        (u/-is-error-thrown
           #"^Function was never called with the expected args\.\nArgs matcher: \[2 4\]\.\nActual calls:\n\[\{:args \(2 3\), :return-value nil\}\]\n"
           (was-called-fn foo [2 4])))))
 
@@ -50,7 +49,7 @@
     (f/with-fakes
       (let [foo (f/recorded-fake [f/any? nil])]
         (foo)
-        (f/-is-error-thrown
+        (u/-is-error-thrown
           #"^Function was never called with the expected args\.\nArgs matcher: \[1 2\]\.\nActual calls:\n\[\{:args nil, :return-value nil\}\]\n"
           (was-called-fn foo [1 2])))))
 
@@ -58,7 +57,7 @@
     (f/with-fakes
       (let [foo (f/recorded-fake [f/any? nil])]
         (foo 2 3)
-        (f/-is-error-thrown
+        (u/-is-error-thrown
           #"^Function was never called with the expected args\.\nArgs matcher: \[2 4 <any\?> <string\?> <abc>\]\.\nActual calls:\n\[\{:args \(2 3\), :return-value nil\}\]\n"
           (was-called-fn foo [2 4 f/any? (f/arg string?) (f/arg #"abc")])))))
-)
+  )

@@ -2,17 +2,16 @@
   #?@(:clj  [
              (:require
                [clojure.test :refer :all]
+               [unit.utils :as u]
                [clj-fakes.core :as f]
-               [unit.fixtures.protocols :as p]
-               )]
+               [unit.fixtures.protocols :as p])]
       :cljs [(:require
                [cljs.test :refer-macros [is testing]]
                [clj-fakes.core :as f :include-macros true]
-               [unit.fixtures.protocols :as p]
-               )
-             ]))
+               [unit.fixtures.protocols :as p])
+             (:require-macros [unit.utils :as u])]))
 
-(f/-deftest
+(u/-deftest
   "big integration test"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -59,7 +58,7 @@
 (def this-file-re-pattern #?(:clj  "unit/methods_were_called_in_order\\.cljc"
                              :cljs "test/unit/methods_were_called_in_order\\.cljc"))
 
-(f/-deftest
+(u/-deftest
   "throws if different functions were not called in expected order"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -69,11 +68,11 @@
       (p/speak cow "Bob")
       (p/eat dog "dog food" "water")
 
-      (f/-is-error-thrown
+      (u/-is-error-thrown
         (re-pattern (str "^Could not find a call satisfying step #2:\n"
                          "recorded fake from "
                          this-file-re-pattern
-                         ", 65:15 \\(p/AnimalProtocol, speak\\)\n"
+                         ", 64:15 \\(p/AnimalProtocol, speak\\)\n"
                          "args matcher: <this> \\[Bob\\]$"))
         (f/methods-were-called-in-order
           p/eat dog ["dog food" "water"]

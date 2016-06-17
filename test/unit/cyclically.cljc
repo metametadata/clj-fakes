@@ -2,15 +2,16 @@
   #?@(:clj  [
              (:require
                [clojure.test :refer :all]
+               [unit.utils :as u]
                [clj-fakes.core :as f]
                [unit.fixtures.protocols :as p :refer [AnimalProtocol]])]
       :cljs [(:require
                [cljs.test :refer-macros [is testing]]
                [clj-fakes.core :as f :include-macros true]
                [unit.fixtures.protocols :as p :refer [AnimalProtocol]])
-             ]))
+             (:require-macros [unit.utils :as u])]))
 
-(f/-deftest
+(u/-deftest
   "returned function cycles through specified values infinitely and takes any args"
   (let [foo (f/cyclically [:first :second :third])]
     (dotimes [_ 5]
@@ -18,7 +19,7 @@
       (is (= :second (foo :some-arg)))
       (is (= :third (foo :some-arg1 :some-arg2))))))
 
-(f/-deftest
+(u/-deftest
   "can be used for iterator-style stubbing"
   (f/with-fakes
     (let [get-weekday (f/fake [["My event"] (f/cyclically [:monday :tuesday :wednesday])])]
@@ -27,7 +28,7 @@
         (is (= :tuesday (get-weekday "My event")))
         (is (= :wednesday (get-weekday "My event")))))))
 
-(f/-deftest
+(u/-deftest
   "(just in case) can be used for iterator-style stubbing of methods"
   (f/with-fakes
     (let [cow (f/reify-fake

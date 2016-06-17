@@ -2,19 +2,16 @@
   #?@(:clj  [
              (:require
                [clojure.test :refer :all]
+               [unit.utils :as u]
                [clj-fakes.core :as f]
-               [clj-fakes.context :as fc]
-               [unit.fixtures.functions :as funcs]
-               )]
+               [unit.fixtures.functions :as funcs])]
       :cljs [(:require
                [cljs.test :refer-macros [is testing]]
                [clj-fakes.core :as f :include-macros true]
-               [clj-fakes.context :as fc :include-macros true]
-               [unit.fixtures.functions :as funcs]
-               )
-             ]))
+               [unit.fixtures.functions :as funcs])
+             (:require-macros [unit.utils :as u])]))
 
-(f/-deftest
+(u/-deftest
   "function can be spied on"
   (f/with-fakes
     (f/patch! #'funcs/sum
