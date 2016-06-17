@@ -38,8 +38,7 @@ Also see [[with-fakes]] macro."}
           (fc/unpatch-all! *context*)
 
           (when-not @exception-caught?
-            (fc/self-test-unchecked-fakes *context*)
-            (fc/self-test-unused-fakes *context*)))))))
+            (fc/self-test *context*)))))))
 
 #?(:clj
    (defmacro with-fakes

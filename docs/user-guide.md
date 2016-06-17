@@ -560,8 +560,12 @@ Framework can perform "self-tests" in order to inform a user
 early on that some fakes (including protocol method fakes) are potentially used inappropriately.
 
 If you use [`with-fakes`](#context) macro then self-tests will be run automatically on exiting the block.
-Otherwise, when [explicit context](#context) is used, you have to invoke self-tests manually.
+Otherwise, when [explicit context](#context) is used, you have to invoke self-tests manually
+using next function:
 
+`(fc/self-test ctx)`
+
+Each test can also be run manually using dedicated functions.
 Currently two types of self-tests are supported to identify:
  
 * unused fakes 

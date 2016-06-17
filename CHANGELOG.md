@@ -20,6 +20,8 @@ Args matcher: <this> [1 2 3].
 Actual calls: ...
 ```
 
+- New function `clj-fakes.context/self-test` will run all available self-tests.
+
 ## 0.4.0
 
 Fixed:

@@ -780,6 +780,12 @@ any?
                          (string/join "\n" descriptions))
                     {}))))
 
+(defn self-test
+  "Runs all available self-tests."
+  [ctx]
+  (self-test-unchecked-fakes ctx)
+  (self-test-unused-fakes ctx))
+
 ;;;;;;;;;;;;;;;;;;;;;;;; Assertions
 (defn ^:no-doc -was-called-times
   "Checks that function:
