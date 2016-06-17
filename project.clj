@@ -11,6 +11,8 @@
             [lein-doo "0.1.6"]
             [lein-codox "0.9.4"]]
 
+  :pedantic? :abort
+
   :source-paths ["src" "test"]
   :java-source-paths ["test/unit/fixtures/interop"]
 
