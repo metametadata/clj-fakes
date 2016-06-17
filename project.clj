@@ -7,9 +7,9 @@
                  [org.clojure/clojurescript "1.7.28" :scope "provided"]]
 
   :plugins [[lein-cljsbuild "1.0.6"]
-            [com.jakemccrary/lein-test-refresh "0.11.0"]
+            [com.jakemccrary/lein-test-refresh "0.15.0"]
             [lein-doo "0.1.6"]
-            [lein-codox "0.9.4"]]
+            [lein-codox "0.9.5"]]
 
   :pedantic? :abort
 
