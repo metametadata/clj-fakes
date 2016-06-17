@@ -6,7 +6,8 @@
                [clj-fakes.core :as f]
                [unit.fixtures.functions :as funcs])]
       :cljs [(:require
-               [cljs.test :refer-macros [is testing]]
+               [cljs.test :refer-macros [is testing async]]
+               [clj-fakes.context :as fc :include-macros true]
                [clj-fakes.core :as f :include-macros true]
                [unit.fixtures.functions :as funcs])
              (:require-macros [unit.utils :as u])]))
@@ -121,3 +122,21 @@
   (f/with-fakes
     (f/patch! #'map->MyRecord (constantly 123))
     (is (= 123 (map->MyRecord {:field 111})))))
+
+#?(:cljs
+   (u/-deftest
+     "var stays patched in setTimeout context"
+     (async done
+       (let [ctx (fc/context)]
+         (is (not= 200 my-var1))
+         (fc/patch! ctx #'my-var1 200)
+         (.setTimeout js/window
+                      #(do
+                        ; assert
+                        (is (= 200 my-var1))
+
+                        ; tear down
+                        (fc/unpatch! ctx #'my-var1)
+                        (is (not= 200 my-var1))
+                        (done))
+                      10)))))

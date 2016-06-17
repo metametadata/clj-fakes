@@ -2,7 +2,7 @@
 
 Autorun Clojure tests: `lein test-refresh`
 
-Run ClojureScript tests: `lein clean && lein doo rhino test once`
+Run ClojureScript tests: `lein clean && lein doo phantom test once`
 (clean is needed because there's an [issue](https://github.com/bensu/doo/issues/51): plugin does not seem to recompile macros)
 
 # Documentation
