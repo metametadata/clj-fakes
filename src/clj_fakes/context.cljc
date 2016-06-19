@@ -191,14 +191,26 @@ any?
   {:pre [ctx (fn? f)]}
   (swap! ctx update-in [:unused-fakes] #(remove #{f} %)))
 
+(defn ^:no-doc -set-position
+  "Saves a position for the specified fake. It can be later used for debugging."
+  [ctx f position]
+  {:pre [ctx f]}
+  (swap! ctx assoc-in [:positions f] position))
+
+(defn ^:no-doc -position
+  "Returns a position of the specified fake."
+  [ctx f]
+  {:pre [ctx f]}
+  (get (:positions @ctx) f))
+
 (defn ^:no-doc -required
   [ctx position f]
   {:pre [ctx position (fn? f)]}
   (letfn [(wrapper [& args]
             (-mark-used ctx wrapper)
             (apply f args))]
-    (swap! ctx assoc-in [:positions wrapper] position)
     (swap! ctx update-in [:unused-fakes] conj wrapper)
+    (-set-position ctx wrapper position)
     wrapper))
 
 (defn ^:no-doc -fake
@@ -223,8 +235,8 @@ any?
                                                 :return-value return-value})
               return-value))]
     (swap! ctx update-in [:recorded-fakes] conj (or k wrapper))
-    (swap! ctx assoc-in [:positions (or k wrapper)] position)
     (swap! ctx update-in [:unchecked-fakes] conj (or k wrapper))
+    (-set-position ctx (or k wrapper) position)
     wrapper))
 
 (defn ^:no-doc -recorded
@@ -258,12 +270,6 @@ any?
 (alter-meta! #'->FakeReturnValue assoc :no-doc true)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Fakes - API
-(defn ^:no-doc -position
-  "Returns a position of the specified fake. Does not yet work for optional fakes."
-  [ctx f]
-  {:pre [ctx f]}
-  (get (:positions @ctx) f))
-
 (def default-fake-config
   "With this config fake will return a new `FakeReturnValue` type instance for any combination of args."
   [any? (fn [& _] (FakeReturnValue.))])
@@ -479,6 +485,7 @@ any?
                              method-full-sym
                              (str method-sym)))
            config (-add-any-first-arg-into-matchers config)]
+       ; Descriptions are not set for :optional-fake and :-nice-fake because there's no need yet.
        (condp = fake-type
          :optional-fake
          (if config
