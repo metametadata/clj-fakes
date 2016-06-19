@@ -16,7 +16,7 @@
 
   Also see: [[clj-fakes.core/with-fakes]]."
   []
-  (atom {; Contains pairs: [key call]
+  (atom {; Contains pairs: [fake call]
          :calls           []
 
          ; Set of recorded fakes
@@ -31,7 +31,7 @@
          ; Vector of fakes
          :unchecked-fakes []
 
-         ; f -> description; will be used for debugging
+         ; fake -> description; will be used for debugging
          :fake-descs      {}
 
          ; object -> id
@@ -40,7 +40,7 @@
          ; var -> original-var-val
          :original-vals   {}
 
-         ; var -> f; f - function which should be called to restore original value
+         ; var -> function that should be called to restore original value
          :unpatches       {}}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Args matching
@@ -155,7 +155,7 @@ any?
   (take-nth group-len (drop (dec n) coll)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Fakes - core
-(defn ^:no-doc -config->f
+(defn ^:no-doc -config->fn
   "Constructs a function from a config vector:
   [args-matcher1 fn-or-value1
    args-matcher2 fn-or-value2 ...]"
@@ -218,13 +218,13 @@ any?
   (-required ctx position (-optional-fake ctx f)))
 
 (defn ^:no-doc -record-call
-  [ctx k call]
-  (swap! ctx update-in [:calls] conj [k call]))
+  [ctx f call]
+  (swap! ctx update-in [:calls] conj [f call]))
 
 (defn ^:no-doc -recorded-as
-  "Decorates the specified function in order to record its calls.
+  "Decorates the specified function f in order to record its calls.
   Calls will be recorded by the specified key k.
-  If k is nil - calls will be recorded by the decorated function (in this case use -recorded).
+  If k is nil - calls will be recorded using the decorated function as a key (in this case use -recorded).
   Returns decorated function."
   [ctx position k f]
   {:pre  [ctx position (fn? f)]
@@ -246,20 +246,20 @@ any?
   (-recorded-as ctx position nil f))
 
 (defn ^:no-doc -recorded?
-  [ctx k]
-  (contains? (:recorded-fakes @ctx) k))
+  [ctx f]
+  (contains? (:recorded-fakes @ctx) f))
 
 (defn mark-checked
   "After using this function [[self-test-unchecked-fakes]] will not warn about the specified recorded fake."
-  [ctx k]
-  {:pre [ctx (-recorded? ctx k)]}
-  (swap! ctx update-in [:unchecked-fakes] #(remove #{k} %)))
+  [ctx f]
+  {:pre [ctx (-recorded? ctx f)]}
+  (swap! ctx update-in [:unchecked-fakes] #(remove #{f} %)))
 
 (defn ^:no-doc -set-desc
   "Saves a description for the specified fake. It can be later used for debugging."
-  [ctx k desc]
-  {:pre [ctx k]}
-  (swap! ctx assoc-in [:fake-descs k] desc))
+  [ctx f desc]
+  {:pre [ctx f]}
+  (swap! ctx assoc-in [:fake-descs f] desc))
 
 ; Type with meaningful name for creating unique return values
 (deftype FakeReturnValue []
@@ -282,7 +282,7 @@ any?
 
   If `config` is not specified then fake will be created with [[default-fake-config]]."
   ([ctx] (optional-fake ctx default-fake-config))
-  ([ctx config] {:pre [ctx]} (-optional-fake ctx (-config->f config))))
+  ([ctx config] {:pre [ctx]} (-optional-fake ctx (-config->fn config))))
 
 #?(:clj
    (defn ^:no-doc -emit-fake-fn-call-with-position
@@ -309,7 +309,7 @@ any?
 (defn ^:no-doc -fake**
   "This function is the same as fake macro, but position must be passed explicitly."
   [ctx position config]
-  (-fake ctx position (-config->f config)))
+  (-fake ctx position (-config->fn config)))
 
 #?(:clj
    (defmacro fake*
@@ -332,7 +332,7 @@ any?
 (defn ^:no-doc -recorded-fake**
   "This function is the same as recorded-fake macro, but position must be passed explicitly."
   ([ctx position] (-recorded-fake** ctx position default-fake-config))
-  ([ctx position config] (-recorded ctx position (-config->f config))))
+  ([ctx position config] (-recorded ctx position (-config->fn config))))
 
 #?(:clj
    (defmacro recorded-fake*
@@ -357,11 +357,11 @@ any?
 (defn ^:no-doc -recorded-fake-as*
   [ctx position k config]
   {:pre [ctx]}
-  (-recorded-as ctx position k (-config->f config)))
+  (-recorded-as ctx position k (-config->fn config)))
 
 #?(:clj
    (defmacro ^:no-doc -recorded-fake-as
-     "The same as [[recorded-fake]], but fake will be stored into context by specified key instead of its value.
+     "The same as [[recorded-fake]], but fake will be stored into context by specified key k instead of its value.
 
      E.g. it is used in [[reify-fake]] in order to emulate recording calls on the protocol method.
      `form` must be passed if this macro is called from another macro in order to correctly determine position."
@@ -382,10 +382,10 @@ any?
    ...]
   ```"
   ([ctx] (:calls @ctx))
-  ([ctx k]
-   {:pre [ctx (-recorded? ctx k)]}
+  ([ctx f]
+   {:pre [ctx (-recorded? ctx f)]}
    (->> (:calls @ctx)
-        (filter #(= k (first %)))
+        (filter #(= f (first %)))
         (mapv #(second %)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Protocol fakes
@@ -798,12 +798,12 @@ any?
   "Checks that function:
    1) was called the specified number of times and
    2) at least once with the specified args."
-  [ctx total-calls-count-pred total-calls-count-str k args-matcher]
-  (mark-checked ctx k)
-  (let [k-calls (calls ctx k)
-        total-calls-count (count k-calls)
+  [ctx total-calls-count-pred total-calls-count-str f args-matcher]
+  (mark-checked ctx f)
+  (let [f-calls (calls ctx f)
+        total-calls-count (count f-calls)
         matched-call (-find-first #(args-match? args-matcher (:args %))
-                                  k-calls)]
+                                  f-calls)]
     (cond
       (not (total-calls-count-pred total-calls-count))
       (throw (ex-info (str "Function was not called the expected number of times. "
@@ -814,35 +814,35 @@ any?
       (nil? matched-call)
       (throw (ex-info (str "Function was never called with the expected args.\n"
                            "Args matcher: " (args-matcher->str args-matcher)
-                           ".\nActual calls:\n" (with-out-str (pprint/pprint k-calls)))
+                           ".\nActual calls:\n" (with-out-str (pprint/pprint f-calls)))
                       {}))
 
       :else true)))
 
 (defn was-called-once
   "Checks that recorded fake was called strictly once and that the call was with the specified args."
-  [ctx k args-matcher]
-  {:pre [ctx (-recorded? ctx k) (satisfies? ArgsMatcher args-matcher)]}
-  (-was-called-times ctx #(= % 1) "1" k args-matcher))
+  [ctx f args-matcher]
+  {:pre [ctx (-recorded? ctx f) (satisfies? ArgsMatcher args-matcher)]}
+  (-was-called-times ctx #(= % 1) "1" f args-matcher))
 
 (defn was-called
   "Checks that recorded fake was called at least once with the specified args."
-  [ctx k args-matcher]
-  {:pre [ctx (-recorded? ctx k) (satisfies? ArgsMatcher args-matcher)]}
-  (-was-called-times ctx #(> % 0) "> 0" k args-matcher))
+  [ctx f args-matcher]
+  {:pre [ctx (-recorded? ctx f) (satisfies? ArgsMatcher args-matcher)]}
+  (-was-called-times ctx #(> % 0) "> 0" f args-matcher))
 
 (defn was-not-called
   "Checks that recorded fake was never called."
-  [ctx k]
-  {:pre [ctx (-recorded? ctx k)]}
-  (mark-checked ctx k)
-  (let [k-calls (calls ctx k)]
-    (or (empty? k-calls)
-        (throw (ex-info (str "Function is expected to be never called. Actual calls:\n" (pr-str k-calls) ".") {})))))
+  [ctx f]
+  {:pre [ctx (-recorded? ctx f)]}
+  (mark-checked ctx f)
+  (let [f-calls (calls ctx f)]
+    (or (empty? f-calls)
+        (throw (ex-info (str "Function is expected to be never called. Actual calls:\n" (pr-str f-calls) ".") {})))))
 
 (defn ^:no-doc -call-matches?
-  [k args-matcher [f {:keys [args]} :as _call_]]
-  (and (= k f)
+  [f args-matcher [call-f {:keys [args]} :as _call_]]
+  (and (= f call-f)
        (args-match? args-matcher args)))
 
 (defn were-called-in-order
@@ -866,16 +866,16 @@ any?
   (loop [fn-matcher-pairs (partition 2 fns-and-matchers)
          unchecked-calls (calls ctx)
          step 1]
-    (when-let [[k args-matcher] (first fn-matcher-pairs)]
-      (mark-checked ctx k)
+    (when-let [[f args-matcher] (first fn-matcher-pairs)]
+      (mark-checked ctx f)
 
       ; find matched call
-      (let [[matched-call rest-unchecked-calls] (-find-and-take-after (partial -call-matches? k args-matcher)
+      (let [[matched-call rest-unchecked-calls] (-find-and-take-after (partial -call-matches? f args-matcher)
                                                                       unchecked-calls)]
         ; not found error
         (when (nil? matched-call)
           (throw (ex-info (str "Could not find a call satisfying step #" step
-                               ":\n" (-fake->str ctx "recorded fake" k)
+                               ":\n" (-fake->str ctx "recorded fake" f)
                                "\nargs matcher: " (args-matcher->str args-matcher)) {})))
 
         ; otherwise, check next pair

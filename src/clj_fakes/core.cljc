@@ -82,11 +82,11 @@ Also see [[with-fakes]] macro."}
 
 (defn calls
   ([] (fc/calls *context*))
-  ([k] (fc/calls *context* k)))
+  ([f] (fc/calls *context* f)))
 
 (defn mark-checked
-  [k]
-  (fc/mark-checked *context* k))
+  [f]
+  (fc/mark-checked *context* f))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Protocol fakes
 #?(:clj
@@ -121,16 +121,16 @@ Also see [[with-fakes]] macro."}
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Assertions
 (defn was-called-once
-  [k args-matcher]
-  (fc/was-called-once *context* k args-matcher))
+  [f args-matcher]
+  (fc/was-called-once *context* f args-matcher))
 
 (defn was-called
-  [k args-matcher]
-  (fc/was-called *context* k args-matcher))
+  [f args-matcher]
+  (fc/was-called *context* f args-matcher))
 
 (defn was-not-called
-  [k]
-  (fc/was-not-called *context* k))
+  [f]
+  (fc/was-not-called *context* f))
 
 (defn were-called-in-order
   [& fns-and-matchers]
