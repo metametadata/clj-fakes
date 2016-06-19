@@ -21,6 +21,7 @@ Actual calls: ...
 ```
 
 - New function `clj-fakes.context/self-test` will run all available self-tests.
+- Better arg naming in API.
 
 ## 0.4.0
 
