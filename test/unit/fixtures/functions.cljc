@@ -4,10 +4,10 @@
   (+ x y))
 
 (defn variadic
-  ([] (println "[]"))
-  ([_] (println "[a]"))
-  ([_ _] (println "[a b]"))
-  ([_ _ & _] (println "[a b & c]")))
+  ([] "[]")
+  ([_] "[a]")
+  ([_ _] "[a b]")
+  ([_ _ & _] "[a b & c]"))
 
 (defmulti fib int)
 (defmethod fib 0 [_] 1)

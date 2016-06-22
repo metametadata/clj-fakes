@@ -88,7 +88,7 @@
     (is (= 123 (println "YOU SHOULDN'T SEE IT")))))
 
 (u/-deftest
-  "variadic function can be patched"
+  "variadic function can be patched with non-variadic function"
   (f/with-fakes
     (f/patch! #'funcs/variadic (constantly 200))
 
@@ -96,6 +96,78 @@
     (is (= 200 (funcs/variadic 1)))
     (is (= 200 (funcs/variadic 1 2)))
     (is (= 200 (funcs/variadic 1 2 3 4 5 6 7)))))
+
+(u/-deftest
+  "variadic function can be patched with variadic function"
+  (f/with-fakes
+    (f/patch! #'funcs/variadic (fn my-variadic
+                                 ([] 0)
+                                 ([_] 1)
+                                 ([_ _] 2)
+                                 ([_ _ _] 3)
+                                 ([_ _ _ & _] :etc)))
+
+    (is (= 0 (funcs/variadic)))
+    (is (= 1 (funcs/variadic 1)))
+    (is (= 2 (funcs/variadic 1 2)))
+    (is (= 3 (funcs/variadic 1 2 3)))
+    (is (= :etc (funcs/variadic 1 2 3 4 5 6 7)))))
+
+(u/-deftest
+  "non-variadic function can be patched with recursive variadic function which calls original function"
+  (f/with-fakes
+    (let [original-sum funcs/sum]
+      (f/patch! #'funcs/sum (fn my-variadic
+                              ([] 0)
+                              ([x] (original-sum 0 x))
+                              ([x y] ((f/original-val #'funcs/sum) x y))
+                              ([x y z] (->> (my-variadic x y)
+                                            ((f/original-val #'funcs/sum) z)))
+                              ([x y z & etc]
+                               ((f/original-val #'funcs/sum)
+                                 (my-variadic x y z)
+                                 (apply my-variadic etc)))))
+
+      ; alias is created to get rid of "WARNING: Wrong number of args (...) passed to unit.fixtures.functions/sum"
+      (let [new-sum funcs/sum]
+        (is (= 0 (new-sum)))
+        (is (= 100 (new-sum 100)))
+        (is (= 7 (new-sum 3 4)))
+        (is (= 10 (new-sum 1 2 3 4)))
+        (is (= 15 (new-sum 1 2 3 4 5)))
+        (is (= 21 (new-sum 1 2 3 4 5 6)))
+        (is (= 120 (new-sum 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15)))))))
+
+; TODO: fails in CLJS with:
+; "TypeError: undefined is not a constructor (evaluating 'unit.fixtures.functions.variadic.cljs$core$IFn$_invoke$arity$1(arguments[0])')"
+#?(:clj
+   (u/-deftest
+     "variadic function can be patched with non-variadic function which calls original function"
+     (f/with-fakes
+       (f/patch! #'funcs/variadic (fn my-sum
+                                    [x]
+                                    ((f/original-val #'funcs/variadic) x)))
+
+       (is (= "[a]" (funcs/variadic 100))))))
+
+; TODO: fails in CLJS with "RangeError: Maximum call stack size exceeded."
+#?(:clj
+   (u/-deftest
+     "variadic function can be patched with variadic function which calls original function"
+     (f/with-fakes
+       (let [original-variadic funcs/variadic]
+         (f/patch! #'funcs/variadic (fn my-variadic
+                                      ([] (original-variadic))
+                                      ([a] ((f/original-val #'funcs/variadic) a))
+                                      ([_ _] 2)
+                                      ([_ _ _] 3)
+                                      ([_ _ _ & _] :etc)))
+
+         (is (= "[]" (funcs/variadic)))
+         (is (= "[a]" (funcs/variadic 1)))
+         (is (= 2 (funcs/variadic 1 2)))
+         (is (= 3 (funcs/variadic 1 2 3)))
+         (is (= :etc (funcs/variadic 1 2 3 4 5 6 7)))))))
 
 (u/-deftest
   "multimethod can be patched"

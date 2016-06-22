@@ -23,6 +23,15 @@
     (is (= 111 (f/original-val #'my-var)))))
 
 (u/-deftest
+  "original function val can be found"
+  (f/with-fakes
+    (is (not= 123 (funcs/sum 2 3)))
+    (f/patch! #'funcs/sum (constantly 123))
+
+    (is (= 123 (funcs/sum 2 3)))
+    (is (= 10 ((f/original-val #'funcs/sum) 7 3)))))
+
+(u/-deftest
   "original function can be called by patched var"
   (f/with-fakes
     (f/patch! #'funcs/sum
