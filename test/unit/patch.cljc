@@ -138,8 +138,7 @@
         (is (= 21 (new-sum 1 2 3 4 5 6)))
         (is (= 120 (new-sum 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15)))))))
 
-; TODO: fails in CLJS with:
-; "TypeError: undefined is not a constructor (evaluating 'unit.fixtures.functions.variadic.cljs$core$IFn$_invoke$arity$1(arguments[0])')"
+; TODO: fails in CLJS - see https://github.com/metametadata/clj-fakes/issues/3
 #?(:clj
    (u/-deftest
      "variadic function can be patched with non-variadic function which calls original function"
@@ -150,7 +149,7 @@
 
        (is (= "[a]" (funcs/variadic 100))))))
 
-; TODO: fails in CLJS with "RangeError: Maximum call stack size exceeded."
+; TODO: fails in CLJS - see https://github.com/metametadata/clj-fakes/issues/3
 #?(:clj
    (u/-deftest
      "variadic function can be patched with variadic function which calls original function"
