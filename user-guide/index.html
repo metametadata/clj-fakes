@@ -663,8 +663,11 @@ Each function either returns <code>true</code> or raises an exception with addit
 <p>Framework can perform "self-tests" in order to inform a user 
 early on that some fakes (including protocol method fakes) are potentially used inappropriately.</p>
 <p>If you use <a href="#context"><code>with-fakes</code></a> macro then self-tests will be run automatically on exiting the block.
-Otherwise, when <a href="#context">explicit context</a> is used, you have to invoke self-tests manually.</p>
-<p>Currently two types of self-tests are supported to identify:</p>
+Otherwise, when <a href="#context">explicit context</a> is used, you have to invoke self-tests manually
+using next function:</p>
+<p><code>(fc/self-test ctx)</code></p>
+<p>Each test can also be run manually using dedicated functions.
+Currently two types of self-tests are supported to identify:</p>
 <ul>
 <li>unused fakes </li>
 <li>unchecked fakes</li>

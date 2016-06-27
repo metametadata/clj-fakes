@@ -152,8 +152,11 @@
 
 <h1 id="tests">Tests</h1>
 <p>Autorun Clojure tests: <code>lein test-refresh</code></p>
-<p>Run ClojureScript tests: <code>lein clean &amp;&amp; lein doo rhino test once</code>
+<p>Run ClojureScript tests: <code>lein clean &amp;&amp; lein doo phantom test once</code>
 (clean is needed because there's an <a href="https://github.com/bensu/doo/issues/51">issue</a>: plugin does not seem to recompile macros)</p>
+<p>Use <code>min-deps</code> profile to test with minimal supported dependencies (instead of default and usually latest versions):</p>
+<p><code>lein with-profiles +min-deps test-refresh</code></p>
+<p><code>lein clean &amp;&amp; lein with-profiles +min-deps doo phantom test once</code></p>
 <h1 id="documentation">Documentation</h1>
 <p>Project uses <a href="http://www.mkdocs.org/">MkDocs</a> with <a href="https://github.com/chrissimpkins/cinder">Cinder</a> theme to generate documentation static site and 
 <a href="https://github.com/weavejester/codox">Codox</a> for API reference.
