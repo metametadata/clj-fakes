@@ -5,6 +5,12 @@ Autorun Clojure tests: `lein test-refresh`
 Run ClojureScript tests: `lein clean && lein doo phantom test once`
 (clean is needed because there's an [issue](https://github.com/bensu/doo/issues/51): plugin does not seem to recompile macros)
 
+Use `min-deps` profile to test with minimal supported dependencies (instead of default and usually latest versions):
+ 
+`lein with-profiles +min-deps test-refresh`
+
+`lein clean && lein with-profiles +min-deps doo phantom test once`
+
 # Documentation
 
 Project uses [MkDocs](http://www.mkdocs.org/) with [Cinder](https://github.com/chrissimpkins/cinder) theme to generate documentation static site and 

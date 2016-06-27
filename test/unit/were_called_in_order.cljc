@@ -127,9 +127,6 @@
       (foo 1 2 3)
 
       (u/-is-error-thrown
-        #?(:clj
-           #"^Could not find a call satisfying step #1:\nrecorded fake from unit/were_called_in_order\.cljc, 126:15\nargs matcher: \[100 <string\?>\]"
-           :cljs
-           #"^Could not find a call satisfying step #1:\nrecorded fake from test/unit/were_called_in_order\.cljc, 126:15\nargs matcher: \[100 <string\?>\]")
+        #"^Could not find a call satisfying step #1:\nrecorded fake from .*unit/were_called_in_order\.cljc, 126:15\nargs matcher: \[100 <string\?>\]"
         (f/were-called-in-order
           foo [100 (f/arg string?)])))))

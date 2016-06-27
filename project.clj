@@ -3,11 +3,11 @@
   :url "https://github.com/metametadata/clj-fakes"
   :license {:name "MIT" :url "http://opensource.org/licenses/MIT"}
 
-  :dependencies [[org.clojure/clojure "1.7.0" :scope "provided"]
-                 [org.clojure/clojurescript "1.7.28" :scope "provided"]]
+  :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
+                 [org.clojure/clojurescript "1.9.93" :scope "provided"]]
 
-  ; fixes codox task dependency conflicts
-  :profiles {:codox {:dependencies [[org.clojure/clojurescript "1.7.189"]]}}
+  :profiles {:min-deps {:dependencies [[org.clojure/clojure "1.7.0"]
+                                       [org.clojure/clojurescript "1.7.28"]]}}
 
   :plugins [[lein-cljsbuild "1.0.6"]
             [com.jakemccrary/lein-test-refresh "0.15.0"]

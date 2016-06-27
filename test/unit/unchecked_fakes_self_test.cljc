@@ -15,10 +15,7 @@
 (u/-deftest
   "user is warned if fake was never checked"
   (u/-is-error-thrown
-    #?(:clj
-       #"^Self-test: no check performed on:\nrecorded fake from unit/unchecked_fakes_self_test\.cljc, 23:7"
-       :cljs
-       #"^Self-test: no check performed on:\nrecorded fake from test/unit/unchecked_fakes_self_test\.cljc, 23:7")
+    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 20:7"
     (f/with-fakes
       (f/recorded-fake [f/any? nil]))))
 
@@ -51,10 +48,7 @@
 (u/-deftest
   "self-test works with explicit context"
   (u/-is-error-thrown
-    #?(:clj
-       #"^Self-test: no check performed on:\nrecorded fake from unit/unchecked_fakes_self_test\.cljc, 59:7"
-       :cljs
-       #"^Self-test: no check performed on:\nrecorded fake from test/unit/unchecked_fakes_self_test\.cljc, 59:7")
+    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 53:7"
     (let [ctx (fc/context)]
       (fc/recorded-fake ctx [f/any? nil])
       (fc/self-test-unchecked-fakes ctx))))
@@ -62,10 +56,7 @@
 (u/-deftest
   "self-test about unchecked recorded fakes is more important than the one about unused fakes"
   (u/-is-error-thrown
-    #?(:clj
-       #"^Self-test: no check performed on:\nrecorded fake from unit/unchecked_fakes_self_test\.cljc, 71:7"
-       :cljs
-       #"^Self-test: no check performed on:\nrecorded fake from test/unit/unchecked_fakes_self_test\.cljc, 71:7")
+    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 62:7"
     (f/with-fakes
       (f/fake [f/any? nil])
       (f/recorded-fake [f/any? nil]))))
@@ -73,29 +64,17 @@
 (u/-deftest
   "user is warned if several fakes were not checked"
   (u/-is-error-thrown
-    #?(:clj
-       #"^Self-test: no check performed on:
-recorded fake from unit/unchecked_fakes_self_test\.cljc, 87:7
-recorded fake from unit/unchecked_fakes_self_test\.cljc, 88:7
-recorded fake from unit/unchecked_fakes_self_test\.cljc, 89:7"
-       :cljs
-       #"^Self-test: no check performed on:
-recorded fake from test/unit/unchecked_fakes_self_test.cljc, 87:7
-recorded fake from test/unit/unchecked_fakes_self_test.cljc, 88:7
-recorded fake from test/unit/unchecked_fakes_self_test.cljc, 87:7")
+    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 69:7\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 70:7\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 71:7$"
     (f/with-fakes
       (f/recorded-fake [f/any? nil])
       (f/recorded-fake [f/any? nil])
       (f/recorded-fake [f/any? nil]))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;; reify-fake
+;;;;;;;;;;;;;;;;;;;;;;;;;; reify-fake
 (u/-deftest
   "user is warned if reified protocol fake was never checked"
   (u/-is-error-thrown
-    #?(:clj
-       #"^Self-test: no check performed on:\nrecorded fake from unit/unchecked_fakes_self_test\.cljc, 100:7 \(p/AnimalProtocol, speak\)"
-       :cljs
-       #"^Self-test: no check performed on:\nrecorded fake from test/unit/unchecked_fakes_self_test\.cljc, 100:7 \(p/AnimalProtocol, speak\)")
+    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 79:7 \(p/AnimalProtocol, speak\)"
     (f/with-fakes
       (f/reify-fake p/AnimalProtocol
                     (speak :recorded-fake [f/any? nil])))))
@@ -103,10 +82,7 @@ recorded fake from test/unit/unchecked_fakes_self_test.cljc, 87:7")
 (u/-deftest
   "user is warned if reified protocol fake was never checked (explicit context)"
   (u/-is-error-thrown
-    #?(:clj
-       #"^Self-test: no check performed on:\nrecorded fake from unit/unchecked_fakes_self_test\.cljc, 111:7 \(p/AnimalProtocol, speak\)"
-       :cljs
-       #"^Self-test: no check performed on:\nrecorded fake from test/unit/unchecked_fakes_self_test\.cljc, 111:7 \(p/AnimalProtocol, speak\)")
+    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 87:7 \(p/AnimalProtocol, speak\)"
     (let [ctx (fc/context)]
       (fc/reify-fake ctx p/AnimalProtocol
                      (speak :recorded-fake [f/any? nil]))
