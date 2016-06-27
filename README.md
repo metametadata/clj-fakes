@@ -25,7 +25,7 @@ Clojure 1.7.0 and/or ClojureScript 1.7.28 or higher.
 Add this to your dependencies in project.clj:
 
 ```clj
-[clj-fakes "0.4.0"]
+[clj-fakes "0.5.0"]
 ```
 
 Require framework namespace in your unit test source file:
