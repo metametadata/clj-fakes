@@ -1,5 +1,5 @@
 (defproject clj-fakes "0.5.0"
-  :description "An isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier."
+  :description "An isolation framework for Clojure/ClojureScript that makes creating test doubles (stubs, mocks, etc.) much easier."
   :url "https://github.com/metametadata/clj-fakes"
   :license {:name "MIT" :url "http://opensource.org/licenses/MIT"}
 

@@ -1,17 +1,24 @@
 # clj-fakes
-clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.
+>Frequently, the final release software consists of a complex set of objects or procedures
+interacting together to create the final result. In automated unit testing, it may be necessary to use objects or procedures 
+that look and behave like their release-intended counterparts, 
+but are actually simplified versions that reduce the complexity and facilitate testing. 
+A **test double** is a generic (meta) term used for these objects or procedures. 
+([:link:](https://en.wikipedia.org/wiki/Test_double))
+
+**clj-fakes** is an isolation framework for Clojure/ClojureScript that makes creating **test doubles** much easier.
 
 [![Clojars Project](https://img.shields.io/clojars/v/clj-fakes.svg)](https://clojars.org/clj-fakes)
 [![Gitter](https://img.shields.io/gitter/room/metametadata/clj-fakes.svg?maxAge=2592000?style=plastic)](https://gitter.im/metametadata/clj-fakes)
 
 ## Features
-* All test doubles are named "fakes" to simplify terminology.
+* All test doubles are named "fakes" to simplify the terminology.
 * Fakes can be created for:
-    * protocol and Java interface instances
     * functions
+    * instances of protocols and Java interfaces
 * "Nice" and "strict" protocol fakes are supported.
 * Monkey patching is supported to fake implicit dependencies.
-* Functions for asserting recorded calls.
+* Several functions are provided for asserting recorded calls.
 * Self-testing: automatically checks for unused fakes.
 * Informative error messages.
 * Test runner agnostic.
