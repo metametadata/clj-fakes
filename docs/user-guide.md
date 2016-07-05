@@ -66,7 +66,7 @@ used in your own helper functions.
 # Function Fakes
 
 Fake is a function which returns canned values on matched arguments and can optionally record its calls. It 
-can be used to define and assert a behavior of an explicit functional dependency of an SUT (system under test).
+can be used to define and assert a behavior of a functional dependency of an SUT (system under test).
 
 ## Fake
 

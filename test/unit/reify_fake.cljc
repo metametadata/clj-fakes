@@ -176,7 +176,7 @@
   "simplest method can be a fake"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
-                            (sleep :fake [f/any? "zzz"]))]
+                            (sleep :fake [[] "zzz"]))]
       (is (= "zzz" (p/sleep cow))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; several protocols
@@ -276,6 +276,7 @@
                    (invoke :recorded-fake))]
          (foo 123)
          (foo 1 2 3)
+
          (is (f/method-was-called "invoke" foo [123]))
          (is (f/method-was-called "invoke" foo [1 2 3]))))))
 
