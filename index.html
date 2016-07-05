@@ -138,61 +138,87 @@
         <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
-        <li class="first-level active"><a href="#clj-fakes">clj-fakes</a></li>
+        <li class="first-level active"><a href="#features">Features</a></li>
         
-            <li class="second-level"><a href="#features">Features</a></li>
-            
+    
+        <li class="first-level "><a href="#installation">Installation</a></li>
         
-            <li class="second-level"><a href="#requirements">Requirements</a></li>
-            
+    
+        <li class="first-level "><a href="#examples">Examples</a></li>
         
-            <li class="second-level"><a href="#installation">Installation</a></li>
-            
-        
-            <li class="second-level"><a href="#examples">Examples</a></li>
-            
-                <li class="third-level"><a href="#fake-protocol-instance-with-recorded-method-aka-mock-object">Fake protocol instance with recorded method (aka mock object)</a></li>
-            
-                <li class="third-level"><a href="#patch-a-function">Patch a function</a></li>
-            
-                <li class="third-level"><a href="#self-tests">Self-tests</a></li>
+            <li class="second-level"><a href="#creating-faking-context">Creating Faking Context</a></li>
             
         
-            <li class="second-level"><a href="#documentation">Documentation</a></li>
+            <li class="second-level"><a href="#stubbing">Stubbing</a></li>
+            
+                <li class="third-level"><a href="#function-stub">Function Stub</a></li>
+            
+                <li class="third-level"><a href="#method-stub">Method Stub</a></li>
+            
+                <li class="third-level"><a href="#nice-method-stub">Nice Method Stub</a></li>
             
         
-            <li class="second-level"><a href="#license">License</a></li>
+            <li class="second-level"><a href="#mocking">Mocking</a></li>
             
+                <li class="third-level"><a href="#function-mock">Function Mock</a></li>
+            
+                <li class="third-level"><a href="#method-mock">Method Mock</a></li>
+            
+        
+            <li class="second-level"><a href="#assertions">Assertions</a></li>
+            
+                <li class="third-level"><a href="#strictly-one-call">Strictly One Call</a></li>
+            
+                <li class="third-level"><a href="#at-least-one-call">At Least One Call</a></li>
+            
+                <li class="third-level"><a href="#no-calls">No Calls</a></li>
+            
+                <li class="third-level"><a href="#calls-in-specified-order">Calls In Specified Order</a></li>
+            
+        
+            <li class="second-level"><a href="#monkey-patching">Monkey Patching</a></li>
+            
+                <li class="third-level"><a href="#patch-function-with-stub">Patch Function With Stub</a></li>
+            
+                <li class="third-level"><a href="#patch-and-spy">Patch and Spy</a></li>
+            
+        
+            <li class="second-level"><a href="#self-tests">Self-tests</a></li>
+            
+        
+    
+        <li class="first-level "><a href="#documentation">Documentation</a></li>
+        
+    
+        <li class="first-level "><a href="#license">License</a></li>
         
     
     </ul>
 </div></div>
         <div class="col-md-9" role="main">
 
-<h1 id="clj-fakes">clj-fakes</h1>
-<p>clj-fakes is an isolation framework for Clojure/ClojureScript. It makes creating mocks and stubs for unit testing much easier.</p>
+<p><strong>clj-fakes</strong> is an isolation framework for Clojure/ClojureScript that makes creating <a href="https://en.wikipedia.org/wiki/Test_double">test doubles</a> much easier.</p>
 <p><a href="https://clojars.org/clj-fakes"><img alt="Clojars Project" src="https://img.shields.io/clojars/v/clj-fakes.svg" /></a>
 <a href="https://gitter.im/metametadata/clj-fakes"><img alt="Gitter" src="https://img.shields.io/gitter/room/metametadata/clj-fakes.svg?maxAge=2592000?style=plastic" /></a></p>
-<h2 id="features">Features</h2>
+<h1 id="features">Features</h1>
 <ul>
-<li>All test doubles are named "fakes" to simplify terminology.</li>
+<li>All test doubles are named "fakes" to simplify the terminology.</li>
 <li>Fakes can be created for:<ul>
-<li>protocol and Java interface instances</li>
 <li>functions</li>
+<li>instances of protocols and Java interfaces</li>
 </ul>
 </li>
 <li>"Nice" and "strict" protocol fakes are supported.</li>
 <li>Monkey patching is supported to fake implicit dependencies.</li>
-<li>Functions for asserting recorded calls.</li>
+<li>Several functions are provided for asserting recorded calls.</li>
 <li>Self-testing: automatically checks for unused fakes.</li>
 <li>Informative error messages.</li>
 <li>Test runner agnostic.</li>
 <li>Arrange-Act-Assert style testing.</li>
 </ul>
-<h2 id="requirements">Requirements</h2>
-<p>Clojure 1.7.0 and/or ClojureScript 1.7.28 or higher.</p>
-<h2 id="installation">Installation</h2>
-<p>Add this to your dependencies in project.clj:</p>
+<h1 id="installation">Installation</h1>
+<p>Requirements: Clojure 1.7.0 and/or ClojureScript 1.7.28 or higher.</p>
+<p>Add this to your dependencies:</p>
 <pre><code class="clj">[clj-fakes &quot;0.5.0&quot;]
 </code></pre>
 
@@ -200,59 +226,150 @@
 <pre><code class="clj">; Clojure
 (ns unit.example
   (:require
-    ; ...
-    [clj-fakes.core :as f]))
+    [clj-fakes.core :as f]
+    ; and/or:
+    [clj-fakes.context :as fc]))
 
 ; ClojureScript
 (ns unit.example
   (:require
-    ; ...
-    [clj-fakes.core :as f :include-macros true]))
+    [clj-fakes.core :as f :include-macros true]
+    ; and/or:
+    [clj-fakes.context :as fc :include-macros true]))
 </code></pre>
 
-<h2 id="examples">Examples</h2>
-<h3 id="fake-protocol-instance-with-recorded-method-aka-mock-object">Fake protocol instance with recorded method (aka mock object)</h3>
-<pre><code class="clj">(defprotocol AnimalProtocol
-  (speak [this name]))
-; ...
-
-(deftest example
-  (f/with-fakes
-    ; create fake instance of specified protocol
-    (let [cow (f/reify-fake p/AnimalProtocol
-                            ; ask framework to record method calls
-                            (speak :recorded-fake))]
-      ; call method on fake object
-      (p/speak cow &quot;Bob&quot;)
-
-      ; assert that method was called with specified args
-      (is (f/method-was-called p/speak cow [&quot;Bob&quot;])))))
+<h1 id="examples">Examples</h1>
+<h3 id="creating-faking-context">Creating Faking Context</h3>
+<p>Explicit context:</p>
+<pre><code class="clj">(let [ctx (fc/context)]
+  ; use clj-fakes.context API here
+)
 </code></pre>
 
-<h3 id="patch-a-function">Patch a function</h3>
-<pre><code class="clj">(deftest example
-  (f/with-fakes
-    (f/patch! #'funcs/sum (f/fake [[1 2] &quot;foo&quot;
-                                   [3 4] &quot;bar&quot;]))
-    (is (= &quot;foo&quot; (funcs/sum 1 2)))
-    (is (= &quot;bar&quot; (funcs/sum 3 4))))
+<p>Implicit context:</p>
+<pre><code class="clj">(f/with-fakes
+  ; use clj-fakes.core API here 
+)
+; on exit block will automatically unpatch all patched vars and execute self-tests
+</code></pre>
 
-  ; patching is reverted on exiting with-fakes block
-  (is (= 3 (funcs/sum 1 2))))
+<p>All the following examples are assumed to be used inside an implicit context.</p>
+<h3 id="stubbing">Stubbing</h3>
+<h4 id="function-stub">Function Stub</h4>
+<pre><code class="clj">(let [foo (f/fake [[1 2] &quot;foo&quot;
+                   [3 4 5] &quot;bar&quot;])]
+  (foo 1 2) ; =&gt; &quot;foo&quot;
+  (foo 3 4 5) ; =&gt; &quot;bar&quot;
+  (foo 100 200)) ; =&gt; raises &quot;Unexpected args are passed into fake: (100 200) ...&quot;
+</code></pre>
+
+<h4 id="method-stub">Method Stub</h4>
+<pre><code class="clj">(let [cow (f/reify-fake AnimalProtocol
+                        (sleep :fake [[] &quot;zzz&quot;]))]
+  (p/sleep cow) ; =&gt; &quot;zzz&quot;
+  (p/speak cow)) ; =&gt; undefined method exception
+</code></pre>
+
+<h4 id="nice-method-stub">Nice Method Stub</h4>
+<pre><code class="clj">(let [cow (f/reify-nice-fake p/AnimalProtocol)]
+  (p/sleep cow) ; =&gt; FakeReturnValue
+  (p/speak cow)) ; =&gt; FakeReturnValue 
+</code></pre>
+
+<h3 id="mocking">Mocking</h3>
+<h4 id="function-mock">Function Mock</h4>
+<pre><code class="clj">(let [foo (f/recorded-fake [[(f/arg integer?) (f/arg integer?)] #(+ %1 %2)])
+      bar (f/recorded-fake [[(f/arg integer?) (f/arg integer?)] #(* %1 %2)])]
+  (foo 1 2)
+  (bar 5 6)
+  (foo 7 8)
+
+  (f/calls foo)
+  ; =&gt; [{:args [1 2] :return-value 3}
+  ;     {:args [7 8] :return-value 15}]
+
+  (f/calls)
+  ; =&gt; [[foo {:args [1 2] :return-value 3}]
+  ;     [bar {:args [5 6] :return-value 30}]
+  ;     [foo {:args [7 8] :return-value 15}]]
+)
+</code></pre>
+
+<h4 id="method-mock">Method Mock</h4>
+<pre><code class="clj">(let [cow (f/reify-fake p/AnimalProtocol
+                        (speak :recorded-fake [f/any? &quot;moo&quot;]))]
+  (p/speak cow)
+
+  (f/calls (f/method cow p/speak))) ; =&gt; [{:args ..., :return-value moo}]
+</code></pre>
+
+<h3 id="assertions">Assertions</h3>
+<h4 id="strictly-one-call">Strictly One Call</h4>
+<pre><code class="clj">(f/was-called-once foo [1 2])
+</code></pre>
+
+<pre><code class="clj">(f/method-was-called-once p/speak cow [&quot;Bob&quot;])
+</code></pre>
+
+<h4 id="at-least-one-call">At Least One Call</h4>
+<pre><code class="clj">(f/was-called foo [1 2])
+</code></pre>
+
+<pre><code class="clj">(f/method-was-called p/speak cow [&quot;Bob&quot;])
+</code></pre>
+
+<h4 id="no-calls">No Calls</h4>
+<pre><code class="clj">(f/was-not-called foo)
+</code></pre>
+
+<pre><code class="clj">(f/method-was-not-called p/speak cow)
+</code></pre>
+
+<h4 id="calls-in-specified-order">Calls In Specified Order</h4>
+<pre><code class="clj">(f/were-called-in-order
+  foo [1 2 3]
+  foo [(f/arg integer?)]
+  bar [100 200]
+  baz [300])
+</code></pre>
+
+<pre><code class="clj">(f/methods-were-called-in-order
+  p/speak cow []
+  p/sleep cow []
+  p/eat dog [&quot;dog food&quot; &quot;water&quot;]
+  p/speak cow [&quot;Bob&quot;])
+</code></pre>
+
+<h3 id="monkey-patching">Monkey Patching</h3>
+<h4 id="patch-function-with-stub">Patch Function With Stub</h4>
+<pre><code class="clj">(f/with-fakes
+  (f/patch! #'funcs/sum (f/fake [[1 2] &quot;foo&quot;
+                                 [3 4] &quot;bar&quot;]))
+  (funcs/sum 1 2) ; =&gt; &quot;foo&quot;
+  (funcs/sum 3 4)) ; =&gt; &quot;bar&quot;
+
+; patching is reverted on exiting with-fakes block
+(funcs/sum 1 2) ; =&gt; 3
+</code></pre>
+
+<h4 id="patch-and-spy">Patch and Spy</h4>
+<pre><code class="clj">(f/patch! #'funcs/sum (f/recorded-fake [f/any? funcs/sum]))
+(funcs/sum 1 2) ; =&gt; 3
+(f/was-called funcs/sum [1 2]) ; =&gt; true
 </code></pre>
 
 <h3 id="self-tests">Self-tests</h3>
 <pre><code class="clj">(f/with-fakes
   (f/fake [f/any? nil]))
-; will raise &quot;Self-test: no call detected for: non-optional fake ...&quot;
+; =&gt; raises &quot;Self-test: no call detected for: non-optional fake ...&quot;
 </code></pre>
 
 <pre><code class="clj">(f/with-fakes
   (f/recorded-fake))
-; will raise &quot;Self-test: no check performed on: recorded fake ...&quot;
+; =&gt; raises &quot;Self-test: no check performed on: recorded fake ...&quot;
 </code></pre>
 
-<h2 id="documentation">Documentation</h2>
+<h1 id="documentation">Documentation</h1>
 <p>More documentation can be found at <a href="http://metametadata.github.io/clj-fakes/">the project site</a>:</p>
 <ul>
 <li><a href="http://metametadata.github.io/clj-fakes/quickstart/">Quickstart</a></li>
@@ -260,7 +377,7 @@
 <li><a href="http://metametadata.github.io/clj-fakes/api/">API Reference</a></li>
 <li><a href="http://metametadata.github.io/clj-fakes/dev-guide/">Developer Guide</a></li>
 </ul>
-<h2 id="license">License</h2>
+<h1 id="license">License</h1>
 <p>Copyright © 2015 Yuri Govorushchenko.</p>
 <p>Released under an MIT license.</p></div>
         
@@ -315,5 +432,5 @@
 
 <!--
 MkDocs version : 0.15.3
-Build Date UTC : 2016-06-27 16:31:12.326222
+Build Date UTC : 2016-07-05 21:26:06.207558
 -->
