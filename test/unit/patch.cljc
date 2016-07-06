@@ -183,6 +183,17 @@
     (is (= "bar" (funcs/sum 3 4)))))
 
 (u/-deftest
+  "var can be patched with a recorded fake"
+  (f/with-fakes
+    (f/patch! #'funcs/sum (f/recorded-fake [[(f/arg integer?) (f/arg integer?)] #(* %1 %2)]))
+
+    (is (= 2 (funcs/sum 1 2)))
+    (is (= 12 (funcs/sum 3 4)))
+
+    (is (f/was-called funcs/sum [1 2]))
+    (is (f/was-called funcs/sum [3 4]))))
+
+(u/-deftest
   "record instantiation using -> can be patched"
   (f/with-fakes
     (f/patch! #'->MyRecord (constantly 123))
