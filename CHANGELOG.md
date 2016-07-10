@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.0
+
+- ClojureScript only: it's now possible to implement any new methods under `Object` in `reify-fake`/`reify-nice-fake`. E.g.:
+
+```clj
+(let [calculator (f/reify-fake Object
+                               (sum [x y] :fake [[f/any? f/any?] #(+ %2 %3)]))]
+  (is (= 5 (.sum calculator 2 3))))
+```
+
 ## 0.5.0
 
 - Better formatting of args matchers in assertion errors for protocol methods. E.g. before and after:
