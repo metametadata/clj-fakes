@@ -498,18 +498,13 @@ which features are currently supported:</p>
 <td>Yes</td>
 </tr>
 <tr>
-<td>Fake Java interface method (explicitly)</td>
-<td>Yes</td>
-<td>Yes</td>
-</tr>
-<tr>
-<td>Fake Object method (explicitly)</td>
-<td>Clojure: Yes, ClojureScript: No</td>
-<td>Clojure: Yes, ClojureScript: No</td>
-</tr>
-<tr>
 <td>Fake protocol method (auto)</td>
 <td>-</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Fake Java interface method (explicitly)</td>
+<td>Yes</td>
 <td>Yes</td>
 </tr>
 <tr>
@@ -518,19 +513,24 @@ which features are currently supported:</p>
 <td>No</td>
 </tr>
 <tr>
+<td>Fake Object method (explicitly)</td>
+<td>Yes</td>
+<td>Only in Clojure</td>
+</tr>
+<tr>
 <td>Fake Object method (auto)</td>
 <td>-</td>
 <td>No</td>
 </tr>
 <tr>
+<td>Object can be reified with any new methods</td>
+<td>Only in ClojureScript</td>
+<td>Only in ClojureScript</td>
+</tr>
+<tr>
 <td>Support overloaded methods</td>
 <td>Yes</td>
 <td>Yes</td>
-</tr>
-<tr>
-<td>Object can be reified with any new methods</td>
-<td>No</td>
-<td>No</td>
 </tr>
 </tbody>
 </table>
@@ -543,7 +543,7 @@ which features are currently supported:</p>
 <p>Each spec consists of the protocol or interface name followed by zero
 or more method fakes:</p>
 <pre><code class="clj">protocol-or-interface-or-Object
-(method-name fake-type config)*
+(method-name [arglist] fake-type [config])*
 </code></pre>
 
 <p>Available fake types:</p>
@@ -587,6 +587,14 @@ including <code>this</code>:</p>
       (println (p/eat monkey &quot;banana&quot; &quot;water&quot;))) ; =&gt; ate banana and drank water
 </code></pre>
 
+<p>In ClojureScript it's possible to implement any methods under <code>Object</code> protocol.
+The framework supports this scenario but requires an arglist explicitly specified after the method name
+(<code>this</code> arg should be omitted):</p>
+<pre><code class="clj">(let [calculator (f/reify-fake Object
+                               (sum [x y] :fake [[f/any? f/any?] #(+ %2 %3)]))]
+  (is (= 5 (.sum calculator 2 3))))
+</code></pre>
+
 <h2 id="calls-assertions">Calls &amp; Assertions</h2>
 <p>In order to get and assert recorded method calls there's a 
 helper function:</p>
@@ -608,7 +616,7 @@ So the last expression can be rewritten like this:</p>
 </code></pre>
 
 <p>For the list of all available assertion functions see <a href="#assertions">Assertions</a>.</p>
-<p>There's a quirk when Java interface method is faked: you will need to use its
+<p>There's a quirk when Java interface or ClojureScript <code>Object</code> method is faked: you will need to use its
 string representation in <code>method</code>/<code>method-*</code>:</p>
 <pre><code class="clj">(let [foo (f/reify-fake clojure.lang.IFn
                         (invoke :recorded-fake))]
