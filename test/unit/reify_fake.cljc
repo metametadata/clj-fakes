@@ -293,10 +293,65 @@
          (is (f/method-was-called -invoke foo [1 2 3]))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Object
-; TODO: the same for cljs
+#?(:cljs
+   (u/-deftest
+     "Object can be reified with a new optional-fake method"
+     (f/with-fakes
+       (let [foo (f/reify-fake Object
+                               (new-method1 [] :optional-fake)
+                               (new-method2 [x y] :optional-fake [[f/any? f/any?] #(+ %2 %3)])
+                               (new-method3 [x y z] :optional-fake [f/any? "bar"]))]
+         (is (instance? fc/FakeReturnValue (.new-method1 foo)))
+
+         (is (= 5 (.new-method2 foo 2 3)))
+
+         (is (= "bar" (.new-method3 foo)))
+         (is (= "bar" (.new-method3 foo 1)))
+         (is (= "bar" (.new-method3 foo 1 2)))
+         (is (= "bar" (.new-method3 foo 1 2 3)))))))
+
+#?(:cljs
+   (u/-deftest
+     "Object can be reified with a new fake method"
+     (f/with-fakes
+       (let [foo (f/reify-fake Object
+                               (new-method1 [] :fake [[] "bla"])
+                               (new-method2 [x y] :fake [[f/any? f/any?] #(+ %2 %3)])
+                               (new-method3 [x y z] :fake [f/any? "bar"]))]
+         (is (= "bla" (.new-method1 foo)))
+
+         (is (= 5 (.new-method2 foo 2 3)))
+
+         (is (= "bar" (.new-method3 foo)))
+         (is (= "bar" (.new-method3 foo 1)))
+         (is (= "bar" (.new-method3 foo 1 2)))
+         (is (= "bar" (.new-method3 foo 1 2 3)))))))
+
+#?(:cljs
+   (u/-deftest
+     "Object can be reified with a new recorded fake method"
+     (f/with-fakes
+       (let [foo (f/reify-fake Object
+                               (new-method1 [x] :recorded-fake)
+                               (new-method2 [x y] :recorded-fake [[f/any? f/any?] #(+ %2 %3)]))]
+         (is (instance? fc/FakeReturnValue (.new-method1 foo 777)))
+         (is (= 5 (.new-method2 foo 2 3)))
+
+         (is (f/method-was-called "new-method1" foo [777]))
+         (is (f/method-was-called "new-method2" foo [2 3]))))))
+
+#?(:cljs
+   (u/-deftest
+     "Object/toString can be faked"
+     (f/with-fakes
+       (let [foo (f/reify-fake Object
+                               (toString [] :recorded-fake [[] "bla"]))]
+         (is (= "bla" (str foo)))
+         (is (f/method-was-called "toString" foo []))))))
+
 #?(:clj
    (u/-deftest
-     "Object/toString can be reified"
+     "Object/toString can be faked"
      (f/with-fakes
        (let [foo (f/reify-fake Object
                                (toString :recorded-fake [[] "bla"]))]
@@ -310,18 +365,6 @@
        (let [foo (f/reify-fake java.lang.Object
                                (toString :fake [[] "bla"]))]
          (is (= "bla" (str foo)))))))
-
-; TODO:
-;#?(:cljs
-;   (u/-deftest
-;     "Object can be reified with any new methods"
-;     (f/with-fakes
-;       (let [foo (f/reify-fake Object
-;                               [bar :optional-fake [f/any? 145]
-;                                #_[[1] "1"
-;                                   [1 2] "1 2 !!!!!!"
-;                                   [] "none"]])]
-;         (is (= "1" (.bar foo 1)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; integration
 (u/-deftest

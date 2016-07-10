@@ -368,13 +368,13 @@ which features are currently supported:
 Feature                                    | `reify-fake` | `reify-nice-fake` 
 -                                          | -            | -            
 Fake protocol method (explicitly)          | Yes          | Yes 
-Fake Java interface method (explicitly)    | Yes          | Yes
-Fake Object method (explicitly)            | Clojure: Yes, ClojureScript: No | Clojure: Yes, ClojureScript: No
 Fake protocol method (auto)                | -            | Yes
+Fake Java interface method (explicitly)    | Yes          | Yes
 Fake Java interface method (auto)          | -            | No
+Fake Object method (explicitly)            | Yes          | Only in Clojure
 Fake Object method (auto)                  | -            | No
+Object can be reified with any new methods | Only in ClojureScript | Only in ClojureScript
 Support overloaded methods                 | Yes          | Yes
-Object can be reified with any new methods | No           | No
 
 ## Syntax
 
@@ -393,7 +393,7 @@ or more method fakes:
 
 ```clj
 protocol-or-interface-or-Object
-(method-name fake-type config)*
+(method-name [arglist] fake-type [config])*
 ```
 
 Available fake types:
@@ -441,6 +441,16 @@ including `this`:
       (println (p/eat monkey "banana" "water"))) ; => ate banana and drank water
 ```
 
+In ClojureScript it's possible to implement any methods under `Object` protocol.
+The framework supports this scenario but requires an arglist explicitly specified after the method name
+(`this` arg should be omitted):
+
+```clj
+(let [calculator (f/reify-fake Object
+                               (sum [x y] :fake [[f/any? f/any?] #(+ %2 %3)]))]
+  (is (= 5 (.sum calculator 2 3))))
+```
+
 ## Calls & Assertions
 
 In order to get and assert recorded method calls there's a 
@@ -471,7 +481,7 @@ So the last expression can be rewritten like this:
 
 For the list of all available assertion functions see [Assertions](#assertions).
 
-There's a quirk when Java interface method is faked: you will need to use its
+There's a quirk when Java interface or ClojureScript `Object` method is faked: you will need to use its
 string representation in `method`/`method-*`:
 
 ```clj

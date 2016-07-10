@@ -475,7 +475,7 @@ any?
 #?(:clj
    (defn ^:no-doc -emit-imp-value
      [form env ctx obj-id-sym protocol-sym
-      [method-sym fake-type config :as _method-spec_]]
+      method-sym fake-type config]
      (let [method-full-sym (-emit-method-full-sym env protocol-sym method-sym)
            method-hash `(-method-hash
                           ~obj-id-sym
@@ -565,7 +565,7 @@ any?
 
        ; not a protocol
        (if (-cljs-env? env)
-         ; ClojureScript - error (note that Object is not yet supported either)
+         ; ClojureScript - something went wrong
          (assert nil (str "Unknown protocol: " protocol-sym))
 
          ; Clojure - Object, Java interface or error
@@ -587,20 +587,40 @@ any?
 
       If protocol is a Java interface then method signature(s) will have type hints (it is needed
       to support overloaded methods)."
-     [form env ctx obj-id-sym protocol-sym
-      [method-sym _fake-type_ _config_ :as method-spec]]
-     (let [imp-sym (gensym "imp")
-           imp-value (-emit-imp-value
-                       form env ctx
-                       obj-id-sym
-                       protocol-sym
-                       method-spec)
-           signatures (-method-signatures env protocol-sym method-sym)]
-       (assert (seq signatures) (str "Unknown method: " protocol-sym "/" method-sym))
+     [form env ctx obj-id-sym protocol-sym method-spec]
+     (let [imp-sym (gensym "imp")]
+       (if (and (-cljs-env? env)
+                (= protocol-sym 'Object))
+         ; edge case: allow implementing any new methods for Object protocol in ClojureScript
+         (let [[method-sym arglist-hint fake-type config] method-spec
+               ; validate arglist and add first 'this' arg
+               arglist (do
+                         (assert (vector? arglist-hint)
+                                 (str "Vector arglist expected to be specified for an Object method: " protocol-sym "/" method-sym
+                                      ". Actual value: " (pr-str arglist-hint)))
+                         (into ['this] arglist-hint))
+               imp-value (-emit-imp-value
+                           form env ctx
+                           obj-id-sym
+                           protocol-sym
+                           method-sym fake-type config)]
+           {:imp-sym    imp-sym
+            :imp-value  imp-value
+            :signatures [{:method-sym method-sym :arglist arglist}]})
 
-       {:imp-sym    imp-sym
-        :imp-value  imp-value
-        :signatures signatures})))
+         ; protocol, Java interface or Clojure Object
+         (let [[method-sym fake-type config] method-spec
+               imp-value (-emit-imp-value
+                           form env ctx
+                           obj-id-sym
+                           protocol-sym
+                           method-sym fake-type config)
+               signatures (-method-signatures env protocol-sym method-sym)]
+           (assert (seq signatures) (str "Unknown method: " protocol-sym "/" method-sym))
+
+           {:imp-sym    imp-sym
+            :imp-value  imp-value
+            :signatures signatures})))))
 
 #?(:clj
    (defn ^:no-doc -method-imps-for-protocol
@@ -701,7 +721,7 @@ any?
                      (-register-obj-id ~ctx ~obj-sym ~obj-id-sym)
                      ~obj-sym)]
        (when debug?
-         (set! *print-meta* true)
+         ;(set! *print-meta* true)
          (PP result)
          (PP "--")
          (set! *print-meta* false))
@@ -742,8 +762,13 @@ any?
      (reify-fake my-context
        protocol-or-interface-or-Object
        [method1 :optional-fake [any? 123]]
+
        protocol-or-interface-or-Object
-       [method2 :recorded-fake])
+       [method2 :recorded-fake]
+
+       ; reification of Object with arbitrary methods works only in ClojureScript, note how arglist must be explicitly provided:
+       Object
+       [new-method3 [x y z] :recorded-fake])
      ```"
      [ctx & specs]
      `(reify-fake* ~ctx ~&form ~&env ~@specs)))
