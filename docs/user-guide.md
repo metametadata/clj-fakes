@@ -447,8 +447,10 @@ The framework supports this scenario but requires an arglist explicitly specifie
 
 ```clj
 (let [calculator (f/reify-fake Object
-                               (sum [x y] :fake [[f/any? f/any?] #(+ %2 %3)]))]
-  (is (= 5 (.sum calculator 2 3))))
+                               (sum [x y] :fake [[f/any? f/any?] #(+ %2 %3)])
+                               (toString [] :optional-fake [[] "my calculator"]))]
+  (is (= 5 (.sum calculator 2 3)))
+  (is (= "my calculator" (str calculator))))
 ```
 
 ## Calls & Assertions
