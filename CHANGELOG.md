@@ -1,8 +1,13 @@
 # Changelog
 
+## 0.7.0
+
+- (Clojure) fixed bug: `with-fakes` should catch all `Throwable`s, not only `Exception`s,
+otherwise original errors are not reported in case of self-test fail.
+
 ## 0.6.0
 
-- ClojureScript only: it's now possible to implement any new methods under `Object` in `reify-fake`/`reify-nice-fake`. E.g.:
+- (ClojureScript) it's now possible to implement any new methods under `Object` in `reify-fake`/`reify-nice-fake`. E.g.:
 
 ```clj
 (let [calculator (f/reify-fake Object

@@ -22,7 +22,7 @@ Requirements: Clojure 1.7.0 and/or ClojureScript 1.7.28 or higher.
 Add this to your dependencies:
 
 ```clj
-[clj-fakes "0.6.0"]
+[clj-fakes "0.7.0"]
 ```
 
 Require framework namespace in your unit test source file:
