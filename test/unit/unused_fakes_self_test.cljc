@@ -31,6 +31,14 @@
       (f/fake [f/any? nil])
       (throw (ex-info "expected" {})))))
 
+(u/-deftest
+  "user is not warned if fake was never called in case of assertion error inside the context"
+  (u/-is-assertion-error-thrown
+    #"expected"
+    (f/with-fakes
+      (f/fake [f/any? nil])
+      (assert nil "expected"))))
+
 #?(:cljs
    (u/-deftest
      "user is not warned if fake was never called in case of non-object exception inside the context"
@@ -48,9 +56,9 @@
   "works with explicit context"
   (u/-is-error-thrown
     #?(:clj
-       #"^Self-test: no call detected for:\nnon-optional fake from unit/unused_fakes_self_test\.cljc, 55:7"
+       #"^Self-test: no call detected for:\nnon-optional fake from unit/unused_fakes_self_test\.cljc, 63:7"
        :cljs
-       #"^Self-test: no call detected for:\nnon-optional fake from test/unit/unused_fakes_self_test\.cljc, 55:7")
+       #"^Self-test: no call detected for:\nnon-optional fake from test/unit/unused_fakes_self_test\.cljc, 63:7")
     (let [ctx (fc/context)]
       (fc/fake ctx [f/any? nil])
       (fc/self-test-unused-fakes ctx))))
@@ -65,14 +73,14 @@
   (u/-is-error-thrown
     #?(:clj
        #"^Self-test: no call detected for:
-non-optional fake from unit/unused_fakes_self_test\.cljc, 77:7
-non-optional fake from unit/unused_fakes_self_test\.cljc, 78:7
-non-optional fake from unit/unused_fakes_self_test\.cljc, 79:7"
+non-optional fake from unit/unused_fakes_self_test\.cljc, 85:7
+non-optional fake from unit/unused_fakes_self_test\.cljc, 86:7
+non-optional fake from unit/unused_fakes_self_test\.cljc, 87:7"
        :cljs
        #"^Self-test: no call detected for:
-non-optional fake from test/unit/unused_fakes_self_test\.cljc, 77:7
-non-optional fake from test/unit/unused_fakes_self_test\.cljc, 78:7
-non-optional fake from test/unit/unused_fakes_self_test\.cljc, 79:7")
+non-optional fake from test/unit/unused_fakes_self_test\.cljc, 85:7
+non-optional fake from test/unit/unused_fakes_self_test\.cljc, 86:7
+non-optional fake from test/unit/unused_fakes_self_test\.cljc, 87:7")
     (f/with-fakes
       (f/fake [f/any? nil])
       (f/fake [f/any? nil])
@@ -83,9 +91,9 @@ non-optional fake from test/unit/unused_fakes_self_test\.cljc, 79:7")
   "user is not warned if reified protocol fake was never called"
   (u/-is-error-thrown
     #?(:clj
-       #"^Self-test: no call detected for:\nnon-optional fake from unit/unused_fakes_self_test\.cljc, 90:7 \(p/AnimalProtocol, speak\)"
+       #"^Self-test: no call detected for:\nnon-optional fake from unit/unused_fakes_self_test\.cljc, 98:7 \(p/AnimalProtocol, speak\)"
        :cljs
-       #"^Self-test: no call detected for:\nnon-optional fake from test/unit/unused_fakes_self_test\.cljc, 90:7 \(p/AnimalProtocol, speak\)")
+       #"^Self-test: no call detected for:\nnon-optional fake from test/unit/unused_fakes_self_test\.cljc, 98:7 \(p/AnimalProtocol, speak\)")
     (f/with-fakes
       (f/reify-fake p/AnimalProtocol
                     (speak :fake [f/any? nil])))))
@@ -94,21 +102,10 @@ non-optional fake from test/unit/unused_fakes_self_test\.cljc, 79:7")
   "user is not warned if reified protocol fake was never called (explicit context)"
   (u/-is-error-thrown
     #?(:clj
-       #"^Self-test: no call detected for:\nnon-optional fake from unit/unused_fakes_self_test\.cljc, 101:7 \(p/AnimalProtocol, speak\)"
+       #"^Self-test: no call detected for:\nnon-optional fake from unit/unused_fakes_self_test\.cljc, 109:7 \(p/AnimalProtocol, speak\)"
        :cljs
-       #"^Self-test: no call detected for:\nnon-optional fake from test/unit/unused_fakes_self_test\.cljc, 101:7 \(p/AnimalProtocol, speak\)")
+       #"^Self-test: no call detected for:\nnon-optional fake from test/unit/unused_fakes_self_test\.cljc, 109:7 \(p/AnimalProtocol, speak\)")
     (let [ctx (fc/context)]
       (fc/reify-fake ctx p/AnimalProtocol
                      (speak :fake [f/any? nil]))
       (fc/self-test-unused-fakes ctx))))
-
-;TODO:
-;#?(:cljs
-;   (u/-deftest
-;     "(async) user is warned if fake was never called"
-;     (async done
-;       (u/-is-error-thrown
-;         #"^Self-test: 1no call detected for:\nnon-optional fake from test/unit/unused_fakes_self_test\.cljc, 87:12"
-;         (f/with-fakes
-;           (f/fake [f/any? nil])))
-;       (done))))

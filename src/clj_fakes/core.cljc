@@ -30,7 +30,7 @@ Also see [[with-fakes]] macro."}
       (try
         (apply f args)
 
-        (catch #?(:clj Exception :cljs :default) e
+        (catch #?(:clj Throwable :cljs :default) e
           (reset! exception-caught? true)
           (throw e))
 
