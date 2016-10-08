@@ -1,18 +1,10 @@
 (ns unit.recorded-fake
-  #?@(:clj  [
-             (:require
-               [clojure.test :refer :all]
-               [unit.utils :as u]
-               [unit.fake-fn-contract :refer :all]
-               [clj-fakes.context :as fc]
-               [clj-fakes.core :as f]
-               )]
-      :cljs [(:require
-               [cljs.test :refer-macros [is testing]]
-               [unit.fake-fn-contract :refer [testing-fake-fn-contract]]
-               [clj-fakes.context :as fc :include-macros true]
-               [clj-fakes.core :as f :include-macros true])
-             (:require-macros [unit.utils :as u])]))
+  (:require
+    [clojure.test :refer [is testing]]
+    [unit.utils :as u]
+    [unit.fake-fn-contract :as c]
+    [clj-fakes.context :as fc]
+    [clj-fakes.core :as f]))
 
 (defn recorded-fake
   ([]
@@ -34,7 +26,7 @@
 
 (u/-deftest
   "fake contract"
-  (testing-fake-fn-contract
+  (c/testing-fake-fn-contract
     recorded-fake
     ctx-recorded-fake
     false))

@@ -1,17 +1,10 @@
 (ns unit.original-val
-  #?@(:clj  [
-             (:require
-               [clojure.test :refer :all]
-               [unit.utils :as u]
-               [clj-fakes.core :as f]
-               [clj-fakes.context :as fc]
-               [unit.fixtures.functions :as funcs])]
-      :cljs [(:require
-               [cljs.test :refer-macros [is testing]]
-               [clj-fakes.core :as f :include-macros true]
-               [clj-fakes.context :as fc :include-macros true]
-               [unit.fixtures.functions :as funcs])
-             (:require-macros [unit.utils :as u])]))
+  (:require
+    [clojure.test :refer [is testing]]
+    [unit.utils :as u]
+    [clj-fakes.core :as f]
+    [clj-fakes.context :as fc]
+    [unit.fixtures.functions :as funcs]))
 
 (def my-var 111)
 (def my-nil-var nil)

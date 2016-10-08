@@ -1,13 +1,13 @@
-(defproject clj-fakes "0.7.0"
+(defproject clj-fakes "0.8.0-SNAPSHOT"
   :description "An isolation framework for Clojure/ClojureScript that makes creating test doubles (stubs, mocks, etc.) much easier."
   :url "https://github.com/metametadata/clj-fakes"
   :license {:name "MIT" :url "http://opensource.org/licenses/MIT"}
 
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
-                 [org.clojure/clojurescript "1.9.93" :scope "provided"]]
+                 [org.clojure/clojurescript "1.9.229" :scope "provided"]]
 
   :profiles {:min-deps {:dependencies [[org.clojure/clojure "1.7.0"]
-                                       [org.clojure/clojurescript "1.7.28"]]}}
+                                       [org.clojure/clojurescript "1.9.229" :exclusions [org.clojure/clojure]]]}}
 
   :plugins [[lein-cljsbuild "1.0.6"]
             [com.jakemccrary/lein-test-refresh "0.15.0"]

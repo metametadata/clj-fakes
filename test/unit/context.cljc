@@ -1,13 +1,8 @@
 (ns unit.context
-  #?@(:clj  [
-             (:require
-               [clojure.test :refer :all]
-               [unit.utils :as u]
-               [clj-fakes.core :as f])]
-      :cljs [(:require
-               [cljs.test :refer-macros [is testing]]
-               [clj-fakes.core :as f :include-macros true])
-             (:require-macros [unit.utils :as u])]))
+  (:require
+    [clojure.test :refer [is testing]]
+    [unit.utils :as u]
+    [clj-fakes.core :as f]))
 
 (def my-var 111)
 

@@ -1,15 +1,9 @@
 (ns unit.args-matcher
-  #?@(:clj  [
-             (:require
-               [clojure.test :refer :all]
-               [unit.utils :as u]
-               [clj-fakes.core :as f]
-               [clj-fakes.context :as fc])]
-      :cljs [(:require
-               [cljs.test :refer-macros [is are testing]]
-               [clj-fakes.core :as f :include-macros true]
-               [clj-fakes.context :as fc :include-macros true])
-             (:require-macros [unit.utils :as u])]))
+  (:require
+    [clojure.test :refer [is are testing]]
+    [unit.utils :as u]
+    [clj-fakes.core :as f]
+    [clj-fakes.context :as fc]))
 
 (defn args-match?
   [matcher args]

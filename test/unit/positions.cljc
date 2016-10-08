@@ -1,18 +1,11 @@
 ; positioning is also partially tested implicitly in tests about self-tests
 (ns unit.positions
-  #?@(:clj  [
-             (:require
-               [clojure.test :refer :all]
-               [unit.utils :as u]
-               [clj-fakes.core :as f]
-               [clj-fakes.context :as fc]
-               [unit.fixtures.macros :as m])]
-      :cljs [(:require
-               [cljs.test :refer-macros [is testing]]
-               [clj-fakes.core :as f :include-macros true]
-               [clj-fakes.context :as fc :include-macros true])
-             (:require-macros [unit.fixtures.macros :as m]
-               [unit.utils :as u])]))
+  (:require
+    [clojure.test :refer [is testing]]
+    [unit.utils :as u]
+    [clj-fakes.core :as f]
+    [clj-fakes.context :as fc]
+    [unit.fixtures.macros :as m]))
 
 (def this-file-re #".*unit/positions.cljc$")
 
@@ -49,9 +42,9 @@
   (testing-fake-fn-position-detection
     ; we can't pass a macro into a function so let's wrap it into a func
     (fn [config] (f/fake config))
-    51 18
+    44 18
     (fn [ctx config] (fc/fake ctx config))
-    53 22))
+    46 22))
 
 (u/-deftest
   "position detection for recorded fake with config"
@@ -61,9 +54,9 @@
       (let [fake-fn (f/recorded-fake config)]
         (f/mark-checked fake-fn)
         fake-fn))
-    61 21
+    54 21
     (fn [ctx config] (fc/recorded-fake ctx config))
-    65 22))
+    58 22))
 
 (u/-deftest
   "position detection for recorded fake without config"
@@ -74,18 +67,18 @@
         ; supress self-test warnings
         (f/mark-checked fake-fn)
         fake-fn))
-    73 21
+    66 21
     (fn [ctx _config_] (fc/recorded-fake ctx))
-    78 24))
+    71 24))
 
 (u/-deftest
   "fake can be reused in a custom macro without losing ability to detect position"
   (testing-fake-fn-position-detection
     ; we can't pass a macro into a function so let's wrap it into a func
     (fn [config] (m/my-fake config))
-    85 18
+    78 18
     (fn [ctx config] (m/ctx-my-fake ctx config))
-    87 22))
+    80 22))
 
 (u/-deftest
   "recorded-fake with config can be reused in a custom macro without losing ability to detect position"
@@ -95,9 +88,9 @@
       (let [fake-fn (m/my-recorded-fake config)]
         (f/mark-checked fake-fn)
         fake-fn))
-    95 21
+    88 21
     (fn [ctx config] (m/ctx-my-recorded-fake ctx config))
-    99 22))
+    92 22))
 
 (u/-deftest
   "recorded-fake without config can be reused in a custom macro without losing ability to detect position"
@@ -107,9 +100,9 @@
       (let [fake-fn (m/my-recorded-fake)]
         (f/mark-checked fake-fn)
         fake-fn))
-    107 21
+    100 21
     (fn [ctx _config_] (m/ctx-my-recorded-fake ctx))
-    111 24))
+    104 24))
 
 (defprotocol LocalProtocol
   (bar [_]))
@@ -122,7 +115,7 @@
                               (bar :recorded-fake [f/any? nil]))]
         ; call to suppress self-test warning
         (f/mark-checked (f/method foo bar))
-        (is-fake-has-position (f/method foo bar) 121 17))))
+        (is-fake-has-position (f/method foo bar) 114 17))))
 
   (testing "recorded fake without config, implicit context"
     (f/with-fakes
@@ -130,21 +123,21 @@
                               (bar :recorded-fake))]
         ; call to suppress self-test warning
         (f/mark-checked (f/method foo bar))
-        (is-fake-has-position (f/method foo bar) 129 17))))
+        (is-fake-has-position (f/method foo bar) 122 17))))
 
   (testing "recorded fake with config, explicit context"
     (f/with-fakes
       (let [ctx (fc/context)
             foo (fc/reify-fake ctx LocalProtocol
                                (bar :recorded-fake [f/any? nil]))]
-        (is-fake-has-position-in-context ctx (fc/method ctx foo bar) 138 17))))
+        (is-fake-has-position-in-context ctx (fc/method ctx foo bar) 131 17))))
 
   (testing "recorded fake without config, explicit context"
     (f/with-fakes
       (let [ctx (fc/context)
             foo (fc/reify-fake ctx LocalProtocol
                                (bar :recorded-fake))]
-        (is-fake-has-position-in-context ctx (fc/method ctx foo bar) 145 17)))))
+        (is-fake-has-position-in-context ctx (fc/method ctx foo bar) 138 17)))))
 
 (u/-deftest
   "position can be determined in reify-fake if it's used from a custom macro"
@@ -154,7 +147,7 @@
                                  (bar :recorded-fake [f/any? nil]))]
         ; call to suppress self-test warning
         (f/mark-checked (f/method foo bar))
-        (is-fake-has-position (f/method foo bar) 153 17))))
+        (is-fake-has-position (f/method foo bar) 146 17))))
 
   (testing "recorded fake without config, implicit context"
     (f/with-fakes
@@ -162,18 +155,18 @@
                                  (bar :recorded-fake))]
         ; call to suppress self-test warning
         (f/mark-checked (f/method foo bar))
-        (is-fake-has-position (f/method foo bar) 161 17))))
+        (is-fake-has-position (f/method foo bar) 154 17))))
 
   (testing "recorded fake with config, explicit context"
     (f/with-fakes
       (let [ctx (fc/context)
             foo (m/ctx-my-reify-fake ctx LocalProtocol
                                      (bar :recorded-fake [f/any? nil]))]
-        (is-fake-has-position-in-context ctx (fc/method ctx foo bar) 170 17))))
+        (is-fake-has-position-in-context ctx (fc/method ctx foo bar) 163 17))))
 
   (testing "recorded fake without config, explicit context"
     (f/with-fakes
       (let [ctx (fc/context)
             foo (m/ctx-my-reify-fake ctx LocalProtocol
                                      (bar :recorded-fake))]
-        (is-fake-has-position-in-context ctx (fc/method ctx foo bar) 177 17)))))
+        (is-fake-has-position-in-context ctx (fc/method ctx foo bar) 170 17)))))

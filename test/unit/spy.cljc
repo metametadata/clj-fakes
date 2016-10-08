@@ -1,15 +1,9 @@
 (ns unit.spy
-  #?@(:clj  [
-             (:require
-               [clojure.test :refer :all]
-               [unit.utils :as u]
-               [clj-fakes.core :as f]
-               [unit.fixtures.functions :as funcs])]
-      :cljs [(:require
-               [cljs.test :refer-macros [is testing]]
-               [clj-fakes.core :as f :include-macros true]
-               [unit.fixtures.functions :as funcs])
-             (:require-macros [unit.utils :as u])]))
+  (:require
+    [clojure.test :refer [is testing]]
+    [unit.utils :as u]
+    [clj-fakes.core :as f]
+    [unit.fixtures.functions :as funcs]))
 
 (u/-deftest
   "function can be spied on"

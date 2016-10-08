@@ -1,16 +1,10 @@
 (ns unit.patch
-  #?@(:clj  [
-             (:require
-               [clojure.test :refer :all]
-               [unit.utils :as u]
-               [clj-fakes.core :as f]
-               [unit.fixtures.functions :as funcs])]
-      :cljs [(:require
-               [cljs.test :refer-macros [is testing async]]
-               [clj-fakes.context :as fc :include-macros true]
-               [clj-fakes.core :as f :include-macros true]
-               [unit.fixtures.functions :as funcs])
-             (:require-macros [unit.utils :as u])]))
+  (:require
+    [clojure.test :refer [is testing #?(:cljs async)]]
+    [unit.utils :as u]
+    [clj-fakes.core :as f]
+    [clj-fakes.context :as fc]
+    [unit.fixtures.functions :as funcs]))
 
 (def my-var1 111)
 (def my-var2 222)

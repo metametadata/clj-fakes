@@ -1,9 +1,26 @@
 (ns clj-fakes.core
   "Simpler API for working in implicit dynamic context.
   Implements almost the same set of functions as [[clj-fakes.context]]."
-  (:require #?@(:clj  [[clj-fakes.context :as fc]
-                       [clj-fakes.macro :refer :all]]
-                :cljs [[clj-fakes.context :as fc :include-macros true]])))
+  (:require [clj-fakes.context :as fc])
+
+  ; declare macros for export
+  #?(:cljs (:require-macros
+             [clj-fakes.core :refer
+              [arg
+               with-fakes
+
+               fake*
+               fake
+               recorded-fake*
+               recorded-fake
+
+               reify-fake*
+               reify-nice-fake*
+               reify-fake
+               reify-nice-fake
+               reify-fake-debug
+
+               patch!]])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Re-exports for usage convenience
 #?(:clj

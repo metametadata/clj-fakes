@@ -1,15 +1,9 @@
 (ns unit.method-was-not-called
-  #?@(:clj  [
-             (:require
-               [clojure.test :refer :all]
-               [unit.utils :as u]
-               [clj-fakes.core :as f]
-               [unit.fixtures.protocols :as p])]
-      :cljs [(:require
-               [cljs.test :refer-macros [is testing]]
-               [clj-fakes.core :as f :include-macros true]
-               [unit.fixtures.protocols :as p])
-             (:require-macros [unit.utils :as u])]))
+  (:require
+    [clojure.test :refer [is testing]]
+    [unit.utils :as u]
+    [clj-fakes.core :as f]
+    [unit.fixtures.protocols :as p]))
 
 (u/-deftest
   "passes if function was never called"

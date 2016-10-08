@@ -1,13 +1,25 @@
 (ns clj-fakes.context
   "API for working in explicit context."
   (:require [clojure.string :as string]
-    #?@(:clj  [
-            [clj-fakes.reflection :as r]
             [clojure.pprint :as pprint]
-            [clj-fakes.macro :refer :all]]
-        :cljs [[cljs.pprint :as pprint]]))
-  #?(:cljs
-     (:require-macros [clj-fakes.macro :refer [-cljs-env? P PP]])))
+    #?@(:clj [
+            [clj-fakes.macro :as m]
+            [clj-fakes.reflection :as r]]))
+
+  ; declare macros for export
+  #?(:cljs (:require-macros
+             [clj-fakes.context :refer
+              [arg
+               fake*
+               fake
+               recorded-fake*
+               recorded-fake
+               reify-fake*
+               -reify-fake-debug*
+               reify-nice-fake*
+               reify-fake
+               reify-nice-fake
+               patch!]])))
 
 (defn context
   "Creates a new context atom.
@@ -461,7 +473,7 @@ any?
    (defn ^:no-doc -emit-method-full-sym
      "Infers fully qualified method symbol."
      [env protocol-sym method-sym]
-     (if (-cljs-env? env)
+     (if (m/-cljs-env? env)
        ; ClojureScript
        (let [protocol-var (r/-cljs-resolve env protocol-sym)]
          (symbol (namespace (:name protocol-var)) (name method-sym)))
@@ -564,7 +576,7 @@ any?
               arglists))
 
        ; not a protocol
-       (if (-cljs-env? env)
+       (if (m/-cljs-env? env)
          ; ClojureScript - something went wrong
          (assert nil (str "Unknown protocol: " protocol-sym))
 
@@ -589,7 +601,7 @@ any?
       to support overloaded methods)."
      [form env ctx obj-id-sym protocol-sym method-spec]
      (let [imp-sym (gensym "imp")]
-       (if (and (-cljs-env? env)
+       (if (and (m/-cljs-env? env)
                 (= protocol-sym 'Object))
          ; edge case: allow implementing any new methods for Object protocol in ClojureScript
          (let [[method-sym arglist-hint fake-type config] method-spec
@@ -722,8 +734,8 @@ any?
                      ~obj-sym)]
        (when debug?
          ;(set! *print-meta* true)
-         (PP result)
-         (PP "--")
+         (m/PP result)
+         (m/PP "--")
          (set! *print-meta* false))
        result)))
 
@@ -872,7 +884,7 @@ any?
 
 (defn were-called-in-order
   "Checks that recorded fakes were called in specified order with the specified args.
-  It does not check that there were not other calls.
+  It does not check that there were no other calls.
 
   Syntax:
   ```
@@ -974,7 +986,7 @@ any?
    (defmacro ^:no-doc -set-var!
      "Portable var set. ClojureScript version expects passed variable to be a pair, e.g. `(var foo)`."
      [a-var val]
-     (if (-cljs-env? &env)
+     (if (m/-cljs-env? &env)
        ; ClojureScript
        (let [[_ var-symbol] a-var]
          `(set! ~var-symbol ~val))

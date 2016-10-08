@@ -1,18 +1,10 @@
 (ns unit.reify-nice-fake
-  #?@(:clj  [
-             (:require
-               [clojure.test :refer :all]
-               [unit.utils :as u]
-               [clj-fakes.core :as f]
-               [clj-fakes.context :as fc]
-               [unit.fixtures.protocols :as p :refer [AnimalProtocol]]
-               )]
-      :cljs [(:require
-               [cljs.test :refer-macros [is testing]]
-               [clj-fakes.core :as f :include-macros true]
-               [clj-fakes.context :as fc :include-macros true]
-               [unit.fixtures.protocols :as p :refer [AnimalProtocol]])
-             (:require-macros [unit.utils :as u])]))
+  (:require
+    [clojure.test :refer [is testing]]
+    [unit.utils :as u]
+    [clj-fakes.core :as f]
+    [clj-fakes.context :as fc]
+    [unit.fixtures.protocols :as p :refer [AnimalProtocol]]))
 
 (defprotocol LocalProtocol
   (bar [this] [this x y])

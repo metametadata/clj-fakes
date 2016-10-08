@@ -9,7 +9,7 @@ Use `min-deps` profile to test with minimal supported dependencies (instead of d
  
 `lein with-profiles +min-deps test-refresh`
 
-`lein clean && lein with-profiles +min-deps doo phantom test once`
+This profile cannot be applied to the ClojureScript version of the library because usage of the latest ClojureScript is always assumed.
 
 # Documentation
 

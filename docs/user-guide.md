@@ -5,22 +5,6 @@ The public API is split into two namespaces:
 * `clj-fakes.core`
 * `clj-fakes.context`
 
-This is how you could require them in Clojure and ClojureScript:
-
-```clj
-; Clojure
-(ns unit.example
-  (:require
-    [clj-fakes.core :as f]
-    [clj-fakes.context :as fc]))
-
-; ClojureScript
-(ns unit.example
-  (:require
-    [clj-fakes.core :as f :include-macros true]
-    [clj-fakes.context :as fc :include-macros true]))
-```
-
 These namespaces contain almost the same set of members. The difference 
 is that `core` uses an implicit context and the `context` namespace
 functions require an explicit context argument.

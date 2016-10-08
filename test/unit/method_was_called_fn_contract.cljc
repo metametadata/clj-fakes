@@ -1,17 +1,10 @@
 (ns unit.method-was-called-fn-contract
-  #?@(:clj  [
-             (:require
-               [clojure.test :refer :all]
-               [unit.utils :as u]
-               [clj-fakes.core :as f]
-               [clj-fakes.context :as fc]
-               [unit.fixtures.protocols :as p])]
-      :cljs [(:require
-               [cljs.test :refer-macros [is testing]]
-               [clj-fakes.core :as f :include-macros true]
-               [clj-fakes.context :as fc :include-macros true]
-               [unit.fixtures.protocols :as p])
-             (:require-macros [unit.utils :as u])]))
+  (:require
+    [clojure.test :refer [is testing]]
+    [unit.utils :as u]
+    [clj-fakes.core :as f]
+    [clj-fakes.context :as fc]
+    [unit.fixtures.protocols :as p]))
 
 (defn testing-method-was-called-fn-contract
   "Parametrized test which defines a contract for method-was-called-* funcs.

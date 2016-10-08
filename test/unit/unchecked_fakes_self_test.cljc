@@ -1,21 +1,15 @@
 (ns unit.unchecked-fakes-self-test
-  #?@(:clj  [
-             (:require
-               [clojure.test :refer :all]
-               [unit.utils :as u]
-               [clj-fakes.core :as f]
-               [clj-fakes.context :as fc]
-               [unit.fixtures.protocols :as p])]
-      :cljs [(:require [cljs.test :refer-macros [is testing]]
-               [clj-fakes.core :as f :include-macros true]
-               [clj-fakes.context :as fc :include-macros true]
-               [unit.fixtures.protocols :as p])
-             (:require-macros [unit.utils :as u])]))
+  (:require
+    [clojure.test :refer [is testing]]
+    [unit.utils :as u]
+    [clj-fakes.core :as f]
+    [clj-fakes.context :as fc]
+    [unit.fixtures.protocols :as p]))
 
 (u/-deftest
   "user is warned if fake was never checked"
   (u/-is-error-thrown
-    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 20:7"
+    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 14:7"
     (f/with-fakes
       (f/recorded-fake [f/any? nil]))))
 
@@ -56,7 +50,7 @@
 (u/-deftest
   "self-test works with explicit context"
   (u/-is-error-thrown
-    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 61:7"
+    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 55:7"
     (let [ctx (fc/context)]
       (fc/recorded-fake ctx [f/any? nil])
       (fc/self-test-unchecked-fakes ctx))))
@@ -64,7 +58,7 @@
 (u/-deftest
   "self-test about unchecked recorded fakes is more important than the one about unused fakes"
   (u/-is-error-thrown
-    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 70:7"
+    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 64:7"
     (f/with-fakes
       (f/fake [f/any? nil])
       (f/recorded-fake [f/any? nil]))))
@@ -72,7 +66,7 @@
 (u/-deftest
   "user is warned if several fakes were not checked"
   (u/-is-error-thrown
-    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 77:7\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 78:7\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 79:7$"
+    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 71:7\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 72:7\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 73:7$"
     (f/with-fakes
       (f/recorded-fake [f/any? nil])
       (f/recorded-fake [f/any? nil])
@@ -82,7 +76,7 @@
 (u/-deftest
   "user is warned if reified protocol fake was never checked"
   (u/-is-error-thrown
-    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 87:7 \(p/AnimalProtocol, speak\)"
+    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 81:7 \(p/AnimalProtocol, speak\)"
     (f/with-fakes
       (f/reify-fake p/AnimalProtocol
                     (speak :recorded-fake [f/any? nil])))))
@@ -90,7 +84,7 @@
 (u/-deftest
   "user is warned if reified protocol fake was never checked (explicit context)"
   (u/-is-error-thrown
-    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 95:7 \(p/AnimalProtocol, speak\)"
+    #"^Self-test: no check performed on:\nrecorded fake from .*unit/unchecked_fakes_self_test\.cljc, 89:7 \(p/AnimalProtocol, speak\)"
     (let [ctx (fc/context)]
       (fc/reify-fake ctx p/AnimalProtocol
                      (speak :recorded-fake [f/any? nil]))

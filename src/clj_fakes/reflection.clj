@@ -1,5 +1,5 @@
 (ns clj-fakes.reflection
-  (:require [clj-fakes.macro :refer :all]
+  (:require [clj-fakes.macro :as m]
             [clojure.reflect :as reflect]))
 
 (defn -cljs-resolve
@@ -10,7 +10,7 @@
 
 (defn -resolves?
   [env sym]
-  (if (-cljs-env? env)
+  (if (m/-cljs-env? env)
     ; ClojureScript
     (not (nil? (:meta (-cljs-resolve env sym))))
 
@@ -20,7 +20,7 @@
 (defn -resolve-protocol-with-specs
   "Returns a resolved protocol or nil if resolved object has no protocol specs."
   [env protocol-sym]
-  (if (-cljs-env? env)
+  (if (m/-cljs-env? env)
     ; ClojureScript
     (let [protocol (-cljs-resolve env protocol-sym)]
       (when-not (nil? (-> protocol :meta :protocol-info))
@@ -33,7 +33,7 @@
 
 (defn -resolves-to-Object?
   [env sym]
-  (if (-cljs-env? env)
+  (if (m/-cljs-env? env)
     ; ClojureScript
     (= 'Object sym)
 
@@ -44,7 +44,7 @@
   "Portable reflection helper. Returns different structures for different hosts.
   Protocol must be already resolved."
   [env protocol]
-  (if (-cljs-env? env)
+  (if (m/-cljs-env? env)
     ; ClojureScript
     (-> protocol :meta :protocol-info :methods)
 
@@ -54,7 +54,7 @@
 (defn -protocol-method-name
   "Portable reflection helper."
   [env protocol-method]
-  (if (-cljs-env? env)
+  (if (m/-cljs-env? env)
     ; ClojureScript
     (first protocol-method)
 
@@ -64,7 +64,7 @@
 (defn -protocol-method-arglist
   "Portable reflection helper."
   [env protocol-method]
-  (if (-cljs-env? env)
+  (if (m/-cljs-env? env)
     ; ClojureScript
     (second protocol-method)
 
@@ -74,7 +74,7 @@
 (defn -reflect-interface-or-object
   "Raises an exception if cannot reflect on specified symbol."
   [env interface-sym]
-  (assert (not (-cljs-env? env)) "Works only in Clojure for reflection on Java interfaces and Object class.")
+  (assert (not (m/-cljs-env? env)) "Works only in Clojure for reflection on Java interfaces and Object class.")
   (if (-resolves-to-Object? env interface-sym)
     ; Object
     (reflect/reflect Object)

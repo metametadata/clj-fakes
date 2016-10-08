@@ -22,19 +22,10 @@ framework in this documentation. To learn how to use it:
 3) Require framework namespace in your unit test source file:
 
 ```clj
-; Clojure
 (ns unit.example
   (:require
-    ; ...
-    [clojure.test :refer :all]
+    [clojure.test :refer [is deftest]]
     [clj-fakes.core :as f]))
-
-; ClojureScript
-(ns unit.example
-  (:require
-    ; ...
-    [cljs.test :refer-macros [is deftest]]
-    [clj-fakes.core :as f :include-macros true]))
 ```
 
 4) Now you can write a simple unit test which creates and calls a fake function:

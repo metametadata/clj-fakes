@@ -1,15 +1,9 @@
 (ns unit.cyclically
-  #?@(:clj  [
-             (:require
-               [clojure.test :refer :all]
-               [unit.utils :as u]
-               [clj-fakes.core :as f]
-               [unit.fixtures.protocols :as p :refer [AnimalProtocol]])]
-      :cljs [(:require
-               [cljs.test :refer-macros [is testing]]
-               [clj-fakes.core :as f :include-macros true]
-               [unit.fixtures.protocols :as p :refer [AnimalProtocol]])
-             (:require-macros [unit.utils :as u])]))
+  (:require
+    [clojure.test :refer [is testing]]
+    [unit.utils :as u]
+    [clj-fakes.core :as f]
+    [unit.fixtures.protocols :as p]))
 
 (u/-deftest
   "returned function cycles through specified values infinitely and takes any args"
@@ -32,7 +26,7 @@
   "(just in case) can be used for iterator-style stubbing of methods"
   (f/with-fakes
     (let [cow (f/reify-fake
-                AnimalProtocol
+                p/AnimalProtocol
                 (speak :fake [[] (f/cyclically ["moo" "mmm" "moo-moo"])]))]
       (dotimes [_ 2]
         (is (= "moo" (p/speak cow)))

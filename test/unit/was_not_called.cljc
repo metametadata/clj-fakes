@@ -1,15 +1,8 @@
 (ns unit.was-not-called
-  #?@(:clj  [
-             (:require
-               [clojure.test :refer :all]
-               [unit.utils :as u]
-               [clj-fakes.core :as f]
-               [unit.was-called-fn-contract :refer :all])]
-      :cljs [(:require
-               [cljs.test :refer-macros [is testing]]
-               [clj-fakes.core :as f :include-macros true]
-               [unit.was-called-fn-contract :refer [testing-was-called-fn-contract]])
-             (:require-macros [unit.utils :as u])]))
+  (:require
+    [clojure.test :refer [is testing]]
+    [unit.utils :as u]
+    [clj-fakes.core :as f]))
 
 (u/-deftest
   "passes if function was never called"

@@ -1,13 +1,8 @@
 (ns unit.were-called-in-order
-  #?@(:clj  [
-             (:require
-               [clojure.test :refer :all]
-               [unit.utils :as u]
-               [clj-fakes.core :as f])]
-      :cljs [(:require
-               [cljs.test :refer-macros [is testing]]
-               [clj-fakes.core :as f :include-macros true])
-             (:require-macros [unit.utils :as u])]))
+  (:require
+    [clojure.test :refer [is testing]]
+    [unit.utils :as u]
+    [clj-fakes.core :as f]))
 
 (u/-deftest
   "passes when function was called twice"
@@ -127,6 +122,6 @@
       (foo 1 2 3)
 
       (u/-is-error-thrown
-        #"^Could not find a call satisfying step #1:\nrecorded fake from .*unit/were_called_in_order\.cljc, 126:15\nargs matcher: \[100 <string\?>\]"
+        #"^Could not find a call satisfying step #1:\nrecorded fake from .*unit/were_called_in_order\.cljc, 121:15\nargs matcher: \[100 <string\?>\]"
         (f/were-called-in-order
           foo [100 (f/arg string?)])))))

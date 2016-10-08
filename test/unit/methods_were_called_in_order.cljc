@@ -1,15 +1,9 @@
 (ns unit.methods-were-called-in-order
-  #?@(:clj  [
-             (:require
-               [clojure.test :refer :all]
-               [unit.utils :as u]
-               [clj-fakes.core :as f]
-               [unit.fixtures.protocols :as p])]
-      :cljs [(:require
-               [cljs.test :refer-macros [is testing]]
-               [clj-fakes.core :as f :include-macros true]
-               [unit.fixtures.protocols :as p])
-             (:require-macros [unit.utils :as u])]))
+  (:require
+    [clojure.test :refer [is testing]]
+    [unit.utils :as u]
+    [clj-fakes.core :as f]
+    [unit.fixtures.protocols :as p]))
 
 (u/-deftest
   "big integration test"
@@ -68,7 +62,7 @@
       (u/-is-error-thrown
         (re-pattern (str "^Could not find a call satisfying step #2:\n"
                          "recorded fake from .*unit/methods_were_called_in_order\\.cljc"
-                         ", 61:15 \\(p/AnimalProtocol, speak\\)\n"
+                         ", 55:15 \\(p/AnimalProtocol, speak\\)\n"
                          "args matcher: <this> \\[Bob\\]$"))
         (f/methods-were-called-in-order
           p/eat dog ["dog food" "water"]
