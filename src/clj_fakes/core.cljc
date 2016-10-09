@@ -27,7 +27,7 @@
    (defmacro arg [matcher]
      `(fc/arg ~matcher)))
 
-(def any? fc/any?)
+(def any fc/any)
 (def cyclically fc/cyclically)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Core

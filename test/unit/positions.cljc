@@ -28,13 +28,13 @@
    ctx-fake-fn ctx-expected-line ctx-expected-column]
   (testing "fake position can be determined in implicit context"
     (f/with-fakes
-      (let [foo (fake-fn [f/any? nil])]
+      (let [foo (fake-fn [f/any nil])]
         (foo)                                               ; call to suppress an exception from self-test
         (is-fake-has-position foo expected-line expected-column))))
 
   (testing "fake position can be determined in explicit context"
     (let [ctx (fc/context)
-          foo (ctx-fake-fn ctx [f/any? nil])]
+          foo (ctx-fake-fn ctx [f/any nil])]
       (is-fake-has-position-in-context ctx foo ctx-expected-line ctx-expected-column))))
 
 (u/-deftest
@@ -112,7 +112,7 @@
   (testing "recorded fake with config, implicit context"
     (f/with-fakes
       (let [foo (f/reify-fake LocalProtocol
-                              (bar :recorded-fake [f/any? nil]))]
+                              (bar :recorded-fake [f/any nil]))]
         ; call to suppress self-test warning
         (f/mark-checked (f/method foo bar))
         (is-fake-has-position (f/method foo bar) 114 17))))
@@ -129,7 +129,7 @@
     (f/with-fakes
       (let [ctx (fc/context)
             foo (fc/reify-fake ctx LocalProtocol
-                               (bar :recorded-fake [f/any? nil]))]
+                               (bar :recorded-fake [f/any nil]))]
         (is-fake-has-position-in-context ctx (fc/method ctx foo bar) 131 17))))
 
   (testing "recorded fake without config, explicit context"
@@ -144,7 +144,7 @@
   (testing "recorded fake with config, implicit context"
     (f/with-fakes
       (let [foo (m/my-reify-fake LocalProtocol
-                                 (bar :recorded-fake [f/any? nil]))]
+                                 (bar :recorded-fake [f/any nil]))]
         ; call to suppress self-test warning
         (f/mark-checked (f/method foo bar))
         (is-fake-has-position (f/method foo bar) 146 17))))
@@ -161,7 +161,7 @@
     (f/with-fakes
       (let [ctx (fc/context)
             foo (m/ctx-my-reify-fake ctx LocalProtocol
-                                     (bar :recorded-fake [f/any? nil]))]
+                                     (bar :recorded-fake [f/any nil]))]
         (is-fake-has-position-in-context ctx (fc/method ctx foo bar) 163 17))))
 
   (testing "recorded fake without config, explicit context"

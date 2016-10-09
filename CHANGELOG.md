@@ -1,14 +1,14 @@
 # Changelog
 
 ## 0.8.0
+- BREAKING CHANGE: matcher `any?` is renamed to `any` to fix v1.9 compiler warnings.
 - (ClojureScript) BREAKING CHANGE: required ClojureScript version updated from 1.7.28 to 1.9.229.
-- (ClojureScript) enhancement: it's now possible to require library namespaces in the same way as you do it in Clojure:
+- (ClojureScript) it's now possible to require library namespaces in the same way as you do it in Clojure:
 
     ```clj
     (ns unit.example
       (:require
-        [clj-fakes.core :as f]    
-        ; and/or:
+        [clj-fakes.core :as f]
         [clj-fakes.context :as fc]))
     ```
 

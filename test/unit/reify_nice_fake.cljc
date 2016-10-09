@@ -53,7 +53,7 @@
 ;  "method with arglists can be automatically reified even if one of arglists is faked explicitly"
 ;  (f/with-fakes
 ;    (let [foo (f/reify-nice-fake LocalProtocol
-;                                 [bar :optional-fake [f/any? "bar"]])]
+;                                 [bar :optional-fake [f/any "bar"]])]
 ;      (is (= "bar" (bar foo)))
 ;      (is-faked bar foo 1 2))))
 
@@ -104,8 +104,8 @@
      (f/with-fakes
        (let [foo (f/reify-nice-fake Object
                                     (new-method1 [] :optional-fake)
-                                    (new-method2 [x y] :optional-fake [[f/any? f/any?] #(+ %2 %3)])
-                                    (new-method3 [x y z] :optional-fake [f/any? "bar"]))]
+                                    (new-method2 [x y] :optional-fake [[f/any f/any] #(+ %2 %3)])
+                                    (new-method3 [x y z] :optional-fake [f/any "bar"]))]
          (is (instance? fc/FakeReturnValue (.new-method1 foo)))
 
          (is (= 5 (.new-method2 foo 2 3)))
@@ -121,8 +121,8 @@
      (f/with-fakes
        (let [foo (f/reify-nice-fake Object
                                     (new-method1 [] :fake [[] "bla"])
-                                    (new-method2 [x y] :fake [[f/any? f/any?] #(+ %2 %3)])
-                                    (new-method3 [x y z] :fake [f/any? "bar"]))]
+                                    (new-method2 [x y] :fake [[f/any f/any] #(+ %2 %3)])
+                                    (new-method3 [x y z] :fake [f/any "bar"]))]
          (is (= "bla" (.new-method1 foo)))
 
          (is (= 5 (.new-method2 foo 2 3)))
@@ -138,7 +138,7 @@
      (f/with-fakes
        (let [foo (f/reify-nice-fake Object
                                     (new-method1 [x] :recorded-fake)
-                                    (new-method2 [x y] :recorded-fake [[f/any? f/any?] #(+ %2 %3)]))]
+                                    (new-method2 [x y] :recorded-fake [[f/any f/any] #(+ %2 %3)]))]
          (is (instance? fc/FakeReturnValue (.new-method1 foo 777)))
          (is (= 5 (.new-method2 foo 2 3)))
 

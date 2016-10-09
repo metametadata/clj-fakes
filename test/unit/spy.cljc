@@ -9,7 +9,7 @@
   "function can be spied on"
   (f/with-fakes
     (f/patch! #'funcs/sum
-              (f/recorded-fake [f/any? funcs/sum]))
+              (f/recorded-fake [f/any funcs/sum]))
 
     (is (= 3 (funcs/sum 1 2)))
     (is (= 7 (funcs/sum 3 4)))

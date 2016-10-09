@@ -55,7 +55,7 @@
 (u/-deftest
   "call args and return values are recorded on single call with args"
   (f/with-fakes
-    (let [foo (f/recorded-fake [f/any? 123])]
+    (let [foo (f/recorded-fake [f/any 123])]
       (f/mark-checked foo)
 
       (foo 100 200)
@@ -68,7 +68,7 @@
 (u/-deftest
   "call args and return values are recorded on several calls"
   (f/with-fakes
-    (let [foo (f/recorded-fake [f/any? #(- %1 %2)])]
+    (let [foo (f/recorded-fake [f/any #(- %1 %2)])]
       (f/mark-checked foo)
 
       (foo 200 100)
@@ -116,8 +116,8 @@
 (u/-deftest
   "(just in case) calls are not recorded for other types of fakes"
   (f/with-fakes
-    (let [foo (f/optional-fake [f/any? nil])
-          bar (f/fake [f/any? nil])]
+    (let [foo (f/optional-fake [f/any nil])
+          bar (f/fake [f/any nil])]
       (foo)
       (bar)
 

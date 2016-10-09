@@ -16,35 +16,35 @@
   "simplest method from same-namespace-protocol can be an optional fake"
   (f/with-fakes
     (let [foo (f/reify-fake LocalProtocol
-                            (bar :optional-fake [f/any? "baz"]))]
+                            (bar :optional-fake [f/any "baz"]))]
       (is (= "baz" (bar foo))))))
 
 (u/-deftest
   "simplest method from fully-qualified protocol can be an optional fake"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
-                            (speak :optional-fake [f/any? "moo"]))]
+                            (speak :optional-fake [f/any "moo"]))]
       (is (= "moo" (p/speak cow))))))
 
 (u/-deftest
   "simplest method from refered protocol can be an optional fake"
   (f/with-fakes
     (let [cow (f/reify-fake AnimalProtocol
-                            (speak :optional-fake [f/any? "moo"]))]
+                            (speak :optional-fake [f/any "moo"]))]
       (is (= "moo" (p/speak cow))))))
 
 (u/-deftest
   "method with an arg can be an optional fake"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
-                            (eat :optional-fake [f/any? "om-nom"]))]
+                            (eat :optional-fake [f/any "om-nom"]))]
       (is (= "om-nom" (p/eat cow :grass :water))))))
 
 (u/-deftest
   "method args are passed to a fake on call"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
-                            (eat :optional-fake [[f/any? f/any?] #(vector %1 %2 %3)]))]
+                            (eat :optional-fake [[f/any f/any] #(vector %1 %2 %3)]))]
       (is (= [cow "grass" "water"] (p/eat cow "grass" "water"))))))
 
 (u/-deftest
@@ -62,7 +62,7 @@
   "several methods can be reified"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
-                            (speak :optional-fake [f/any? "moo"])
+                            (speak :optional-fake [f/any "moo"])
                             (eat :optional-fake [[1 2] "ate"]))]
       (is (= "moo" (p/speak cow)))
       (is (= "ate" (p/eat cow 1 2))))))
@@ -72,8 +72,8 @@
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
                             (speak :optional-fake [[] "moo"
-                                                   [f/any?] #(str "moo, " %2)
-                                                   [f/any? f/any?] #(str "moo, " %2 " and " %3)]))]
+                                                   [f/any] #(str "moo, " %2)
+                                                   [f/any f/any] #(str "moo, " %2 " and " %3)]))]
       (is (= "moo, User" (p/speak cow "User")))
       (is (= "moo" (p/speak cow)))
       (is (= "moo, Bob and Alice" (p/speak cow "Bob" "Alice"))))))
@@ -83,7 +83,7 @@
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
                             (speak :optional-fake [["you"] "moo to you!"
-                                                   [f/any?] (fn [this _]
+                                                   [f/any] (fn [this _]
                                                               (p/speak this "you"))]))]
       (is (= "moo to you!" (p/speak cow "Bob"))))))
 
@@ -95,7 +95,7 @@
     #""
     (f/with-fakes
       (let [cow (f/reify-fake p/AnimalProtocol
-                              (speak :optional-fake [f/any? nil]))]
+                              (speak :optional-fake [f/any nil]))]
         (p/sleep cow)))))
 
 (u/-deftest
@@ -110,7 +110,7 @@
   "simplest method can be a recorded fake"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
-                            (speak :recorded-fake [f/any? "moo"]))]
+                            (speak :recorded-fake [f/any "moo"]))]
       (is (= "moo" (p/speak cow)))
       (is (f/was-called (f/method cow p/speak) [cow])))))
 
@@ -133,9 +133,9 @@
   "the same method can be recorded in different fake instances"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
-                            (speak :recorded-fake [f/any? #(str "moo, " %2)]))
+                            (speak :recorded-fake [f/any #(str "moo, " %2)]))
           dog (f/reify-fake p/AnimalProtocol
-                            (speak :recorded-fake [f/any? #(str "woof, " %2)]))]
+                            (speak :recorded-fake [f/any #(str "woof, " %2)]))]
 
       (is (= "moo, Bob" (p/speak cow "Bob")))
       (is (= "woof, Alice" (p/speak dog "Alice")))
@@ -147,8 +147,8 @@
   "several methods can be recorded in the fake instance"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
-                            (speak :recorded-fake [f/any? #(str "moo, " %2)])
-                            (sleep :recorded-fake [f/any? "zzz"]))]
+                            (speak :recorded-fake [f/any #(str "moo, " %2)])
+                            (sleep :recorded-fake [f/any "zzz"]))]
 
       (is (= "moo, Bob" (p/speak cow "Bob")))
       (is (= "zzz" (p/sleep cow)))
@@ -177,11 +177,11 @@
   "several protocols can be reified at once with optional fakes"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
-                            (speak :optional-fake [f/any? "moo"])
+                            (speak :optional-fake [f/any "moo"])
                             (eat :optional-fake [["grass" "water"] "om-nom"])
 
                             p/FileProtocol
-                            (save :optional-fake [f/any? "saved"]))]
+                            (save :optional-fake [f/any "saved"]))]
       (is (= "moo" (p/speak cow)))
       (is (= "saved" (p/save cow))))))
 
@@ -292,8 +292,8 @@
      (f/with-fakes
        (let [foo (f/reify-fake Object
                                (new-method1 [] :optional-fake)
-                               (new-method2 [x y] :optional-fake [[f/any? f/any?] #(+ %2 %3)])
-                               (new-method3 [x y z] :optional-fake [f/any? "bar"]))]
+                               (new-method2 [x y] :optional-fake [[f/any f/any] #(+ %2 %3)])
+                               (new-method3 [x y z] :optional-fake [f/any "bar"]))]
          (is (instance? fc/FakeReturnValue (.new-method1 foo)))
 
          (is (= 5 (.new-method2 foo 2 3)))
@@ -309,8 +309,8 @@
      (f/with-fakes
        (let [foo (f/reify-fake Object
                                (new-method1 [] :fake [[] "bla"])
-                               (new-method2 [x y] :fake [[f/any? f/any?] #(+ %2 %3)])
-                               (new-method3 [x y z] :fake [f/any? "bar"]))]
+                               (new-method2 [x y] :fake [[f/any f/any] #(+ %2 %3)])
+                               (new-method3 [x y z] :fake [f/any "bar"]))]
          (is (= "bla" (.new-method1 foo)))
 
          (is (= 5 (.new-method2 foo 2 3)))
@@ -326,7 +326,7 @@
      (f/with-fakes
        (let [foo (f/reify-fake Object
                                (new-method1 [x] :recorded-fake)
-                               (new-method2 [x y] :recorded-fake [[f/any? f/any?] #(+ %2 %3)]))]
+                               (new-method2 [x y] :recorded-fake [[f/any f/any] #(+ %2 %3)]))]
          (is (instance? fc/FakeReturnValue (.new-method1 foo 777)))
          (is (= 5 (.new-method2 foo 2 3)))
 
@@ -364,8 +364,8 @@
   "several methods can be fakes using different fake types"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
-                            (speak :recorded-fake [f/any? #(str "moo, " %2)])
-                            (sleep :optional-fake [f/any? "zzz"]))]
+                            (speak :recorded-fake [f/any #(str "moo, " %2)])
+                            (sleep :optional-fake [f/any "zzz"]))]
 
       (is (= "moo, Bob" (p/speak cow "Bob")))
       (is (= "zzz" (p/sleep cow)))
@@ -375,8 +375,8 @@
   "several methods can be fakes using different fake types (using explicit context)"
   (let [ctx (fc/context)]
     (let [cow (fc/reify-fake ctx p/AnimalProtocol
-                             (speak :recorded-fake [f/any? #(str "moo, " %2)])
-                             (sleep :optional-fake [f/any? "zzz"]))]
+                             (speak :recorded-fake [f/any #(str "moo, " %2)])
+                             (sleep :optional-fake [f/any "zzz"]))]
 
       (is (= "moo, Bob" (p/speak cow "Bob")))
       (is (= "zzz" (p/sleep cow)))
@@ -386,8 +386,8 @@
   "several protocols can be reified at once with different fake types"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
-                            (speak :recorded-fake [f/any? #(str "moo, " %2)])
-                            (sleep :optional-fake [f/any? "zzz"])
+                            (speak :recorded-fake [f/any #(str "moo, " %2)])
+                            (sleep :optional-fake [f/any "zzz"])
 
                             p/FileProtocol
                             (save :recorded-fake))]
@@ -406,7 +406,7 @@
                    (save :recorded-fake)
 
                    java.lang.CharSequence
-                   (charAt :recorded-fake [f/any? \a]))]
+                   (charAt :recorded-fake [f/any \a]))]
          (p/save foo)
          (.charAt foo 100)
 

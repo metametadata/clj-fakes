@@ -3,7 +3,7 @@
   :url "https://github.com/metametadata/clj-fakes"
   :license {:name "MIT" :url "http://opensource.org/licenses/MIT"}
 
-  :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
+  :dependencies [[org.clojure/clojure "1.9.0-alpha13" :scope "provided"]
                  [org.clojure/clojurescript "1.9.229" :scope "provided"]]
 
   :profiles {:min-deps {:dependencies [[org.clojure/clojure "1.7.0"]

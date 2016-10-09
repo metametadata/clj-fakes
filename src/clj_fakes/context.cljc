@@ -74,14 +74,14 @@
   (arg-matches? [this arg] "Should return true or false."))
 
 (def ^{:doc "Matcher which matches any value. Implements both [[ArgsMatcher]] and [[ImplicitArgMatcher]]."}
-any?
+any
   (reify
     ArgsMatcher
     (args-match? [_ _args_] true)
 
     ImplicitArgMatcher
     (arg-matches-implicitly? [_ _arg_] true)
-    (arg-matcher->str [_] "<any?>")))
+    (arg-matcher->str [_] "<any>")))
 
 (defn ^:no-doc -arg-matches?
   [matcher arg]
@@ -284,7 +284,7 @@ any?
 ;;;;;;;;;;;;;;;;;;;;;;;; Fakes - API
 (def default-fake-config
   "With this config fake will return a new `FakeReturnValue` type instance for any combination of args."
-  [any? (fn [& _] (FakeReturnValue.))])
+  [any (fn [& _] (FakeReturnValue.))])
 
 (defn optional-fake
   "Creates an optional fake function which will not be checked by [[self-test-unused-fakes]],
@@ -773,7 +773,7 @@ any?
      ```clj
      (reify-fake my-context
        protocol-or-interface-or-Object
-       [method1 :optional-fake [any? 123]]
+       [method1 :optional-fake [any 123]]
 
        protocol-or-interface-or-Object
        [method2 :recorded-fake]

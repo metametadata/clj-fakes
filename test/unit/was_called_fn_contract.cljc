@@ -33,7 +33,7 @@
 
   (testing "throws if function was never called with specified args"
     (f/with-fakes
-      (let [foo (f/recorded-fake [f/any? nil])]
+      (let [foo (f/recorded-fake [f/any nil])]
         (foo 2 3)
         (u/-is-error-thrown
           #"^Function was never called with the expected args\.\nArgs matcher: \[2 4\]\.\nActual calls:\n\[\{:args \(2 3\), :return-value nil\}\]\n"
@@ -41,17 +41,17 @@
 
   (testing "(regression) check with matcher should not pass when function was called with no args"
     (f/with-fakes
-      (let [foo (f/recorded-fake [f/any? nil])]
+      (let [foo (f/recorded-fake [f/any nil])]
         (foo)
         (u/-is-error-thrown
           #"^Function was never called with the expected args\.\nArgs matcher: \[1 2\]\.\nActual calls:\n\[\{:args nil, :return-value nil\}\]\n"
           (was-called-fn foo [1 2])))))
 
-  (testing "on exception args matcher with any?, function and regex arg matchers is printed in a readable form"
+  (testing "on exception args matcher with any, function and regex arg matchers is printed in a readable form"
     (f/with-fakes
-      (let [foo (f/recorded-fake [f/any? nil])]
+      (let [foo (f/recorded-fake [f/any nil])]
         (foo 2 3)
         (u/-is-error-thrown
-          #"^Function was never called with the expected args\.\nArgs matcher: \[2 4 <any\?> <string\?> <abc>\]\.\nActual calls:\n\[\{:args \(2 3\), :return-value nil\}\]\n"
-          (was-called-fn foo [2 4 f/any? (f/arg string?) (f/arg #"abc")])))))
+          #"^Function was never called with the expected args\.\nArgs matcher: \[2 4 <any> <string\?> <abc>\]\.\nActual calls:\n\[\{:args \(2 3\), :return-value nil\}\]\n"
+          (was-called-fn foo [2 4 f/any (f/arg string?) (f/arg #"abc")])))))
   )

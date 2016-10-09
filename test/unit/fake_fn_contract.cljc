@@ -84,7 +84,7 @@
 
   (testing "first matching rule wins"
     (f/with-fakes
-      (let [foo (fake-fn [f/any? 1
+      (let [foo (fake-fn [f/any 1
                           [2] 2
                           [3 4] 3])]
         (is (= 1 (foo)))

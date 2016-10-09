@@ -113,7 +113,7 @@ All the following examples are assumed to be used inside an implicit context.
 
 ```clj
 (let [cow (f/reify-fake p/AnimalProtocol
-                        (speak :recorded-fake [f/any? "moo"]))]
+                        (speak :recorded-fake [f/any "moo"]))]
   (p/speak cow)
     
   (f/calls (f/method cow p/speak))) ; => [{:args ..., :return-value moo}]
@@ -187,7 +187,7 @@ All the following examples are assumed to be used inside an implicit context.
 #### Patch and Spy
 
 ```clj
-(f/patch! #'funcs/sum (f/recorded-fake [f/any? funcs/sum]))
+(f/patch! #'funcs/sum (f/recorded-fake [f/any funcs/sum]))
 (funcs/sum 1 2) ; => 3
 (f/was-called funcs/sum [1 2]) ; => true
 ```
@@ -196,7 +196,7 @@ All the following examples are assumed to be used inside an implicit context.
 
 ```clj
 (f/with-fakes
-  (f/fake [f/any? nil]))
+  (f/fake [f/any nil]))
 ; => raises "Self-test: no call detected for: non-optional fake ..."
 ```
 

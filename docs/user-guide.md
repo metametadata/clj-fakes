@@ -9,7 +9,7 @@ These namespaces contain almost the same set of members. The difference
 is that `core` uses an implicit context and the `context` namespace
 functions require an explicit context argument.
 
-For your convenience functions which don't rely on a context can also be sometimes found in both namespaces (e.g. `f/any?` is the same as `fc/any?`).
+For your convenience functions which don't rely on a context can also be sometimes found in both namespaces (e.g. `f/any` is the same as `fc/any`).
 
 The private/internal API uses a `-` prefix and should not be used (e.g. `-this-is-some-private-thing`).
 
@@ -308,19 +308,19 @@ You are encouraged to define your own argument matchers in a similar way.
 The framework also supports *regex matchers* (using 
 [`re-find`](https://clojuredocs.org/clojure.core/re-find) under the hood), for example: `(f/arg #"abc.*")`.
 
-## any?
+## any
 
-`(f/any? _)`
+`(f/any _)`
 
-`(fc/any? _)`
+`(fc/any _)`
 
 This special matcher always returns `true` for any input arguments. 
 It can be used to match single and multiple arguments:
 
 ```clj
 (let [foo (f/fake [[1 2] "1 2"
-                   [f/any? f/any? f/any?] "three args"
-                   f/any? "something else"])]
+                   [f/any f/any f/any] "three args"
+                   f/any "something else"])]
   (foo) ; => "something else"
   (foo 1) ; => "something else"
   (foo 1 2) ; => "1 2"
@@ -402,14 +402,14 @@ As with function fakes, config can be omitted for `:optional-fake` and `:recorde
 
 (f/reify-fake
   p/AnimalProtocol
-  (sleep :fake [f/any? "zzz"])
+  (sleep :fake [f/any "zzz"])
   (speak :recorded-fake)
     
   p/FileProtocol
   (save :optional-fake)
   
   java.lang.CharSequence
-  (charAt :recorded-fake [f/any? \a]))
+  (charAt :recorded-fake [f/any \a]))
 ```
 
 Although protocol methods always have a first `this` argument, 
@@ -421,7 +421,7 @@ including `this`:
 (let [monkey (f/reify-fake p/AnimalProtocol
                            ; config only matches |food| and |drink| arguments
                            ; but return value function will get all 3 arguments on call
-                           (eat :fake [[f/any? f/any?] #(str "ate " %2 " and drank " %3)]))]
+                           (eat :fake [[f/any f/any] #(str "ate " %2 " and drank " %3)]))]
       (println (p/eat monkey "banana" "water"))) ; => ate banana and drank water
 ```
 
@@ -431,7 +431,7 @@ The framework supports this scenario but requires an arglist explicitly specifie
 
 ```clj
 (let [calculator (f/reify-fake Object
-                               (sum [x y] :fake [[f/any? f/any?] #(+ %2 %3)])
+                               (sum [x y] :fake [[f/any f/any] #(+ %2 %3)])
                                (toString [] :optional-fake [[] "my calculator"]))]
   (is (= 5 (.sum calculator 2 3)))
   (is (= "my calculator" (str calculator))))
@@ -451,7 +451,7 @@ It can be used in combination with existing `calls` and `was-called-*` functions
 ```clj
 (f/with-fakes
   (let [cow (f/reify-fake p/AnimalProtocol
-                          (speak :recorded-fake [f/any? "moo"]))]
+                          (speak :recorded-fake [f/any "moo"]))]
     (p/speak cow)
     (println (f/calls (f/method cow p/speak))) ; => [{:args ..., :return-value moo}]
     (is (f/was-called-once (f/method cow p/speak) [cow]))))
@@ -629,7 +629,7 @@ to create a *function spy* which works exactly the same as the original function
 and also records its calls:
 
 ```clj
-(f/patch! #'funcs/sum (f/recorded-fake [f/any? funcs/sum]))
+(f/patch! #'funcs/sum (f/recorded-fake [f/any funcs/sum]))
 ```
 
 Monkey patching is not thread-safe because it changes variable 

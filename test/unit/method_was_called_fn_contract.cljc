@@ -38,20 +38,20 @@
   (testing "throws if function was never called with specified args"
     (f/with-fakes
       (let [cow (f/reify-fake p/AnimalProtocol
-                              (speak :recorded-fake [f/any? nil]))]
+                              (speak :recorded-fake [f/any nil]))]
         (p/speak cow 2 3)
         (u/-is-error-thrown
           ; message is too complicated to assert here fully
           #"^Function was never called with the expected args\.\nArgs matcher: <this> \[2 4\]\.\nActual calls:\n.*\n"
           (was-called-fn p/speak cow [2 4])))))
 
-  (testing "on exception args matcher with any?, function and regex arg matchers is printed in a readable form"
+  (testing "on exception args matcher with any, function and regex arg matchers is printed in a readable form"
     (f/with-fakes
       (let [cow (f/reify-fake p/AnimalProtocol
-                              (speak :recorded-fake [f/any? nil]))]
+                              (speak :recorded-fake [f/any nil]))]
         (p/speak cow 2 3)
         (u/-is-error-thrown
           ; message is too complicated to assert here fully
-          #"^Function was never called with the expected args\.\nArgs matcher: <this> \[2 4 <any\?> <string\?> <abc>\]\.\nActual calls:\n.*\n"
-          (was-called-fn p/speak cow [2 4 f/any? (f/arg string?) (f/arg #"abc")])))))
+          #"^Function was never called with the expected args\.\nArgs matcher: <this> \[2 4 <any> <string\?> <abc>\]\.\nActual calls:\n.*\n"
+          (was-called-fn p/speak cow [2 4 f/any (f/arg string?) (f/arg #"abc")])))))
   )

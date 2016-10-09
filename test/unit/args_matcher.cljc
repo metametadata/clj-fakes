@@ -52,15 +52,15 @@
               [" "]))
 
 (u/-deftest
-  "f/any? args matcher matches everything"
-  (are [args] (args-match? f/any? args)
+  "f/any args matcher matches everything"
+  (are [args] (args-match? f/any args)
               nil
               [4]
               [3 2 4]))
 
 (u/-deftest
-  "f/any? can be an arg matcher"
-  (are [args] (args-match? [f/any? 111] args)
+  "f/any can be an arg matcher"
+  (are [args] (args-match? [f/any 111] args)
               [nil 111]
               [[] 111]
               [2 111]))

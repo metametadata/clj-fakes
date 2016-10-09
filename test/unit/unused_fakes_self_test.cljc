@@ -11,14 +11,14 @@
   (u/-is-error-thrown
     #"^Self-test: no call detected for:\nnon-optional fake from .*unit/unused_fakes_self_test\.cljc, 14:7"
     (f/with-fakes
-      (f/fake [f/any? nil]))))
+      (f/fake [f/any nil]))))
 
 (u/-deftest
   "user is not warned if fake was never called in case of exception inside the context"
   (u/-is-error-thrown
     #"expected"
     (f/with-fakes
-      (f/fake [f/any? nil])
+      (f/fake [f/any nil])
       (throw (ex-info "expected" {})))))
 
 (u/-deftest
@@ -26,7 +26,7 @@
   (u/-is-assertion-error-thrown
     #"expected"
     (f/with-fakes
-      (f/fake [f/any? nil])
+      (f/fake [f/any nil])
       (assert nil "expected"))))
 
 #?(:cljs
@@ -35,7 +35,7 @@
      (let [caught-exception (atom nil)]
        (try
          (f/with-fakes
-           (f/fake [f/any? nil])
+           (f/fake [f/any nil])
            (throw "expected"))
          (catch :default e
            (reset! caught-exception e))
@@ -47,13 +47,13 @@
   (u/-is-error-thrown
     #"^Self-test: no call detected for:\nnon-optional fake from .*unit/unused_fakes_self_test\.cljc, 50:7"
     (let [ctx (fc/context)]
-      (fc/fake ctx [f/any? nil])
+      (fc/fake ctx [f/any nil])
       (fc/self-test-unused-fakes ctx))))
 
 (u/-deftest
   "user is not warned if optional fake was never called"
   (f/with-fakes
-    (f/optional-fake [f/any? nil])))
+    (f/optional-fake [f/any nil])))
 
 (u/-deftest
   "user is warned if several fakes were never called"
@@ -63,9 +63,9 @@ non-optional fake from .*unit/unused_fakes_self_test\.cljc, 66:7
 non-optional fake from .*unit/unused_fakes_self_test\.cljc, 67:7
 non-optional fake from .*unit/unused_fakes_self_test\.cljc, 68:7"
     (f/with-fakes
-      (f/fake [f/any? nil])
-      (f/fake [f/any? nil])
-      (f/fake [f/any? nil]))))
+      (f/fake [f/any nil])
+      (f/fake [f/any nil])
+      (f/fake [f/any nil]))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; reify-fake
 (u/-deftest
@@ -74,7 +74,7 @@ non-optional fake from .*unit/unused_fakes_self_test\.cljc, 68:7"
     #"^Self-test: no call detected for:\nnon-optional fake from .*unit/unused_fakes_self_test\.cljc, 76:7 \(p/AnimalProtocol, speak\)"
     (f/with-fakes
       (f/reify-fake p/AnimalProtocol
-                    (speak :fake [f/any? nil])))))
+                    (speak :fake [f/any nil])))))
 
 (u/-deftest
   "user is not warned if reified protocol fake was never called (explicit context)"
@@ -82,5 +82,5 @@ non-optional fake from .*unit/unused_fakes_self_test\.cljc, 68:7"
     #"^Self-test: no call detected for:\nnon-optional fake from .*unit/unused_fakes_self_test\.cljc, 84:7 \(p/AnimalProtocol, speak\)"
     (let [ctx (fc/context)]
       (fc/reify-fake ctx p/AnimalProtocol
-                     (speak :fake [f/any? nil]))
+                     (speak :fake [f/any nil]))
       (fc/self-test-unused-fakes ctx))))
