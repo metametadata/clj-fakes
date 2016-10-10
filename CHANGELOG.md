@@ -11,6 +11,10 @@
         [clj-fakes.core :as f]
         [clj-fakes.context :as fc]))
     ```
+- `were-called-in-order` now always marks all passed fakes as checked.
+So that the self-test about unchecked fakes is not also triggered if some steps are not reached
+because of an exception in `were-called-in-order`.
+- Fixed: `were-called-in-order` with `any` args matcher in a failing step threw an incorrect exception.
 
 ## 0.7.0
 

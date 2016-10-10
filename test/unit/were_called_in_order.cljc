@@ -133,3 +133,13 @@
       (u/-is-error-thrown
         #"^Could not find a call satisfying step #1:\nrecorded fake from .*unit/were_called_in_order\.cljc, 132:15\nargs matcher: <any>"
         (f/were-called-in-order foo f/any)))))
+
+(u/-deftest
+  "marks all mentioned fakes checked, even on failure"
+  (f/with-fakes
+    (let [foo (f/recorded-fake)
+          bar (f/recorded-fake)]
+      (u/-is-error-thrown
+        #"^Could not find a call satisfying step #1"
+        (f/were-called-in-order foo f/any
+                                bar f/any)))))

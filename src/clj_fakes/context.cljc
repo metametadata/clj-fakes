@@ -884,7 +884,7 @@ any
        (args-match? args-matcher args)))
 
 (defn were-called-in-order
-  "Checks that recorded fakes were called in specified order with the specified args.
+  "Checks that recorded fakes were called in the specified order with the specified args.
   It does not check that there were no other calls.
 
   Syntax:
@@ -900,26 +900,28 @@ any
          (even? (count fns-and-matchers))
          (every? (partial -recorded? ctx) (-take-nth-from-group 1 2 fns-and-matchers))
          (every? #(satisfies? ArgsMatcher %) (-take-nth-from-group 2 2 fns-and-matchers))]}
-  ; loop over provided pairs
-  (loop [fn-matcher-pairs (partition 2 fns-and-matchers)
-         unchecked-calls (calls ctx)
-         step 1]
-    (when-let [[f args-matcher] (first fn-matcher-pairs)]
-      (mark-checked ctx f)
+  (let [fn-matcher-pairs (partition 2 fns-and-matchers)]
+    (doseq [[f _] fn-matcher-pairs]
+      (mark-checked ctx f))
 
-      ; find matched call
-      (let [[matched-call rest-unchecked-calls] (-find-and-take-after (partial -call-matches? f args-matcher)
-                                                                      unchecked-calls)]
-        ; not found error
-        (when (nil? matched-call)
-          (throw (ex-info (str "Could not find a call satisfying step #" step
-                               ":\n" (-fake->str ctx "recorded fake" f)
-                               "\nargs matcher: " (args-matcher->str args-matcher)) {})))
+    ; for each provided pair
+    (loop [unchecked-pairs fn-matcher-pairs
+           unchecked-calls (calls ctx)
+           step 1]
+      (when-let [[f args-matcher] (first unchecked-pairs)]
+        ; find matched call
+        (let [[matched-call rest-unchecked-calls] (-find-and-take-after (partial -call-matches? f args-matcher)
+                                                                        unchecked-calls)]
+          ; not found error
+          (when (nil? matched-call)
+            (throw (ex-info (str "Could not find a call satisfying step #" step
+                                 ":\n" (-fake->str ctx "recorded fake" f)
+                                 "\nargs matcher: " (args-matcher->str args-matcher)) {})))
 
-        ; otherwise, check next pair
-        (recur (rest fn-matcher-pairs)
-               rest-unchecked-calls
-               (inc step)))))
+          ; otherwise, check next pair
+          (recur (rest unchecked-pairs)
+                 rest-unchecked-calls
+                 (inc step))))))
   true)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Assertions for protocol methods
