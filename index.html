@@ -217,25 +217,17 @@
 <li>Arrange-Act-Assert style testing.</li>
 </ul>
 <h1 id="installation">Installation</h1>
-<p>Requirements: Clojure 1.7.0 and/or ClojureScript 1.7.28 or higher.</p>
+<p>Requirements: Clojure 1.7.0+ and/or ClojureScript 1.9.229+.</p>
 <p>Add this to your dependencies:</p>
-<pre><code class="clj">[clj-fakes &quot;0.7.0&quot;]
+<pre><code class="clj">[clj-fakes &quot;0.8.0&quot;]
 </code></pre>
 
 <p>Require framework namespace in your unit test source file:</p>
-<pre><code class="clj">; Clojure
-(ns unit.example
+<pre><code class="clj">(ns unit.example
   (:require
-    [clj-fakes.core :as f]
+    [clj-fakes.core :as f]    
     ; and/or:
     [clj-fakes.context :as fc]))
-
-; ClojureScript
-(ns unit.example
-  (:require
-    [clj-fakes.core :as f :include-macros true]
-    ; and/or:
-    [clj-fakes.context :as fc :include-macros true]))
 </code></pre>
 
 <h1 id="examples">Examples</h1>
@@ -297,7 +289,7 @@
 
 <h4 id="method-mock">Method Mock</h4>
 <pre><code class="clj">(let [cow (f/reify-fake p/AnimalProtocol
-                        (speak :recorded-fake [f/any? &quot;moo&quot;]))]
+                        (speak :recorded-fake [f/any &quot;moo&quot;]))]
   (p/speak cow)
 
   (f/calls (f/method cow p/speak))) ; =&gt; [{:args ..., :return-value moo}]
@@ -353,14 +345,14 @@
 </code></pre>
 
 <h4 id="patch-and-spy">Patch and Spy</h4>
-<pre><code class="clj">(f/patch! #'funcs/sum (f/recorded-fake [f/any? funcs/sum]))
+<pre><code class="clj">(f/patch! #'funcs/sum (f/recorded-fake [f/any funcs/sum]))
 (funcs/sum 1 2) ; =&gt; 3
 (f/was-called funcs/sum [1 2]) ; =&gt; true
 </code></pre>
 
 <h3 id="self-tests">Self-tests</h3>
 <pre><code class="clj">(f/with-fakes
-  (f/fake [f/any? nil]))
+  (f/fake [f/any nil]))
 ; =&gt; raises &quot;Self-test: no call detected for: non-optional fake ...&quot;
 </code></pre>
 
@@ -432,5 +424,5 @@
 
 <!--
 MkDocs version : 0.15.3
-Build Date UTC : 2016-07-25 11:33:13.522774
+Build Date UTC : 2016-10-10 20:47:02.796047
 -->

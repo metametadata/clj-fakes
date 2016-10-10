@@ -158,23 +158,14 @@ framework in this documentation. To learn how to use it:</p>
 </ul>
 <p>2) Add framework dependency into <code>project.clj</code> (the framework is hosted on <a href="https://clojars.org/clj-fakes">Clojars</a>):</p>
 <pre><code class="clj">:dependencies [...
-               [clj-fakes &quot;&lt;insert here the latest version from Clojars&gt;&quot;]]
+               [clj-fakes &quot;0.8.0&quot;]]
 </code></pre>
 
 <p>3) Require framework namespace in your unit test source file:</p>
-<pre><code class="clj">; Clojure
-(ns unit.example
+<pre><code class="clj">(ns unit.example
   (:require
-    ; ...
-    [clojure.test :refer :all]
+    [clojure.test :refer [is deftest]]
     [clj-fakes.core :as f]))
-
-; ClojureScript
-(ns unit.example
-  (:require
-    ; ...
-    [cljs.test :refer-macros [is deftest]]
-    [clj-fakes.core :as f :include-macros true]))
 </code></pre>
 
 <p>4) Now you can write a simple unit test which creates and calls a fake function:</p>

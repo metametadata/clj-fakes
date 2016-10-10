@@ -169,7 +169,7 @@
             <li class="second-level"><a href="#vector-matcher">Vector Matcher</a></li>
             
         
-            <li class="second-level"><a href="#any">any?</a></li>
+            <li class="second-level"><a href="#any">any</a></li>
             
         
     
@@ -213,24 +213,10 @@
 <li><code>clj-fakes.core</code></li>
 <li><code>clj-fakes.context</code></li>
 </ul>
-<p>This is how you could require them in Clojure and ClojureScript:</p>
-<pre><code class="clj">; Clojure
-(ns unit.example
-  (:require
-    [clj-fakes.core :as f]
-    [clj-fakes.context :as fc]))
-
-; ClojureScript
-(ns unit.example
-  (:require
-    [clj-fakes.core :as f :include-macros true]
-    [clj-fakes.context :as fc :include-macros true]))
-</code></pre>
-
 <p>These namespaces contain almost the same set of members. The difference 
 is that <code>core</code> uses an implicit context and the <code>context</code> namespace
 functions require an explicit context argument.</p>
-<p>For your convenience functions which don't rely on a context can also be sometimes found in both namespaces (e.g. <code>f/any?</code> is the same as <code>fc/any?</code>).</p>
+<p>For your convenience functions which don't rely on a context can also be sometimes found in both namespaces (e.g. <code>f/any</code> is the same as <code>fc/any</code>).</p>
 <p>The private/internal API uses a <code>-</code> prefix and should not be used (e.g. <code>-this-is-some-private-thing</code>).</p>
 <h1 id="context">Context</h1>
 <p>Context is an object which stores all the information about
@@ -453,14 +439,14 @@ which are implemented by extending function type like this:</p>
 <p>You are encouraged to define your own argument matchers in a similar way.</p>
 <p>The framework also supports <em>regex matchers</em> (using 
 <a href="https://clojuredocs.org/clojure.core/re-find"><code>re-find</code></a> under the hood), for example: <code>(f/arg #"abc.*")</code>.</p>
-<h2 id="any">any?</h2>
-<p><code>(f/any? _)</code></p>
-<p><code>(fc/any? _)</code></p>
+<h2 id="any">any</h2>
+<p><code>(f/any _)</code></p>
+<p><code>(fc/any _)</code></p>
 <p>This special matcher always returns <code>true</code> for any input arguments. 
 It can be used to match single and multiple arguments:</p>
 <pre><code class="clj">(let [foo (f/fake [[1 2] &quot;1 2&quot;
-                   [f/any? f/any? f/any?] &quot;three args&quot;
-                   f/any? &quot;something else&quot;])]
+                   [f/any f/any f/any] &quot;three args&quot;
+                   f/any &quot;something else&quot;])]
   (foo) ; =&gt; &quot;something else&quot;
   (foo 1) ; =&gt; &quot;something else&quot;
   (foo 1 2) ; =&gt; &quot;1 2&quot;
@@ -566,14 +552,14 @@ or more method fakes:</p>
 
 (f/reify-fake
   p/AnimalProtocol
-  (sleep :fake [f/any? &quot;zzz&quot;])
+  (sleep :fake [f/any &quot;zzz&quot;])
   (speak :recorded-fake)
 
   p/FileProtocol
   (save :optional-fake)
 
   java.lang.CharSequence
-  (charAt :recorded-fake [f/any? \a]))
+  (charAt :recorded-fake [f/any \a]))
 </code></pre>
 
 <p>Although protocol methods always have a first <code>this</code> argument, 
@@ -583,7 +569,7 @@ including <code>this</code>:</p>
 <pre><code class="clj">(let [monkey (f/reify-fake p/AnimalProtocol
                            ; config only matches |food| and |drink| arguments
                            ; but return value function will get all 3 arguments on call
-                           (eat :fake [[f/any? f/any?] #(str &quot;ate &quot; %2 &quot; and drank &quot; %3)]))]
+                           (eat :fake [[f/any f/any] #(str &quot;ate &quot; %2 &quot; and drank &quot; %3)]))]
       (println (p/eat monkey &quot;banana&quot; &quot;water&quot;))) ; =&gt; ate banana and drank water
 </code></pre>
 
@@ -591,7 +577,7 @@ including <code>this</code>:</p>
 The framework supports this scenario but requires an arglist explicitly specified after the method name
 (<code>this</code> arg should be omitted):</p>
 <pre><code class="clj">(let [calculator (f/reify-fake Object
-                               (sum [x y] :fake [[f/any? f/any?] #(+ %2 %3)])
+                               (sum [x y] :fake [[f/any f/any] #(+ %2 %3)])
                                (toString [] :optional-fake [[] &quot;my calculator&quot;]))]
   (is (= 5 (.sum calculator 2 3)))
   (is (= &quot;my calculator&quot; (str calculator))))
@@ -605,7 +591,7 @@ helper function:</p>
 <p>It can be used in combination with existing <code>calls</code> and <code>was-called-*</code> functions like this:</p>
 <pre><code class="clj">(f/with-fakes
   (let [cow (f/reify-fake p/AnimalProtocol
-                          (speak :recorded-fake [f/any? &quot;moo&quot;]))]
+                          (speak :recorded-fake [f/any &quot;moo&quot;]))]
     (p/speak cow)
     (println (f/calls (f/method cow p/speak))) ; =&gt; [{:args ..., :return-value moo}]
     (is (f/was-called-once (f/method cow p/speak) [cow]))))
@@ -720,7 +706,7 @@ automatically on exiting the block, for instance:</p>
 <p>Another example is combining <code>patch</code> and <code>recorded-fake</code> in order
 to create a <em>function spy</em> which works exactly the same as the original function
 and also records its calls:</p>
-<pre><code class="clj">(f/patch! #'funcs/sum (f/recorded-fake [f/any? funcs/sum]))
+<pre><code class="clj">(f/patch! #'funcs/sum (f/recorded-fake [f/any funcs/sum]))
 </code></pre>
 
 <p>Monkey patching is not thread-safe because it changes variable 
