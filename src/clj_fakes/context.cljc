@@ -78,6 +78,7 @@ any
   (reify
     ArgsMatcher
     (args-match? [_ _args_] true)
+    (args-matcher->str [_] "<any>")
 
     ImplicitArgMatcher
     (arg-matches-implicitly? [_ _arg_] true)

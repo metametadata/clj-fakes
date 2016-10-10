@@ -125,3 +125,11 @@
         #"^Could not find a call satisfying step #1:\nrecorded fake from .*unit/were_called_in_order\.cljc, 121:15\nargs matcher: \[100 <string\?>\]"
         (f/were-called-in-order
           foo [100 (f/arg string?)])))))
+
+(u/-deftest
+  "(regression) correctly reports a step on any args matcher"
+  (f/with-fakes
+    (let [foo (f/recorded-fake [[1 2] 3])]
+      (u/-is-error-thrown
+        #"^Could not find a call satisfying step #1:\nrecorded fake from .*unit/were_called_in_order\.cljc, 132:15\nargs matcher: <any>"
+        (f/were-called-in-order foo f/any)))))
