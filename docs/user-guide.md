@@ -650,10 +650,11 @@ design decisions loosely based on the
 
 Some alternative frameworks with isolation capabilities:
 
-* [shrubbery](https://github.com/bguthrie/shrubbery)
+* [bond](https://github.com/circleci/bond)
 * [clj-mock](https://github.com/EchoTeam/clj-mock)
 * [conjure](https://github.com/amitrathore/conjure)
 * [Midje](https://github.com/marick/Midje)
+* [shrubbery](https://github.com/bguthrie/shrubbery)
 * [speclj](https://github.com/slagyr/speclj)
 
 Also take at look at the article 
