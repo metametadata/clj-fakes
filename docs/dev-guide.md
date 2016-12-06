@@ -15,15 +15,16 @@ This profile cannot be applied to the ClojureScript version of the library becau
 
 Project uses [MkDocs](http://www.mkdocs.org/) with [Cinder](https://github.com/chrissimpkins/cinder) theme to generate documentation static site and 
 [Codox](https://github.com/weavejester/codox) for API reference.
-Tasks are scripted using [PyInvoke](http://www.pyinvoke.org/).
+Tasks are scripted using [Lumo](https://github.com/anmonteiro/lumo).
+Do `npm install` in order to install NodeJS dependencies for tasks.
+
+Build only site pages: `./tasks.cljs mkdocs`
+
+Build API reference into site folder: `./tasks.cljs api`
+
+Build the whole site: `./tasks.cljs site`
 
 Serve site pages locally with automatic build (but it won't work for index page): `mkdocs serve`
-
-Build only site pages: `inv mkdocs`
-
-Build API reference into site folder: `inv api`
-
-Build the whole site: `inv site`
 
 # Deploying
 

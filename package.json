@@ -1,0 +1,10 @@
+{
+  "name": "tasks",
+  "version": "1.0.0",
+  "description": "Specifies deps needed for task execution.",
+  "repository": "-",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^1.0.0"
+  }
+}
