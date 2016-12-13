@@ -41,7 +41,8 @@
   (let [publics (cljs.analyzer.api/ns-publics (.-name *ns*))
         task-publics (->> publics
                           (filter #(-> % second :task)))
-        tasks (->> task-publics (mapv #(-> {:name (-> % second :name name)
-                                            :fn   (-> % second :name)
-                                            :doc  (-> % second :doc)})))]
+        tasks (mapv #(-> {:name (-> % second :name name)
+                          :fn   (-> % second :name)
+                          :doc  (-> % second :doc)})
+                    task-publics)]
     `(cli* ~tasks)))

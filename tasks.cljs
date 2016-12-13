@@ -7,7 +7,7 @@
 (def path (js/require "path"))
 
 (defn with-temp-copy
-  "Copies file from source to dest, then calls the specified functions.
+  "Copies file from source to dest, then calls the specified function.
   Finally, source file is returned to its initial state."
   [source-path dest-path f]
   (let [dest-els (.parse path dest-path)
