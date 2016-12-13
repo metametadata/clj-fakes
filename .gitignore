@@ -17,3 +17,4 @@ pom.xml.asc
 /out
 /clj-fakes.iml
 .DS_Store
+/node_modules/
