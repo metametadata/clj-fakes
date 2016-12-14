@@ -6,7 +6,12 @@
   "Runs the specified process."
   [command & args]
   (println "ᐅ" (str command " " (string/join " " args)))
-  (.spawnSync (js/require "child_process") command (clj->js args) (clj->js {:stdio "inherit"})))
+  (let [result (.spawnSync (js/require "child_process") command (clj->js args) (clj->js {:stdio "inherit" :shell true}))]
+    (when (not (= (.-status result) 0))
+      (throw (ex-info "Command exited with error code" {:status (.-status result)})))
+
+    (when (.-error result)
+      (throw (ex-info "Error executing a command" {:error (.-error result)})))))
 
 (defn cli*
   "tasks example: [{:name 'site' :fn site-fn :doc 'Lorem ipsum.'} ...]"

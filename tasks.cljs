@@ -48,4 +48,11 @@
   (mkdocs)
   (api))
 
-(t/cli)
+; catch exceptions explicitly because Lumo doesn't yet return error code and print stacktraces
+(try
+  (t/cli)
+
+  (catch :default e
+    (println "Exiting because of exception:" e)
+    (println "Exception:" (.-stack e))
+    (.exit js/process 1)))
