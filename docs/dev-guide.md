@@ -15,8 +15,9 @@ This profile cannot be applied to the ClojureScript version of the library becau
 
 Project uses [MkDocs](http://www.mkdocs.org/) with [Cinder](https://github.com/chrissimpkins/cinder) theme to generate documentation static site and 
 [Codox](https://github.com/weavejester/codox) for API reference.
+
 Tasks are scripted using [Lumo](https://github.com/anmonteiro/lumo).
-Do `npm install` in order to install NodeJS dependencies for tasks.
+Run `yarn` in order to install NodeJS dependencies for tasks.
 
 Build only site pages: `./tasks.cljs mkdocs`
 
