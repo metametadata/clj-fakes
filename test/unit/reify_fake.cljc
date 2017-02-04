@@ -84,7 +84,7 @@
     (let [cow (f/reify-fake p/AnimalProtocol
                             (speak :optional-fake [["you"] "moo to you!"
                                                    [f/any] (fn [this _]
-                                                              (p/speak this "you"))]))]
+                                                             (p/speak this "you"))]))]
       (is (= "moo to you!" (p/speak cow "Bob"))))))
 
 (u/-deftest
@@ -412,3 +412,16 @@
 
          (is (f/method-was-called p/save foo []))
          (is (f/method-was-called "charAt" foo [100]))))))
+
+(defprotocol WebService
+  (save [this data]))
+
+(u/-deftest
+  "real example: method can be faked with cyclical return values"
+  (f/with-fakes
+    (let [service (f/reify-fake WebService
+                                (save :fake [[:--data--]
+                                             (f/cyclically [503 200])]))]
+      (is (= 503 (save service :--data--)))
+      (is (= 200 (save service :--data--)))
+      (is (= 503 (save service :--data--))))))
