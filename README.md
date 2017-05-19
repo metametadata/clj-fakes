@@ -171,6 +171,9 @@ All the following examples are assumed to be used inside an implicit context.
 
 ### Monkey Patching
 
+**Caution**: this feature is not thread-safe.
+Strongly consider avoiding it in Clojure code if you plan to someday run your tests concurrently.
+
 #### Patch Function With Stub
 
 ```clj
@@ -184,7 +187,7 @@ All the following examples are assumed to be used inside an implicit context.
 (funcs/sum 1 2) ; => 3
 ```
 
-#### Patch and Spy
+#### Patch To Spy
 
 ```clj
 (f/patch! #'funcs/sum (f/recorded-fake [f/any funcs/sum]))
@@ -213,6 +216,31 @@ More documentation can be found at [the project site](http://metametadata.github
 * [User Guide](http://metametadata.github.io/clj-fakes/user-guide/)
 * [API Reference](http://metametadata.github.io/clj-fakes/api/)
 * [Developer Guide](http://metametadata.github.io/clj-fakes/dev-guide/)
+
+# References
+The API was mainly inspired by [jMock](http://www.jmock.org/) and
+[unittest.mock](https://docs.python.org/3/library/unittest.mock.html) frameworks with
+design decisions loosely based on the
+["Fifteen things I look for in an Isolation framework" by Roy Osherove](http://osherove.com/blog/2013/11/23/fifteen-things-i-look-for-in-an-isolation-framework.html).
+
+Some alternative frameworks with isolation capabilities:
+
+* [bond](https://github.com/circleci/bond)
+* [clj-mock](https://github.com/EchoTeam/clj-mock)
+* [conjure](https://github.com/amitrathore/conjure)
+* [Midje](https://github.com/marick/Midje)
+* [shrubbery](https://github.com/bguthrie/shrubbery)
+* [speclj](https://github.com/slagyr/speclj)
+* [Untangled Spec](https://github.com/untangled-web/untangled-spec)
+
+Also take at look at the article
+["Isolating External Dependencies in Clojure" by Joseph Wilk](http://blog.josephwilk.net/clojure/isolating-external-dependencies-in-clojure.html).
+
+For more detailed information about unit testing, TDD and test double patterns I'd recommend the books below:
+
+* "Test Driven Development: By Example" by Kent Beck
+* "Growing Object-Oriented Software, Guided by Tests" by Steve Freeman and Nat Pryce [[site](http://www.growing-object-oriented-software.com/)]
+* "xUnit Test Patterns: Refactoring Test Code" by Gerard Meszaros [[site](http://xunitpatterns.com/)]
 
 # License
 Copyright © 2015 Yuri Govorushchenko.
