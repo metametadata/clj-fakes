@@ -20,7 +20,8 @@
 
     (is (= original-val my-var1) "just in case")))
 
-(testing "unpatch works in explicit context"
+(u/deftest+
+  "unpatch works in explicit context"
   (let [ctx (fc/context)
         original-val my-var1]
     (fc/patch! ctx #'my-var1 200)
@@ -87,7 +88,8 @@
     (is (= original-val1 my-var1) "just in case")
     (is (= original-val2 my-var2) "just in case")))
 
-(testing "unpatch all works in explicit context"
+(u/deftest+
+  "unpatch-all works in explicit context"
   (let [ctx (fc/context)
         original-val my-var1]
     (fc/patch! ctx #'my-var1 200)
