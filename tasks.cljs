@@ -8,7 +8,7 @@
 
 (defn with-temp-copy
   "Copies file from source to dest, then calls the specified function.
-  Finally, source file is returned to its initial state."
+  Finally, dest file is returned to its initial state."
   [source-path dest-path f]
   (let [dest-els (.parse path dest-path)
         backup-path (.join path
@@ -48,11 +48,4 @@
   (mkdocs)
   (api))
 
-; catch exceptions explicitly because Lumo doesn't yet return error code and print stacktraces
-(try
-  (t/cli)
-
-  (catch :default e
-    (println "Exiting because of exception:" e)
-    (println "Exception:" (.-stack e))
-    (.exit js/process 1)))
+(t/cli)
