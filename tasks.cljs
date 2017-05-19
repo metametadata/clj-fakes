@@ -17,17 +17,17 @@
                                 (.-ext dest-els)
                                 "_backup"))]
     (try
-      (print "copy" dest-path "to" backup-path)
+      (println "copy" dest-path "to" backup-path)
       (.copySync fs dest-path backup-path)
-      (print "copy" source-path "to" dest-path)
+      (println "copy" source-path "to" dest-path)
       (.copySync fs source-path dest-path)
       (f)
 
       (finally
-        (print "recover" dest-path "from" backup-path)
+        (println "recover" dest-path "from" backup-path)
         (.copySync fs backup-path dest-path)
 
-        (print "remove temp file" backup-path)
+        (println "remove temp file" backup-path)
         (.removeSync fs backup-path)))))
 
 (defn ^:task api
