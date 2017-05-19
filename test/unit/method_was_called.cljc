@@ -6,12 +6,12 @@
     [unit.method-was-called-fn-contract :as c]
     [unit.fixtures.protocols :as p]))
 
-(u/-deftest
+(u/deftest+
   "contract"
-  (c/testing-method-was-called-fn-contract f/method-was-called
+  (c/test-method-was-called-fn-contract f/method-was-called
                                          #"^Function was not called the expected number of times\. Expected: > 0\. Actual: 0\."))
 
-(u/-deftest
+(u/deftest+
   "passes if function was called several times"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol

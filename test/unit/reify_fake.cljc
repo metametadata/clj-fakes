@@ -12,42 +12,42 @@
   (bar [this]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; optional-fake
-(u/-deftest
+(u/deftest+
   "simplest method from same-namespace-protocol can be an optional fake"
   (f/with-fakes
     (let [foo (f/reify-fake LocalProtocol
                             (bar :optional-fake [f/any "baz"]))]
       (is (= "baz" (bar foo))))))
 
-(u/-deftest
+(u/deftest+
   "simplest method from fully-qualified protocol can be an optional fake"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
                             (speak :optional-fake [f/any "moo"]))]
       (is (= "moo" (p/speak cow))))))
 
-(u/-deftest
+(u/deftest+
   "simplest method from refered protocol can be an optional fake"
   (f/with-fakes
     (let [cow (f/reify-fake AnimalProtocol
                             (speak :optional-fake [f/any "moo"]))]
       (is (= "moo" (p/speak cow))))))
 
-(u/-deftest
+(u/deftest+
   "method with an arg can be an optional fake"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
                             (eat :optional-fake [f/any "om-nom"]))]
       (is (= "om-nom" (p/eat cow :grass :water))))))
 
-(u/-deftest
+(u/deftest+
   "method args are passed to a fake on call"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
                             (eat :optional-fake [[f/any f/any] #(vector %1 %2 %3)]))]
       (is (= [cow "grass" "water"] (p/eat cow "grass" "water"))))))
 
-(u/-deftest
+(u/deftest+
   "args matchers get correct args on call"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -58,7 +58,7 @@
       (is (= "drank some juice" (p/eat cow "" "juice")))
       (is (= "ate a banana" (p/eat cow "banana" nil))))))
 
-(u/-deftest
+(u/deftest+
   "several methods can be reified"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -67,7 +67,7 @@
       (is (= "moo" (p/speak cow)))
       (is (= "ate" (p/eat cow 1 2))))))
 
-(u/-deftest
+(u/deftest+
   "multiple method arglists are supported"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -78,7 +78,7 @@
       (is (= "moo" (p/speak cow)))
       (is (= "moo, Bob and Alice" (p/speak cow "Bob" "Alice"))))))
 
-(u/-deftest
+(u/deftest+
   "recursion works"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -87,9 +87,9 @@
                                                              (p/speak this "you"))]))]
       (is (= "moo to you!" (p/speak cow "Bob"))))))
 
-(u/-deftest
+(u/deftest+
   "calling a non-reified method throws an exception"
-  (u/-is-exception-thrown
+  (u/is-exception-thrown
     java.lang.AbstractMethodError
     js/Error
     #""
@@ -98,7 +98,7 @@
                               (speak :optional-fake [f/any nil]))]
         (p/sleep cow)))))
 
-(u/-deftest
+(u/deftest+
   "config is not required for optional fake"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -106,7 +106,7 @@
       (is (not= (p/speak cow "Bob") (p/speak cow "Bob"))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; recorded-fake
-(u/-deftest
+(u/deftest+
   "simplest method can be a recorded fake"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -114,7 +114,7 @@
       (is (= "moo" (p/speak cow)))
       (is (f/was-called (f/method cow p/speak) [cow])))))
 
-(u/-deftest
+(u/deftest+
   "recorded fake's args matchers get correct args on call"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -129,7 +129,7 @@
       (is (f/method-was-called p/eat cow ["" "juice"]))
       (is (f/method-was-called p/eat cow ["banana" nil])))))
 
-(u/-deftest
+(u/deftest+
   "the same method can be recorded in different fake instances"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -143,7 +143,7 @@
       (is (f/method-was-called p/speak cow ["Bob"]))
       (is (f/method-was-called p/speak dog ["Alice"])))))
 
-(u/-deftest
+(u/deftest+
   "several methods can be recorded in the fake instance"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -156,7 +156,7 @@
       (is (f/method-was-called p/speak cow ["Bob"]))
       (is (f/method-was-called p/sleep cow [])))))
 
-(u/-deftest
+(u/deftest+
   "config is not required for recorded fake"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -165,7 +165,7 @@
       (is (f/method-was-called p/speak cow ["Bob"])))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; fake
-(u/-deftest
+(u/deftest+
   "simplest method can be a fake"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -173,7 +173,7 @@
       (is (= "zzz" (p/sleep cow))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; several protocols
-(u/-deftest
+(u/deftest+
   "several protocols can be reified at once with optional fakes"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -187,7 +187,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Java interfaces
 #?(:clj
-   (u/-deftest
+   (u/deftest+
      "java.lang.CharSequence/length can be reified with fake"
      (f/with-fakes
        (let [foo (f/reify-fake
@@ -196,7 +196,7 @@
          (is (= 123 (.length foo)))))))
 
 #?(:clj
-   (u/-deftest
+   (u/deftest+
      "java.lang.CharSequence/charAt can be reified with optional fake"
      (f/with-fakes
        (let [foo (f/reify-fake
@@ -205,7 +205,7 @@
          (is (= \a (.charAt foo 100)))))))
 
 #?(:clj
-   (u/-deftest
+   (u/deftest+
      "java.lang.CharSequence/subSequence can be reified with optional fake"
      (f/with-fakes
        (let [foo (f/reify-fake
@@ -214,7 +214,7 @@
          (is (= "bar" (.subSequence foo 100 200)))))))
 
 #?(:clj
-   (u/-deftest
+   (u/deftest+
      "java.lang.Appendable/append (overloaded method) can be reified with optional fake"
      (f/with-fakes
        (let [my-char-seq "123"
@@ -228,7 +228,7 @@
          (is (= expected2 (.append foo my-char-seq)))))))
 
 #?(:clj
-   (u/-deftest
+   (u/deftest+
      "overloaded java interface method with different return types can be reified with optional fake"
      (f/with-fakes
        (let [foo (f/reify-fake
@@ -261,7 +261,7 @@
 ;         (is (satisfies? fc/FakeReturnValue (.append foo \a)))))))
 
 #?(:clj
-   (u/-deftest
+   (u/deftest+
      "IFn/invoke can be reified with recordable fake"
      (f/with-fakes
        (let [foo (f/reify-fake
@@ -274,7 +274,7 @@
          (is (f/method-was-called "invoke" foo [1 2 3]))))))
 
 #?(:cljs
-   (u/-deftest
+   (u/deftest+
      "IFn/invoke can be reified with recordable fake"
      (f/with-fakes
        (let [foo (f/reify-fake
@@ -287,7 +287,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Object
 #?(:cljs
-   (u/-deftest
+   (u/deftest+
      "Object can be reified with a new optional-fake method"
      (f/with-fakes
        (let [foo (f/reify-fake Object
@@ -304,7 +304,7 @@
          (is (= "bar" (.new-method3 foo 1 2 3)))))))
 
 #?(:cljs
-   (u/-deftest
+   (u/deftest+
      "Object can be reified with a new fake method"
      (f/with-fakes
        (let [foo (f/reify-fake Object
@@ -321,7 +321,7 @@
          (is (= "bar" (.new-method3 foo 1 2 3)))))))
 
 #?(:cljs
-   (u/-deftest
+   (u/deftest+
      "Object can be reified with a new recorded fake method"
      (f/with-fakes
        (let [foo (f/reify-fake Object
@@ -334,7 +334,7 @@
          (is (f/method-was-called "new-method2" foo [2 3]))))))
 
 #?(:cljs
-   (u/-deftest
+   (u/deftest+
      "Object/toString can be faked"
      (f/with-fakes
        (let [foo (f/reify-fake Object
@@ -343,7 +343,7 @@
          (is (f/method-was-called "toString" foo []))))))
 
 #?(:clj
-   (u/-deftest
+   (u/deftest+
      "Object/toString can be faked"
      (f/with-fakes
        (let [foo (f/reify-fake Object
@@ -352,7 +352,7 @@
          (is (f/method-was-called "toString" foo []))))))
 
 #?(:clj
-   (u/-deftest
+   (u/deftest+
      "java.lang.Object is also supported"
      (f/with-fakes
        (let [foo (f/reify-fake java.lang.Object
@@ -360,7 +360,7 @@
          (is (= "bla" (str foo)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; integration
-(u/-deftest
+(u/deftest+
   "several methods can be fakes using different fake types"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -371,7 +371,7 @@
       (is (= "zzz" (p/sleep cow)))
       (is (f/method-was-called p/speak cow ["Bob"])))))
 
-(u/-deftest
+(u/deftest+
   "several methods can be fakes using different fake types (using explicit context)"
   (let [ctx (fc/context)]
     (let [cow (fc/reify-fake ctx p/AnimalProtocol
@@ -382,7 +382,7 @@
       (is (= "zzz" (p/sleep cow)))
       (is (fc/method-was-called ctx p/speak cow ["Bob"])))))
 
-(u/-deftest
+(u/deftest+
   "several protocols can be reified at once with different fake types"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -398,7 +398,7 @@
       (is (f/method-was-called p/save cow [])))))
 
 #?(:clj
-   (u/-deftest
+   (u/deftest+
      "protocol and Java interface can be reified at the same time"
      (f/with-fakes
        (let [foo (f/reify-fake
@@ -416,7 +416,7 @@
 (defprotocol WebService
   (save [this data]))
 
-(u/-deftest
+(u/deftest+
   "real example: method can be faked with cyclical return values"
   (f/with-fakes
     (let [service (f/reify-fake WebService

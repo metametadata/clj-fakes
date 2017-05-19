@@ -5,7 +5,7 @@
     [clj-fakes.core :as f]
     [unit.fixtures.functions :as funcs]))
 
-(u/-deftest
+(u/deftest+
   "function can be spied on"
   (f/with-fakes
     (f/patch! #'funcs/sum

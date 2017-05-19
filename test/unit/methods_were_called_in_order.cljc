@@ -5,7 +5,7 @@
     [clj-fakes.core :as f]
     [unit.fixtures.protocols :as p]))
 
-(u/-deftest
+(u/deftest+
   "big integration test"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -49,7 +49,7 @@
             p/eat cow ["grass" "cola"]
             p/speak cow ["John" "Alice"])))))
 
-(u/-deftest
+(u/deftest+
   "throws if different functions were not called in expected order"
   (f/with-fakes
     (let [cow (f/reify-fake p/AnimalProtocol
@@ -59,7 +59,7 @@
       (p/speak cow "Bob")
       (p/eat dog "dog food" "water")
 
-      (u/-is-error-thrown
+      (u/is-error-thrown
         (re-pattern (str "^Could not find a call satisfying step #2:\n"
                          "recorded fake from .*unit/methods_were_called_in_order\\.cljc"
                          ", 55:15 \\(p/AnimalProtocol, speak\\)\n"

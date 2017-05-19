@@ -22,7 +22,7 @@
   (is (not= (apply method args)
             (apply method args))))
 
-(u/-deftest
+(u/deftest+
   "methods from same-namespace-protocol can be automatically faked"
   (f/with-fakes
     (let [foo (f/reify-nice-fake LocalProtocol)]
@@ -31,19 +31,19 @@
       (is-faked baz foo 100)
       (is-faked qux foo 1 2 3))))
 
-(u/-deftest
+(u/deftest+
   "method from fully-qualified protocol can be automatically faked"
   (f/with-fakes
     (let [cow (f/reify-nice-fake p/AnimalProtocol)]
       (is-faked p/speak cow))))
 
-(u/-deftest
+(u/deftest+
   "method from refered protocol can be automatically faked"
   (f/with-fakes
     (let [cow (f/reify-nice-fake AnimalProtocol)]
       (is-faked p/speak cow))))
 
-(u/-deftest
+(u/deftest+
   "works in explicit context"
   (let [ctx (fc/context)
         cow (fc/reify-nice-fake ctx AnimalProtocol)]
@@ -57,7 +57,7 @@
 ;      (is (= "bar" (bar foo)))
 ;      (is-faked bar foo 1 2))))
 
-(u/-deftest
+(u/deftest+
   "several protocols can be automatically reified"
   (f/with-fakes
     (let [cow (f/reify-nice-fake p/AnimalProtocol
@@ -73,9 +73,9 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Java interface
 #?(:clj
-   (u/-deftest
+   (u/deftest+
      "IFn cannot be automatically reified"
-     (u/-is-exception-thrown
+     (u/is-exception-thrown
        java.lang.AbstractMethodError
        "n/a"
        #""
@@ -84,7 +84,7 @@
            (foo 1 2 3 4))))))
 
 #?(:clj
-   (u/-deftest
+   (u/deftest+
      "java.lang.CharSequence can be explicitly reified alongside automatically reified protocol"
      (f/with-fakes
        (let [foo (f/reify-nice-fake
@@ -99,7 +99,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Object
 #?(:cljs
-   (u/-deftest
+   (u/deftest+
      "Object can be reified with a new optional-fake method"
      (f/with-fakes
        (let [foo (f/reify-nice-fake Object
@@ -116,7 +116,7 @@
          (is (= "bar" (.new-method3 foo 1 2 3)))))))
 
 #?(:cljs
-   (u/-deftest
+   (u/deftest+
      "Object can be reified with a new fake method"
      (f/with-fakes
        (let [foo (f/reify-nice-fake Object
@@ -133,7 +133,7 @@
          (is (= "bar" (.new-method3 foo 1 2 3)))))))
 
 #?(:cljs
-   (u/-deftest
+   (u/deftest+
      "Object can be reified with a new recorded fake method"
      (f/with-fakes
        (let [foo (f/reify-nice-fake Object
@@ -145,14 +145,14 @@
          (is (f/method-was-called "new-method1" foo [777]))
          (is (f/method-was-called "new-method2" foo [2 3]))))))
 
-(u/-deftest
+(u/deftest+
   "Object/toString cannot be automatically reified"
   (f/with-fakes
     (let [foo (f/reify-nice-fake Object)]
       (is (not (instance? clj_fakes.context.FakeReturnValue (.toString foo)))))))
 
 #?(:cljs
-   (u/-deftest
+   (u/deftest+
      "Object/toString can be faked"
      (f/with-fakes
        (let [foo (f/reify-nice-fake Object
@@ -161,7 +161,7 @@
          (is (f/method-was-called "toString" foo []))))))
 
 #?(:clj
-   (u/-deftest
+   (u/deftest+
      "Object/toString can be faked"
      (f/with-fakes
        (let [foo (f/reify-nice-fake Object
@@ -170,7 +170,7 @@
          (is (f/method-was-called "toString" foo []))))))
 
 #?(:clj
-   (u/-deftest
+   (u/deftest+
      "java.lang.Object is also supported"
      (f/with-fakes
        (let [foo (f/reify-nice-fake java.lang.Object
@@ -178,7 +178,7 @@
          (is (= "bla" (str foo)))))))
 
 #?(:clj
-   (u/-deftest
+   (u/deftest+
      "Object/toString can be explicitly reified alongside automatically reified protocol"
      (f/with-fakes
        (let [foo (f/reify-nice-fake Object
@@ -192,7 +192,7 @@
          (is-faked p/scan foo)))))
 
 #?(:cljs
-   (u/-deftest
+   (u/deftest+
      "Object/toString can be explicitly reified alongside automatically reified protocol"
      (f/with-fakes
        (let [foo (f/reify-nice-fake Object
@@ -206,7 +206,7 @@
          (is-faked p/scan foo)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; integration
-(u/-deftest
+(u/deftest+
   "several protocols can be automatically reified and be partially explicitly faked"
   (f/with-fakes
     (let [cow (f/reify-nice-fake p/AnimalProtocol

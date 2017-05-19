@@ -10,7 +10,7 @@
   (is (satisfies? fc/ArgsMatcher matcher) "self test")
   (fc/args-match? matcher args))
 
-(u/-deftest
+(u/deftest+
   "vector is args matcher"
   (are [v args] (args-match? v args)
                 [11 22] [11 22]
@@ -29,7 +29,7 @@
                   [[]] [[]]
                   [(f/arg integer?) []] [123 []])))
 
-(u/-deftest
+(u/deftest+
   "function is an arg matcher"
   (are [v args] (args-match? v args)
                 [100 (f/arg even?)] [100 2]
@@ -39,7 +39,7 @@
                 [100 (f/arg odd?)] [100 2]
                 [100 (f/arg odd?)] [100 10]))
 
-(u/-deftest
+(u/deftest+
   "regex is an arg matcher"
   (are [args] (args-match? [(f/arg #"abc.*")] args)
               ["abc"]
@@ -51,14 +51,14 @@
               ["123ab4"]
               [" "]))
 
-(u/-deftest
+(u/deftest+
   "f/any args matcher matches everything"
   (are [args] (args-match? f/any args)
               nil
               [4]
               [3 2 4]))
 
-(u/-deftest
+(u/deftest+
   "f/any can be an arg matcher"
   (are [args] (args-match? [f/any 111] args)
               [nil 111]

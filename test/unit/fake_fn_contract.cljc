@@ -5,7 +5,7 @@
     [clj-fakes.core :as f]
     [clj-fakes.context :as fc]))
 
-(defn testing-fake-fn-contract
+(defn test-fake-fn-contract
   "Parametrized test which defines a contract for all function fakes.
   Unfortunately it will short-circuit on first uncaught exception."
   [fake-fn ctx-fake-fn config-required?]
@@ -47,7 +47,7 @@
                             (args-match? [_ _] false)
                             (args-matcher->str [_] "<custom matcher>"))
                           (fn [_ _])])]
-        (u/-is-error-thrown
+        (u/is-error-thrown
           #"^Unexpected args are passed into fake: \(2 3\).\nSupported args matchers:\n<custom matcher>"
           (foo 2 3)))))
 
@@ -78,7 +78,7 @@
     (f/with-fakes
       (let [foo (fake-fn [[11 22] 1
                           [8 4] 2])]
-        (u/-is-error-thrown
+        (u/is-error-thrown
           #"^Unexpected args are passed into fake: \(100 100\).\nSupported args matchers:\n\[11 22\]\n\[8 4\]"
           (foo 100 100)))))
 

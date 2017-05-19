@@ -5,12 +5,12 @@
     [clj-fakes.core :as f]
     [unit.was-called-fn-contract :as c]))
 
-(u/-deftest
+(u/deftest+
   "contract"
-  (c/testing-was-called-fn-contract f/was-called
-                                  #"^Function was not called the expected number of times\. Expected: > 0\. Actual: 0\."))
+  (c/test-was-called-fn-contract f/was-called
+                                 #"^Function was not called the expected number of times\. Expected: > 0\. Actual: 0\."))
 
-(u/-deftest
+(u/deftest+
   "passes if function was called several times"
   (f/with-fakes
     (let [foo (f/recorded-fake)]

@@ -6,7 +6,7 @@
 
 (def my-var 111)
 
-(u/-deftest
+(u/deftest+
   "context executes its body and returns last expression"
   (let [x (atom 100)
         return-val (f/with-fakes
@@ -14,7 +14,7 @@
                      (inc @x))]
     (is (= return-val 201))))
 
-(u/-deftest
+(u/deftest+
   "contexts can nest"
   (f/with-fakes
     (is (= 111 my-var))
@@ -28,7 +28,7 @@
 
     (is (= "parent context" my-var))))
 
-(u/-deftest
+(u/deftest+
   "function can be used instead of a macro"
   (f/with-fakes*
     (fn [] (is (= 111 my-var))

@@ -8,7 +8,7 @@
 (def my-var1 111)
 (def my-var2 222)
 
-(u/-deftest
+(u/deftest+
   "var can be unpatched explicitly"
   (let [original-val my-var1]
     (f/with-fakes
@@ -29,7 +29,7 @@
     (fc/unpatch! ctx #'my-var1)
     (is (= original-val my-var1))))
 
-(u/-deftest
+(u/deftest+
   "var can be unpatched twice in a row"
   (let [original-val my-var1]
     (f/with-fakes
@@ -42,7 +42,7 @@
 
     (is (= original-val my-var1) "just in case")))
 
-(u/-deftest
+(u/deftest+
   "var can be patched/unpatched several times"
   (let [original-val my-var1]
     (f/with-fakes
@@ -63,14 +63,14 @@
 
     (is (= original-val my-var1) "just in case")))
 
-(u/-deftest
+(u/deftest+
   "raises if key is not found"
   (f/with-fakes
-    (u/-is-assertion-error-thrown
+    (u/is-assertion-error-thrown
       #"^Assert failed: Specified var is not patched\n"
       (f/unpatch! #'my-var1))))
 
-(u/-deftest
+(u/deftest+
   "all vars can be unpatched at once"
   (let [original-val1 my-var1
         original-val2 my-var2]

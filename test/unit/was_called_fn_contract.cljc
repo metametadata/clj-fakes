@@ -5,7 +5,7 @@
     [clj-fakes.core :as f]
     [clj-fakes.context :as fc]))
 
-(defn testing-was-called-fn-contract
+(defn test-was-called-fn-contract
   "Parametrized test which defines a contract for was-called-* funcs.
   Unfortunately it will short-circuit on first uncaught exception."
   [was-called-fn expected-exc-re-on-no-call]
@@ -19,7 +19,7 @@
   (testing "throws if function was not called at all"
     (f/with-fakes
       (let [foo (f/recorded-fake)]
-        (u/-is-error-thrown
+        (u/is-error-thrown
           expected-exc-re-on-no-call
           (was-called-fn foo [])))))
 
@@ -35,7 +35,7 @@
     (f/with-fakes
       (let [foo (f/recorded-fake [f/any nil])]
         (foo 2 3)
-        (u/-is-error-thrown
+        (u/is-error-thrown
           #"^Function was never called with the expected args\.\nArgs matcher: \[2 4\]\.\nActual calls:\n\[\{:args \(2 3\), :return-value nil\}\]\n"
           (was-called-fn foo [2 4])))))
 
@@ -43,7 +43,7 @@
     (f/with-fakes
       (let [foo (f/recorded-fake [f/any nil])]
         (foo)
-        (u/-is-error-thrown
+        (u/is-error-thrown
           #"^Function was never called with the expected args\.\nArgs matcher: \[1 2\]\.\nActual calls:\n\[\{:args nil, :return-value nil\}\]\n"
           (was-called-fn foo [1 2])))))
 
@@ -51,7 +51,7 @@
     (f/with-fakes
       (let [foo (f/recorded-fake [f/any nil])]
         (foo 2 3)
-        (u/-is-error-thrown
+        (u/is-error-thrown
           #"^Function was never called with the expected args\.\nArgs matcher: \[2 4 <any> <string\?> <abc>\]\.\nActual calls:\n\[\{:args \(2 3\), :return-value nil\}\]\n"
           (was-called-fn foo [2 4 f/any (f/arg string?) (f/arg #"abc")])))))
   )

@@ -6,6 +6,6 @@
     [clj-fakes.core :as f]
     [clj-fakes.context :as fc]))
 
-(u/-deftest
+(u/deftest+
   "fake contract"
-  (c/testing-fake-fn-contract f/optional-fake fc/optional-fake false))
+  (c/test-fake-fn-contract f/optional-fake fc/optional-fake false))

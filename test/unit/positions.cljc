@@ -23,7 +23,7 @@
   [ctx f expected-line expected-column]
   (is-pos (fc/-position ctx f) expected-line expected-column))
 
-(defn testing-fake-fn-position-detection
+(defn test-fake-fn-position-detection
   [fake-fn expected-line expected-column
    ctx-fake-fn ctx-expected-line ctx-expected-column]
   (testing "fake position can be determined in implicit context"
@@ -37,18 +37,18 @@
           foo (ctx-fake-fn ctx [f/any nil])]
       (is-fake-has-position-in-context ctx foo ctx-expected-line ctx-expected-column))))
 
-(u/-deftest
+(u/deftest+
   "position detection for fake"
-  (testing-fake-fn-position-detection
+  (test-fake-fn-position-detection
     ; we can't pass a macro into a function so let's wrap it into a func
     (fn [config] (f/fake config))
     44 18
     (fn [ctx config] (fc/fake ctx config))
     46 22))
 
-(u/-deftest
+(u/deftest+
   "position detection for recorded fake with config"
-  (testing-fake-fn-position-detection
+  (test-fake-fn-position-detection
     ; we can't pass a macro into a function so let's wrap it into a func
     (fn [config]
       (let [fake-fn (f/recorded-fake config)]
@@ -58,9 +58,9 @@
     (fn [ctx config] (fc/recorded-fake ctx config))
     58 22))
 
-(u/-deftest
+(u/deftest+
   "position detection for recorded fake without config"
-  (testing-fake-fn-position-detection
+  (test-fake-fn-position-detection
     ; we can't pass a macro into a function so let's wrap it into a func
     (fn [_config_]
       (let [fake-fn (f/recorded-fake)]
@@ -71,18 +71,18 @@
     (fn [ctx _config_] (fc/recorded-fake ctx))
     71 24))
 
-(u/-deftest
+(u/deftest+
   "fake can be reused in a custom macro without losing ability to detect position"
-  (testing-fake-fn-position-detection
+  (test-fake-fn-position-detection
     ; we can't pass a macro into a function so let's wrap it into a func
     (fn [config] (m/my-fake config))
     78 18
     (fn [ctx config] (m/ctx-my-fake ctx config))
     80 22))
 
-(u/-deftest
+(u/deftest+
   "recorded-fake with config can be reused in a custom macro without losing ability to detect position"
-  (testing-fake-fn-position-detection
+  (test-fake-fn-position-detection
     ; we can't pass a macro into a function so let's wrap it into a func
     (fn [config]
       (let [fake-fn (m/my-recorded-fake config)]
@@ -92,9 +92,9 @@
     (fn [ctx config] (m/ctx-my-recorded-fake ctx config))
     92 22))
 
-(u/-deftest
+(u/deftest+
   "recorded-fake without config can be reused in a custom macro without losing ability to detect position"
-  (testing-fake-fn-position-detection
+  (test-fake-fn-position-detection
     ; we can't pass a macro into a function so let's wrap it into a func
     (fn [_config_]
       (let [fake-fn (m/my-recorded-fake)]
@@ -107,7 +107,7 @@
 (defprotocol LocalProtocol
   (bar [_]))
 
-(u/-deftest
+(u/deftest+
   "position can be determined in reify-fake"
   (testing "recorded fake with config, implicit context"
     (f/with-fakes
@@ -139,7 +139,7 @@
                                (bar :recorded-fake))]
         (is-fake-has-position-in-context ctx (fc/method ctx foo bar) 138 17)))))
 
-(u/-deftest
+(u/deftest+
   "position can be determined in reify-fake if it's used from a custom macro"
   (testing "recorded fake with config, implicit context"
     (f/with-fakes

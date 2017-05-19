@@ -24,14 +24,14 @@
   ([ctx] (fc/recorded-fake ctx))
   ([ctx config] (fc/recorded-fake ctx config)))
 
-(u/-deftest
+(u/deftest+
   "fake contract"
-  (c/testing-fake-fn-contract
+  (c/test-fake-fn-contract
     recorded-fake
     ctx-recorded-fake
     false))
 
-(u/-deftest
+(u/deftest+
   "there are no calls recorded if fake was not called"
   (f/with-fakes
     (let [foo (f/recorded-fake [[] 123])]
@@ -39,7 +39,7 @@
       (is (= [] (f/calls foo)))
       (is (= [] (f/calls))))))
 
-(u/-deftest
+(u/deftest+
   "call args and return values are recorded on single call without args"
   (f/with-fakes
     (let [foo (f/recorded-fake [[] 123])]
@@ -52,7 +52,7 @@
       (is (= [[foo {:args nil :return-value 123}]]
              (f/calls))))))
 
-(u/-deftest
+(u/deftest+
   "call args and return values are recorded on single call with args"
   (f/with-fakes
     (let [foo (f/recorded-fake [f/any 123])]
@@ -65,7 +65,7 @@
       (is (= [[foo {:args '(100 200) :return-value 123}]]
              (f/calls))))))
 
-(u/-deftest
+(u/deftest+
   "call args and return values are recorded on several calls"
   (f/with-fakes
     (let [foo (f/recorded-fake [f/any #(- %1 %2)])]
@@ -84,7 +84,7 @@
               [foo {:args '(900 500) :return-value 400}]]
              (f/calls))))))
 
-(u/-deftest
+(u/deftest+
   "call args and return values are recorded for several fakes"
   (f/with-fakes
     (let [foo (f/recorded-fake [[(f/arg integer?) (f/arg integer?)] #(+ %1 %2)])
@@ -113,7 +113,7 @@
               [bar {:args [9 10] :return-value 90}]]
              (f/calls))))))
 
-(u/-deftest
+(u/deftest+
   "(just in case) calls are not recorded for other types of fakes"
   (f/with-fakes
     (let [foo (f/optional-fake [f/any nil])
@@ -123,7 +123,7 @@
 
       (is (= [] (f/calls))))))
 
-(u/-deftest
+(u/deftest+
   "(just in case) calls are still recorded if config is not specified"
   (f/with-fakes
     (let [foo (f/recorded-fake)]
