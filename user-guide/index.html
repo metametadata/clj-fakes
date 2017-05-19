@@ -200,9 +200,6 @@
         <li class="first-level "><a href="#monkey-patching">Monkey Patching</a></li>
         
     
-        <li class="first-level "><a href="#references">References</a></li>
-        
-    
     </ul>
 </div></div>
         <div class="col-md-9" role="main">
@@ -717,28 +714,6 @@ in all threads
 <ul>
 <li>you have to add <code>^:redef</code> metadata key to functions which you patch;</li>
 <li>you can't patch core functions (e.g. <code>println</code>).</li>
-</ul>
-<h1 id="references">References</h1>
-<p>The API was mainly inspired by <a href="http://www.jmock.org/">jMock</a> and 
-<a href="https://docs.python.org/3/library/unittest.mock.html">unittest.mock</a> frameworks with
-design decisions loosely based on the 
-<a href="http://osherove.com/blog/2013/11/23/fifteen-things-i-look-for-in-an-isolation-framework.html">"Fifteen things I look for in an Isolation framework" by Roy Osherove</a>.</p>
-<p>Some alternative frameworks with isolation capabilities:</p>
-<ul>
-<li><a href="https://github.com/circleci/bond">bond</a></li>
-<li><a href="https://github.com/EchoTeam/clj-mock">clj-mock</a></li>
-<li><a href="https://github.com/amitrathore/conjure">conjure</a></li>
-<li><a href="https://github.com/marick/Midje">Midje</a></li>
-<li><a href="https://github.com/bguthrie/shrubbery">shrubbery</a></li>
-<li><a href="https://github.com/slagyr/speclj">speclj</a></li>
-</ul>
-<p>Also take at look at the article 
-<a href="http://blog.josephwilk.net/clojure/isolating-external-dependencies-in-clojure.html">"Isolating External Dependencies in Clojure" by Joseph Wilk</a>.</p>
-<p>For more detailed information about unit testing, TDD and test double patterns I'd recommend the books below:</p>
-<ul>
-<li>"Test Driven Development: By Example" by Kent Beck</li>
-<li>"Growing Object-Oriented Software, Guided by Tests" by Steve Freeman and Nat Pryce [<a href="http://www.growing-object-oriented-software.com/">site</a>]</li>
-<li>"xUnit Test Patterns: Refactoring Test Code" by Gerard Meszaros [<a href="http://xunitpatterns.com/">site</a>]</li>
 </ul></div>
         
     </div>

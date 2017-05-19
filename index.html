@@ -180,7 +180,7 @@
             
                 <li class="third-level"><a href="#patch-function-with-stub">Patch Function With Stub</a></li>
             
-                <li class="third-level"><a href="#patch-and-spy">Patch and Spy</a></li>
+                <li class="third-level"><a href="#patch-to-spy">Patch To Spy</a></li>
             
         
             <li class="second-level"><a href="#self-tests">Self-tests</a></li>
@@ -188,6 +188,9 @@
         
     
         <li class="first-level "><a href="#documentation">Documentation</a></li>
+        
+    
+        <li class="first-level "><a href="#references">References</a></li>
         
     
         <li class="first-level "><a href="#license">License</a></li>
@@ -333,6 +336,8 @@
 </code></pre>
 
 <h3 id="monkey-patching">Monkey Patching</h3>
+<p><strong>Caution</strong>: this feature is not thread-safe.
+Strongly consider avoiding it in Clojure code if you plan to someday run your tests concurrently.</p>
 <h4 id="patch-function-with-stub">Patch Function With Stub</h4>
 <pre><code class="clj">(f/with-fakes
   (f/patch! #'funcs/sum (f/fake [[1 2] &quot;foo&quot;
@@ -344,7 +349,7 @@
 (funcs/sum 1 2) ; =&gt; 3
 </code></pre>
 
-<h4 id="patch-and-spy">Patch and Spy</h4>
+<h4 id="patch-to-spy">Patch To Spy</h4>
 <pre><code class="clj">(f/patch! #'funcs/sum (f/recorded-fake [f/any funcs/sum]))
 (funcs/sum 1 2) ; =&gt; 3
 (f/was-called funcs/sum [1 2]) ; =&gt; true
@@ -368,6 +373,29 @@
 <li><a href="http://metametadata.github.io/clj-fakes/user-guide/">User Guide</a></li>
 <li><a href="http://metametadata.github.io/clj-fakes/api/">API Reference</a></li>
 <li><a href="http://metametadata.github.io/clj-fakes/dev-guide/">Developer Guide</a></li>
+</ul>
+<h1 id="references">References</h1>
+<p>The API was mainly inspired by <a href="http://www.jmock.org/">jMock</a> and
+<a href="https://docs.python.org/3/library/unittest.mock.html">unittest.mock</a> frameworks with
+design decisions loosely based on the
+<a href="http://osherove.com/blog/2013/11/23/fifteen-things-i-look-for-in-an-isolation-framework.html">"Fifteen things I look for in an Isolation framework" by Roy Osherove</a>.</p>
+<p>Some alternative frameworks with isolation capabilities:</p>
+<ul>
+<li><a href="https://github.com/circleci/bond">bond</a></li>
+<li><a href="https://github.com/EchoTeam/clj-mock">clj-mock</a></li>
+<li><a href="https://github.com/amitrathore/conjure">conjure</a></li>
+<li><a href="https://github.com/marick/Midje">Midje</a></li>
+<li><a href="https://github.com/bguthrie/shrubbery">shrubbery</a></li>
+<li><a href="https://github.com/slagyr/speclj">speclj</a></li>
+<li><a href="https://github.com/untangled-web/untangled-spec">Untangled Spec</a></li>
+</ul>
+<p>Also take at look at the article
+<a href="http://blog.josephwilk.net/clojure/isolating-external-dependencies-in-clojure.html">"Isolating External Dependencies in Clojure" by Joseph Wilk</a>.</p>
+<p>For more detailed information about unit testing, TDD and test double patterns I'd recommend the books below:</p>
+<ul>
+<li>"Test Driven Development: By Example" by Kent Beck</li>
+<li>"Growing Object-Oriented Software, Guided by Tests" by Steve Freeman and Nat Pryce [<a href="http://www.growing-object-oriented-software.com/">site</a>]</li>
+<li>"xUnit Test Patterns: Refactoring Test Code" by Gerard Meszaros [<a href="http://xunitpatterns.com/">site</a>]</li>
 </ul>
 <h1 id="license">License</h1>
 <p>Copyright © 2015 Yuri Govorushchenko.</p>
@@ -424,5 +452,5 @@
 
 <!--
 MkDocs version : 0.15.3
-Build Date UTC : 2016-11-20 14:41:04.100424
+Build Date UTC : 2017-05-19 19:18:09.910805
 -->

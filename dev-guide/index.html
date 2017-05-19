@@ -159,12 +159,13 @@
 <p>This profile cannot be applied to the ClojureScript version of the library because usage of the latest ClojureScript is always assumed.</p>
 <h1 id="documentation">Documentation</h1>
 <p>Project uses <a href="http://www.mkdocs.org/">MkDocs</a> with <a href="https://github.com/chrissimpkins/cinder">Cinder</a> theme to generate documentation static site and 
-<a href="https://github.com/weavejester/codox">Codox</a> for API reference.
-Tasks are scripted using <a href="http://www.pyinvoke.org/">PyInvoke</a>.</p>
+<a href="https://github.com/weavejester/codox">Codox</a> for API reference.</p>
+<p>Tasks are scripted using <a href="https://github.com/anmonteiro/lumo">Lumo</a>.
+Run <code>yarn</code> in order to install NodeJS dependencies for tasks.</p>
+<p>Build only site pages: <code>./tasks.cljs mkdocs</code></p>
+<p>Build API reference into site folder: <code>./tasks.cljs api</code></p>
+<p>Build the whole site: <code>./tasks.cljs site</code></p>
 <p>Serve site pages locally with automatic build (but it won't work for index page): <code>mkdocs serve</code></p>
-<p>Build only site pages: <code>inv mkdocs</code></p>
-<p>Build API reference into site folder: <code>inv api</code></p>
-<p>Build the whole site: <code>inv site</code></p>
 <h1 id="deploying">Deploying</h1>
 <p>Deploy to Clojars: <code>lein deploy clojars</code></p>
 <p>Deploy site to gh-pages branch: <code>ghp-import -p site</code></p></div>
