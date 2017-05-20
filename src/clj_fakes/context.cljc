@@ -103,8 +103,8 @@ any
     [this]
     (str "["
          (string/join " " (map #(if (satisfies? ImplicitArgMatcher %)
-                                 (arg-matcher->str %)
-                                 (str %))
+                                  (arg-matcher->str %)
+                                  (str %))
                                this))
          "]")))
 
@@ -833,44 +833,68 @@ any
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Assertions
 (defn ^:no-doc -was-called-times
-  "Checks that function:
-   1) was called the specified number of times and
-   2) at least once with the specified args."
-  [ctx total-calls-count-pred total-calls-count-str f args-matcher]
-  (mark-checked ctx f)
+  "Checks that function was called the specified number of times."
+  [ctx f calls-count-pred calls-count-str]
+  (let [calls-count (count (calls ctx f))]
+    (if (calls-count-pred calls-count)
+      true
+      (throw (ex-info (str "Function was not called the expected number of times. Expected: " calls-count-str ". "
+                           "Actual: " calls-count ".")
+                      {})))))
+
+(defn ^:no-doc -was-matched
+  "Checks that there was a call with the specified args.
+  Optionally: checks that strictly one call satisfies the args matcher."
+  [ctx f args-matcher strictly-once?]
   (let [f-calls (calls ctx f)
-        total-calls-count (count f-calls)
-        matched-call (-find-first #(args-match? args-matcher (:args %))
-                                  f-calls)]
+        matched-calls (filter #(args-match? args-matcher (:args %))
+                              f-calls)
+        matched-calls-count (count matched-calls)]
     (cond
-      (not (total-calls-count-pred total-calls-count))
-      (throw (ex-info (str "Function was not called the expected number of times. "
-                           "Expected: " total-calls-count-str ". "
-                           "Actual: " total-calls-count ".")
+      (zero? matched-calls-count)
+      (throw (ex-info (str "Function was never called with the expected args.\n"
+                           "Args matcher: " (args-matcher->str args-matcher) ".\n"
+                           "Actual calls:\n" (with-out-str (pprint/pprint f-calls)))
                       {}))
 
-      (nil? matched-call)
-      (throw (ex-info (str "Function was never called with the expected args.\n"
-                           "Args matcher: " (args-matcher->str args-matcher)
-                           ".\nActual calls:\n" (with-out-str (pprint/pprint f-calls)))
+      (and strictly-once? (> matched-calls-count 1))
+      (throw (ex-info (str "More than one call satisfies the provided args matcher.\n"
+                           "Args matcher: " (args-matcher->str args-matcher) ".\n"
+                           "Matched calls:\n" (with-out-str (pprint/pprint (vec matched-calls))))
                       {}))
 
       :else true)))
 
 (defn was-called-once
-  "Checks that recorded fake was called strictly once and that the call was with the specified args."
+  "Checks that recorded fake was called strictly once and that the call was with the specified args.
+  Returns true or raises an exception."
   [ctx f args-matcher]
   {:pre [ctx (-recorded? ctx f) (satisfies? ArgsMatcher args-matcher)]}
-  (-was-called-times ctx #(= % 1) "1" f args-matcher))
+  (mark-checked ctx f)
+  (-was-called-times ctx f #(= % 1) "1")
+  (-was-matched ctx f args-matcher false))
 
 (defn was-called
-  "Checks that recorded fake was called at least once with the specified args."
+  "Checks that recorded fake was called at least once with the specified args.
+  Returns true or raises an exception."
   [ctx f args-matcher]
   {:pre [ctx (-recorded? ctx f) (satisfies? ArgsMatcher args-matcher)]}
-  (-was-called-times ctx #(> % 0) "> 0" f args-matcher))
+  (mark-checked ctx f)
+  (-was-called-times ctx f #(> % 0) "> 0")
+  (-was-matched ctx f args-matcher false))
+
+(defn was-matched-once
+  "Checks that recorded fake was called at least once and only a single call satisfies the provided args matcher.
+  Returns true or raises an exception."
+  [ctx f args-matcher]
+  {:pre [ctx (-recorded? ctx f) (satisfies? ArgsMatcher args-matcher)]}
+  (mark-checked ctx f)
+  (-was-called-times ctx f #(> % 0) "> 0")
+  (-was-matched ctx f args-matcher true))
 
 (defn was-not-called
-  "Checks that recorded fake was never called."
+  "Checks that recorded fake was never called.
+  Returns true or raises an exception."
   [ctx f]
   {:pre [ctx (-recorded? ctx f)]}
   (mark-checked ctx f)
@@ -893,7 +917,9 @@ any
     f1 args-matcher1
     f2 args-matcher2
     ...)
-   ```"
+   ```
+
+  Returns true or raises an exception."
   [ctx & fns-and-matchers]
   {:pre [ctx
          (pos? (count fns-and-matchers))
@@ -936,6 +962,12 @@ any
   [ctx f obj args-matcher]
   {:pre [ctx f obj (satisfies? ArgsMatcher args-matcher)]}
   (was-called ctx (method ctx obj f) (-with-any-this-arg args-matcher)))
+
+(defn method-was-matched-once
+  "[[was-matched-once]] for protocol method fakes."
+  [ctx f obj args-matcher]
+  {:pre [ctx f obj (satisfies? ArgsMatcher args-matcher)]}
+  (was-matched-once ctx (method ctx obj f) (-with-any-this-arg args-matcher)))
 
 (defn method-was-not-called
   "[[was-not-called]] for protocol method fakes."

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.0
+- Added new assertions: `was-matched-once` and `method-was-matched-once`.
+
 ## 0.8.0
 - BREAKING CHANGE: matcher `any?` is renamed to `any` to fix v1.9 compiler warnings.
 - (ClojureScript) BREAKING CHANGE: required ClojureScript version updated from 1.7.28 to 1.9.229.

@@ -516,6 +516,9 @@ Each function either returns `true` or raises an exception with additional detai
 `(f/was-called f args-matcher)`
 - checks that function was called at least once with the specified args.
 
+`(f/was-matched-once f args-matcher)`
+- checks that function was called at least once and only a single call satisfies the provided args matcher.
+
 `(f/was-not-called f)`
 - checks that function was never called.
 
@@ -528,27 +531,15 @@ The set of similar functions is defined for [protocol methods](#calls-assertions
 
 `(f/method-was-called f obj args-matcher)`
 
+`(f/method-was-matched-once f obj args-matcher)`
+
 `(f/method-was-not-called f obj)`
 
 `(f/methods-were-called-in-order f1 obj1 args-matcher1 f2 obj2 args-matcher2 ...)`
 
-Of course, all these functions can be called with an explicit context:
+Of course, all these functions can be called with an explicit context, e.g.:
 
 `(fc/was-called-once ctx f args-matcher)`
-
-`(fc/was-called ctx f args-matcher)`
-
-`(fc/was-not-called ctx f)`
-
-`(fc/were-called-in-order ctx f1 args-matcher1 f2 args-matcher2 ...)`
-
-`(fc/method-was-called-once ctx f obj args-matcher)`
-
-`(fc/method-was-called ctx f obj args-matcher)`
-
-`(fc/method-was-not-called ctx f obj)`
-
-`(fc/methods-were-called-in-order ctx f1 obj1 args-matcher1 f2 obj2 args-matcher2 ...)`
 
 # Self-tests
 

@@ -145,6 +145,10 @@ Also see [[with-fakes]] macro."}
   [f args-matcher]
   (fc/was-called *context* f args-matcher))
 
+(defn was-matched-once
+  [f args-matcher]
+  (fc/was-matched-once *context* f args-matcher))
+
 (defn was-not-called
   [f]
   (fc/was-not-called *context* f))
@@ -161,6 +165,10 @@ Also see [[with-fakes]] macro."}
 (defn method-was-called
   [f obj args-matcher]
   (fc/method-was-called *context* f obj args-matcher))
+
+(defn method-was-matched-once
+  [f obj args-matcher]
+  (fc/method-was-matched-once *context* f obj args-matcher))
 
 (defn method-was-not-called
   [f obj]

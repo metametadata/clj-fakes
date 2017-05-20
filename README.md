@@ -35,7 +35,7 @@ Require framework namespace in your unit test source file:
     [clj-fakes.context :as fc]))
 ```
 
-# Examples
+# Cheat Sheet
 
 ### Creating Faking Context
 
@@ -73,7 +73,7 @@ All the following examples are assumed to be used inside an implicit context.
 #### Method Stub
 
 ```clj
-(let [cow (f/reify-fake AnimalProtocol
+(let [cow (f/reify-fake p/AnimalProtocol
                         (sleep :fake [[] "zzz"]))]
   (p/sleep cow) ; => "zzz"
   (p/speak cow)) ; => undefined method exception
@@ -121,13 +121,13 @@ All the following examples are assumed to be used inside an implicit context.
 
 ### Assertions
 
+These functions return true or raise an exception and can be used only with recorded fakes.
+
 #### Strictly One Call
 
 ```clj
 (f/was-called-once foo [1 2])
-```
 
-```clj
 (f/method-was-called-once p/speak cow ["Bob"])
 ```
 
@@ -135,23 +135,27 @@ All the following examples are assumed to be used inside an implicit context.
 
 ```clj
 (f/was-called foo [1 2])
+
+(f/method-was-called p/speak cow ["Bob"])
 ```
 
+#### Strictly One Call Matched The Provided Args Matcher
+
 ```clj
-(f/method-was-called p/speak cow ["Bob"])
+(f/was-matched-once foo [1 2])
+
+(f/method-was-matched-once p/speak cow ["Bob"])
 ```
 
 #### No Calls
 
 ```clj
 (f/was-not-called foo)
-```
 
-```clj
 (f/method-was-not-called p/speak cow)
 ```
 
-#### Calls In Specified Order
+#### Calls In The Specified Order
 
 ```clj
 (f/were-called-in-order
@@ -159,9 +163,7 @@ All the following examples are assumed to be used inside an implicit context.
   foo [(f/arg integer?)]
   bar [100 200]
   baz [300])
-```
 
-```clj
 (f/methods-were-called-in-order
   p/speak cow []
   p/sleep cow []
@@ -201,9 +203,7 @@ Strongly consider avoiding it in Clojure code if you plan to someday run your te
 (f/with-fakes
   (f/fake [f/any nil]))
 ; => raises "Self-test: no call detected for: non-optional fake ..."
-```
 
-```clj
 (f/with-fakes
   (f/recorded-fake))
 ; => raises "Self-test: no check performed on: recorded fake ..."
