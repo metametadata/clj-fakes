@@ -77,11 +77,11 @@
 any
   (reify
     ArgsMatcher
-    (args-match? [_ _args_] true)
+    (args-match? [_ _args] true)
     (args-matcher->str [_] "<any>")
 
     ImplicitArgMatcher
-    (arg-matches-implicitly? [_ _arg_] true)
+    (arg-matches-implicitly? [_ _arg] true)
     (arg-matcher->str [_] "<any>")))
 
 (defn ^:no-doc -arg-matches?
@@ -586,7 +586,7 @@ any
                members (filter #(and (= method-sym (:name %))
                                      (not (contains? (:flags %) :varargs)))
                                (:members interface))]
-           (map (fn [{:keys [return-type parameter-types] :as _member_}]
+           (map (fn [{:keys [return-type parameter-types] :as _member}]
                   {:method-sym (-with-hint return-type method-sym)
                    :arglist    (-fix-arglist-with-hints protocol-sym (into ['this] parameter-types))})
                 members))))))
@@ -668,7 +668,7 @@ any
 
 #?(:clj
    (defn ^:no-doc -emit-method-specs
-     [{:keys [imp-sym signatures] :as _method-imp_}]
+     [{:keys [imp-sym signatures] :as _method-imp}]
      (map (fn [{:keys [method-sym arglist]}]
             `(~method-sym ~arglist
                (~imp-sym ~@(map -remove-meta arglist))))
@@ -698,15 +698,15 @@ any
 
 #?(:clj
    (defn ^:no-doc -not-yet-in-specs?
-     [specs [nice-method-sym :as _spec_]]
+     [specs [nice-method-sym :as _spec]]
      (nil?
-       (-find-first (fn [[method-sym :as _spec_]]
+       (-find-first (fn [[method-sym :as _spec]]
                       (= method-sym nice-method-sym))
                     specs))))
 
 #?(:clj
    (defn ^:no-doc -add-nice-specs-for-protocol
-     [env [protocol-sym parsed-specs :as _parsed_spec_]]
+     [env [protocol-sym parsed-specs :as _parsed-spec]]
      (let [nice-specs (-nice-specs env protocol-sym)
            auto-specs (filter (partial -not-yet-in-specs? parsed-specs) nice-specs)
            new-specs (concat parsed-specs auto-specs)]
@@ -879,7 +879,7 @@ any
         (throw (ex-info (str "Function is expected to be never called. Actual calls:\n" (pr-str f-calls) ".") {})))))
 
 (defn ^:no-doc -call-matches?
-  [f args-matcher [call-f {:keys [args]} :as _call_]]
+  [f args-matcher [call-f {:keys [args]} :as _call]]
   (and (= f call-f)
        (args-match? args-matcher args)))
 
@@ -1018,7 +1018,7 @@ any
 (defn unpatch-all!
   "Restores original values for all the variables patched in the specified context."
   [ctx]
-  (doseq [[_var_ unpatch-fn] (:unpatches @ctx)]
+  (doseq [[_var unpatch-fn] (:unpatches @ctx)]
     (unpatch-fn)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Utils
@@ -1029,7 +1029,7 @@ any
   2. on each call returns the next value from `coll`, cyclically."
   [coll]
   (let [vals (atom (cycle coll))]
-    (fn cyclical-fn [& _args_]
+    (fn cyclical-fn [& _args]
       (let [result (first @vals)]
         (swap! vals next)
         result))))
