@@ -144,7 +144,7 @@
         <li class="first-level "><a href="#installation">Installation</a></li>
         
     
-        <li class="first-level "><a href="#examples">Examples</a></li>
+        <li class="first-level "><a href="#cheat-sheet">Cheat Sheet</a></li>
         
             <li class="second-level"><a href="#creating-faking-context">Creating Faking Context</a></li>
             
@@ -171,9 +171,11 @@
             
                 <li class="third-level"><a href="#at-least-one-call">At Least One Call</a></li>
             
+                <li class="third-level"><a href="#strictly-one-call-matched-the-provided-args-matcher">Strictly One Call Matched The Provided Args Matcher</a></li>
+            
                 <li class="third-level"><a href="#no-calls">No Calls</a></li>
             
-                <li class="third-level"><a href="#calls-in-specified-order">Calls In Specified Order</a></li>
+                <li class="third-level"><a href="#calls-in-the-specified-order">Calls In The Specified Order</a></li>
             
         
             <li class="second-level"><a href="#monkey-patching">Monkey Patching</a></li>
@@ -233,7 +235,7 @@
     [clj-fakes.context :as fc]))
 </code></pre>
 
-<h1 id="examples">Examples</h1>
+<h1 id="cheat-sheet">Cheat Sheet</h1>
 <h3 id="creating-faking-context">Creating Faking Context</h3>
 <p>Explicit context:</p>
 <pre><code class="clj">(let [ctx (fc/context)]
@@ -259,7 +261,7 @@
 </code></pre>
 
 <h4 id="method-stub">Method Stub</h4>
-<pre><code class="clj">(let [cow (f/reify-fake AnimalProtocol
+<pre><code class="clj">(let [cow (f/reify-fake p/AnimalProtocol
                         (sleep :fake [[] &quot;zzz&quot;]))]
   (p/sleep cow) ; =&gt; &quot;zzz&quot;
   (p/speak cow)) ; =&gt; undefined method exception
@@ -299,36 +301,39 @@
 </code></pre>
 
 <h3 id="assertions">Assertions</h3>
+<p>These functions return true or raise an exception and can be used only with recorded fakes.</p>
 <h4 id="strictly-one-call">Strictly One Call</h4>
 <pre><code class="clj">(f/was-called-once foo [1 2])
-</code></pre>
 
-<pre><code class="clj">(f/method-was-called-once p/speak cow [&quot;Bob&quot;])
+(f/method-was-called-once p/speak cow [&quot;Bob&quot;])
 </code></pre>
 
 <h4 id="at-least-one-call">At Least One Call</h4>
 <pre><code class="clj">(f/was-called foo [1 2])
+
+(f/method-was-called p/speak cow [&quot;Bob&quot;])
 </code></pre>
 
-<pre><code class="clj">(f/method-was-called p/speak cow [&quot;Bob&quot;])
+<h4 id="strictly-one-call-matched-the-provided-args-matcher">Strictly One Call Matched The Provided Args Matcher</h4>
+<pre><code class="clj">(f/was-matched-once foo [1 2])
+
+(f/method-was-matched-once p/speak cow [&quot;Bob&quot;])
 </code></pre>
 
 <h4 id="no-calls">No Calls</h4>
 <pre><code class="clj">(f/was-not-called foo)
+
+(f/method-was-not-called p/speak cow)
 </code></pre>
 
-<pre><code class="clj">(f/method-was-not-called p/speak cow)
-</code></pre>
-
-<h4 id="calls-in-specified-order">Calls In Specified Order</h4>
+<h4 id="calls-in-the-specified-order">Calls In The Specified Order</h4>
 <pre><code class="clj">(f/were-called-in-order
   foo [1 2 3]
   foo [(f/arg integer?)]
   bar [100 200]
   baz [300])
-</code></pre>
 
-<pre><code class="clj">(f/methods-were-called-in-order
+(f/methods-were-called-in-order
   p/speak cow []
   p/sleep cow []
   p/eat dog [&quot;dog food&quot; &quot;water&quot;]
@@ -359,9 +364,8 @@ Strongly consider avoiding it in Clojure code if you plan to someday run your te
 <pre><code class="clj">(f/with-fakes
   (f/fake [f/any nil]))
 ; =&gt; raises &quot;Self-test: no call detected for: non-optional fake ...&quot;
-</code></pre>
 
-<pre><code class="clj">(f/with-fakes
+(f/with-fakes
   (f/recorded-fake))
 ; =&gt; raises &quot;Self-test: no check performed on: recorded fake ...&quot;
 </code></pre>
@@ -452,5 +456,5 @@ design decisions loosely based on the
 
 <!--
 MkDocs version : 0.15.3
-Build Date UTC : 2017-05-19 19:18:09.910805
+Build Date UTC : 2017-06-02 10:24:55.815582
 -->

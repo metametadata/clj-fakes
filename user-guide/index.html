@@ -634,6 +634,8 @@ Each function either returns <code>true</code> or raises an exception with addit
 - checks that function was called strictly once and that the call was with the specified args.</p>
 <p><code>(f/was-called f args-matcher)</code>
 - checks that function was called at least once with the specified args.</p>
+<p><code>(f/was-matched-once f args-matcher)</code>
+- checks that function was called at least once and only a single call satisfies the provided args matcher.</p>
 <p><code>(f/was-not-called f)</code>
 - checks that function was never called.</p>
 <p><code>(f/were-called-in-order f1 args-matcher1 f2 args-matcher2 ...)</code>
@@ -641,17 +643,11 @@ Each function either returns <code>true</code> or raises an exception with addit
 <p>The set of similar functions is defined for <a href="#calls-assertions">protocol methods</a>:</p>
 <p><code>(f/method-was-called-once f obj args-matcher)</code></p>
 <p><code>(f/method-was-called f obj args-matcher)</code></p>
+<p><code>(f/method-was-matched-once f obj args-matcher)</code></p>
 <p><code>(f/method-was-not-called f obj)</code></p>
 <p><code>(f/methods-were-called-in-order f1 obj1 args-matcher1 f2 obj2 args-matcher2 ...)</code></p>
-<p>Of course, all these functions can be called with an explicit context:</p>
+<p>Of course, all these functions can be called with an explicit context, e.g.:</p>
 <p><code>(fc/was-called-once ctx f args-matcher)</code></p>
-<p><code>(fc/was-called ctx f args-matcher)</code></p>
-<p><code>(fc/was-not-called ctx f)</code></p>
-<p><code>(fc/were-called-in-order ctx f1 args-matcher1 f2 args-matcher2 ...)</code></p>
-<p><code>(fc/method-was-called-once ctx f obj args-matcher)</code></p>
-<p><code>(fc/method-was-called ctx f obj args-matcher)</code></p>
-<p><code>(fc/method-was-not-called ctx f obj)</code></p>
-<p><code>(fc/methods-were-called-in-order ctx f1 obj1 args-matcher1 f2 obj2 args-matcher2 ...)</code></p>
 <h1 id="self-tests">Self-tests</h1>
 <p>Framework can perform "self-tests" in order to inform a user 
 early on that some fakes (including protocol method fakes) are potentially used inappropriately.</p>
