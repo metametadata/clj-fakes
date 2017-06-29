@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.0-SNAPSHOT
+- `with-fakes` macro now doesn't generated an anonymous function
+so that it now can be used inside `core.async/go` blocks.
+
 ## 0.9.0
 - Added new assertions: `was-matched-once` and `method-was-matched-once`.
 

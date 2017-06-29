@@ -1,7 +1,9 @@
 (ns clj-fakes.core
   "Simpler API for working in implicit dynamic context.
   Implements almost the same set of functions as [[clj-fakes.context]]."
-  (:require [clj-fakes.context :as fc])
+  (:require [clj-fakes.context :as fc]
+    #?@(:clj [
+            [clj-fakes.macro :as m]]))
 
   ; declare macros for export
   #?(:cljs (:require-macros
@@ -66,7 +68,26 @@ Also see [[with-fakes]] macro."}
      Self-tests will not be executed if exception was raised inside the body.
      Variables are guaranteed to always be unpatched on exiting the block."
      [& body]
-     `(with-fakes* (fn [] ~@body))))
+     (let [exception-class (if (m/-cljs-env? &env)
+                             ; ClojureScript
+                             :default
+
+                             ; Clojure
+                             Throwable)]
+       `(binding [*context* (fc/context)]
+          (let [exception-caught?# (atom false)]
+            (try
+              ~@body
+
+              (catch ~exception-class e#
+                (reset! exception-caught?# true)
+                (throw e#))
+
+              (finally
+                (fc/unpatch-all! *context*)
+
+                (when-not @exception-caught?#
+                  (fc/self-test *context*)))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Function fakes
 (defn optional-fake
