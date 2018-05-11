@@ -39,8 +39,9 @@ Also see [[with-fakes]] macro."}
 ^:dynamic *context* nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Macros - with-fakes
+; It is left in mostly for backwards compatibility because previously macro was based on this public function.
 (defn with-fakes*
-  "Function which drives [[with-fakes]] macro.
+  "The function which works similarly to [[with-fakes]] macro.
   It defines an implicit dynamic [[*context*]] and
   executes function `f` with specified arguments inside the context."
   [f & args]
