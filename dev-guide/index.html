@@ -155,7 +155,8 @@
 <p>Run ClojureScript tests: <code>lein do clean, doo phantom test once</code>
 (clean is needed because there's an <a href="https://github.com/bensu/doo/issues/51">issue</a>: plugin does not seem to recompile macros)</p>
 <p>Use <code>min-deps</code> profile to test with minimal supported dependencies (instead of default and usually latest versions):</p>
-<p><code>lein with-profiles +min-deps test-refresh</code></p>
+<pre><code>lein with-profiles +min-deps test-refresh
+</code></pre>
 <p>This profile cannot be applied to the ClojureScript version of the library because usage of the latest ClojureScript is always assumed.</p>
 <h1 id="documentation">Documentation</h1>
 <p>Project uses <a href="http://www.mkdocs.org/">MkDocs</a> with <a href="https://github.com/chrissimpkins/cinder">Cinder</a> theme to generate documentation static site and 
