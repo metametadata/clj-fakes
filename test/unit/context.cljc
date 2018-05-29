@@ -1,7 +1,8 @@
 (ns unit.context
   (:require
-    [clojure.test :refer [is testing]]
+    [clojure.test :refer [is testing #?(:cljs async)]]
     [unit.utils :as u]
+    [clojure.core.async :as a]
     [clj-fakes.core :as f]))
 
 (def my-var 111)
@@ -43,3 +44,54 @@
         "child context")
 
       (is (= "parent context" my-var)))))
+
+(u/deftest+
+  "with-fakes macro resets the binding on exiting the block"
+  (is (nil? f/*context*) "self-test: context is nil by default")
+  (f/with-fakes
+    (is (some? f/*context*) "self-test: context is bound inside the block"))
+
+  (is (nil? f/*context*) "context is unbound on exiting the block"))
+
+(u/deftest+
+  "with-fakes* function resets the binding on exiting the block"
+  (is (nil? f/*context*) "self-test: context is nil by default")
+  (f/with-fakes*
+    #(is (some? f/*context*) "self-test: context is bound inside the block"))
+
+  (is (nil? f/*context*) "context is unbound on exiting the block"))
+
+#?(:cljs
+   (u/deftest+
+     "with-fakes cannot be used inside a go-block in ClojureScript"
+     (async done
+       (a/go
+         (try
+           (u/is-assertion-error-thrown
+             #"with-fakes cannot be used here"
+             (f/with-fakes))
+
+           (finally
+             (done)))))))
+
+#?(:clj
+   (u/deftest+
+     "with-fakes can be used inside a go-block in Clojure"
+     (a/<!!
+       (a/go
+         (f/with-fakes)))))
+
+#?(:cljs
+   (u/deftest+
+     "with-fakes* function can be correctly used inside a go-block"
+     (async done
+       (a/go
+         (try
+           (is (nil? f/*context*) "self-test: context is nil by default")
+           (f/with-fakes*
+             #(is (some? f/*context*) "context is bound inside with-fakes* block"))
+
+           (is (nil? f/*context*) "context is unbound on exiting with-fakes* block")
+
+           (finally
+             (done)))))))

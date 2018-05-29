@@ -18,3 +18,4 @@ pom.xml.asc
 /clj-fakes.iml
 .DS_Store
 /node_modules/
+/profiles.clj

@@ -4,25 +4,7 @@
   (:require [clj-fakes.context :as fc]
     #?@(:clj [
             [clj-fakes.macro :as m]]))
-
-  ; declare macros for export
-  #?(:cljs (:require-macros
-             [clj-fakes.core :refer
-              [arg
-               with-fakes
-
-               fake*
-               fake
-               recorded-fake*
-               recorded-fake
-
-               reify-fake*
-               reify-nice-fake*
-               reify-fake
-               reify-nice-fake
-               reify-fake-debug
-
-               patch!]])))
+  #?(:cljs (:require-macros [clj-fakes.core])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Re-exports for usage convenience
 #?(:clj
@@ -39,26 +21,16 @@ Also see [[with-fakes]] macro."}
 ^:dynamic *context* nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Macros - with-fakes
-; It is left in mostly for backwards compatibility because previously macro was based on this public function.
-(defn with-fakes*
-  "The function which works similarly to [[with-fakes]] macro.
-  It defines an implicit dynamic [[*context*]] and
-  executes function `f` with specified arguments inside the context."
-  [f & args]
-  (binding [*context* (fc/context)]
-    (let [exception-caught? (atom false)]
-      (try
-        (apply f args)
-
-        (catch #?(:clj Throwable :cljs :default) e
-          (reset! exception-caught? true)
-          (throw e))
-
-        (finally
-          (fc/unpatch-all! *context*)
-
-          (when-not @exception-caught?
-            (fc/self-test *context*)))))))
+(def ^:no-doc ^:dynamic *-probe* nil)
+#?(:clj
+   (defmacro ^:no-doc -check-binding-works
+     []
+     `(do
+        (fc/-set-var! #'*-probe* nil)
+        (binding [*-probe* "bound value"])
+        (when (some? *-probe*)
+          (assert false
+                  "with-fakes cannot be used here because binding macro doesn't work correctly. This can happen if with-fakes is used in CLJS go-block (related to https://dev.clojure.org/jira/browse/CLJS-884).")))))
 
 #?(:clj
    (defmacro with-fakes
@@ -75,20 +47,32 @@ Also see [[with-fakes]] macro."}
 
                              ; Clojure
                              Throwable)]
-       `(binding [*context* (fc/context)]
-          (let [exception-caught?# (atom false)]
-            (try
-              ~@body
+       `(do
+          (-check-binding-works)
 
-              (catch ~exception-class e#
-                (reset! exception-caught?# true)
-                (throw e#))
+          (binding [*context* (fc/context)]
+            (let [exception-caught?# (atom false)]
+              (try
+                ~@body
 
-              (finally
-                (fc/unpatch-all! *context*)
+                (catch ~exception-class e#
+                  (reset! exception-caught?# true)
+                  (throw e#))
 
-                (when-not @exception-caught?#
-                  (fc/self-test *context*)))))))))
+                (finally
+                  (fc/unpatch-all! *context*)
+
+                  (when-not @exception-caught?#
+                    (fc/self-test *context*))))))))))
+
+(defn with-fakes*
+  "The function which works similarly to [[with-fakes]] macro.
+  It defines an implicit dynamic [[*context*]] and
+  executes function `f` with specified arguments inside the context.
+
+  It is left in mostly for backwards compatibility because previously macro was based on this public function."
+  [f & args]
+  (clj-fakes.core/with-fakes (apply f args)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Function fakes
 (defn optional-fake

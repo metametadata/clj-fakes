@@ -17,12 +17,12 @@
 * Arrange-Act-Assert style testing.
 
 # Installation
-Requirements: Clojure 1.7.0+ and/or ClojureScript 1.9.229+.
+Requirements: Clojure 1.7.0+ and/or ClojureScript 1.10.238+.
 
 Add this to your dependencies:
 
 ```clj
-[clj-fakes "0.9.0"]
+[clj-fakes "0.11.0"]
 ```
 
 Require framework namespace in your unit test source file:

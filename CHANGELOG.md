@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.0
+- BREAKING CHANGE: `with-fakes` macro now asserts if dynamic bindings work correctly.
+Specifically, this prevents its usage in `core.async/go` blocks under ClojureScript because there's an unresolved issue
+https://dev.clojure.org/jira/browse/CLJS-884 which led to not resetting `*context*`
+back to `nil` on exiting the faking block in previous clj-fakes versions.
+This was a source of subtle bugs in async ClojureScript tests.
+
 ## 0.10.0
 - `with-fakes` macro now doesn't generate an anonymous function
 so that it now can be used inside `core.async/go` blocks.
