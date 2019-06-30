@@ -16,7 +16,7 @@ framework in this documentation. To learn how to use it:
 
 ```clj
 :dependencies [...
-               [clj-fakes "0.11.0"]]
+               [clj-fakes "0.12.0"]]
 ```
 
 3) Require framework namespace in your unit test source file:
