@@ -1,6 +1,6 @@
 (ns clj-fakes.reflection
-  (:require [clj-fakes.macro :as m]
-            [clojure.reflect :as reflect]))
+  (:require [clj-fakes.macro :as m])
+  (:import (java.lang.reflect Method)))
 
 (defn -cljs-resolve
   "Alternative way to call cljs.analyzer/resolve-var.
@@ -30,15 +30,6 @@
     (let [protocol (resolve protocol-sym)]
       (when (instance? clojure.lang.Var protocol)
         protocol))))
-
-(defn -resolves-to-Object?
-  [env sym]
-  (if (m/-cljs-env? env)
-    ; ClojureScript
-    (= 'Object sym)
-
-    ; Clojure
-    (= Object (resolve sym))))
 
 (defn -protocol-methods
   "Portable reflection helper. Returns different structures for different hosts.
@@ -71,19 +62,21 @@
     ; Clojure
     (:arglists protocol-method)))
 
-(defn -reflect-interface-or-object
+(defn -interface-or-object-methods
   "Raises an exception if cannot reflect on specified symbol."
   [env interface-sym]
   (assert (not (m/-cljs-env? env)) "Works only in Clojure for reflection on Java interfaces and Object class.")
-  (if (-resolves-to-Object? env interface-sym)
-    ; Object
-    (reflect/reflect Object)
+  ; Not using clojure.reflect because it returns types in a form cumbersome to transform into type hints.
+  ; For instance, it returns "java.lang.Integer<>" but the hint should be "[Ljava.lang.Integer;".
+  (let [class (try
+                (if (= interface-sym 'Object)
+                  Object
+                  (Class/forName (str interface-sym)))
 
-    ; Java interface?
-    (try
-      (reflect/type-reflect interface-sym)
-
-      ; error
-      (catch Exception e
-        (assert nil (str "Unknown protocol or interface: " interface-sym
-                         ". Underlying exception: " (pr-str e)))))))
+                (catch Exception e
+                  (assert nil (str "Unknown protocol or interface: " interface-sym
+                                   ". Underlying exception: " (pr-str e)))))]
+    (for [^Method method (.getMethods class)]
+      {:name            (.getName method)
+       :return-type     (.getReturnType method)
+       :parameter-types (.getParameterTypes method)})))

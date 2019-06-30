@@ -2,9 +2,8 @@
   "API for working in explicit context."
   (:require [clojure.string :as string]
             [clojure.pprint :as pprint]
-    #?@(:clj [
-            [clj-fakes.macro :as m]
-            [clj-fakes.reflection :as r]]))
+            #?@(:clj [[clj-fakes.macro :as m]
+                      [clj-fakes.reflection :as r]]))
 
   ; declare macros for export
   #?(:cljs (:require-macros
@@ -74,7 +73,7 @@
   (arg-matches? [this arg] "Should return true or false."))
 
 (def ^{:doc "Matcher which matches any value. Implements both [[ArgsMatcher]] and [[ImplicitArgMatcher]]."}
-any
+  any
   (reify
     ArgsMatcher
     (args-match? [_ _args] true)
@@ -529,34 +528,36 @@ any
 
 #?(:clj
    (defn ^:no-doc -with-hint
+     "hint can be a symbol (e.g. interop.InterfaceFixture) or a string (e.g. '[Ljava.lang.Integer;' or 'boolean').
+     See http://asymmetrical-view.com/2009/07/02/clojure-primitive-arrays.html and comments there."
      [hint sym]
      (with-meta sym {:tag hint})))
 
 #?(:clj
    (defn ^:no-doc -arg
-     "Constructs arg symbol from the specified name."
+     "Constructs a globally unique arg symbol from the specified name.
+     Without using this helper emitted arglists can have duplicated args and not allowed symbols.
+     No type hints will be added."
      [name]
      (-> name
          ; sanitize in case Java name is passed in (e.g. java.lang.CharSequence)
-         (string/replace #"\." "-")
+         (string/replace #"\W" "-")
          (gensym))))
 
 #?(:clj
-   (defn ^:no-doc -fix-arglist
-     "Passed arglist can have duplicated args and not allowed symbols.
-     This function generates a correct arglist for code emitting.
-     No type hints will be specified."
+   (defn ^:no-doc -arglist
      [arglist]
      (mapv -arg arglist)))
 
 #?(:clj
-   (defn ^:no-doc -fix-arglist-with-hints
-     "The same as -fix-arglist and also adds type hints:
-       for the first arg: protocol-sym will be used as a hint;
-       for the rest: arg value itself will be used as a hint."
-     [protocol-sym arglist]
-     (into [(-with-hint protocol-sym (-arg (first arglist)))]
-           (map #(-with-hint % (-arg %)) (rest arglist)))))
+   (defn ^:no-doc -arglist-with-hints
+     "Generates a method arglist with hints for the given interface.
+     parameter-types does not include `this` arg."
+     [interface-sym parameter-types]
+     (into [(-with-hint interface-sym (-arg 'this))]
+           (for [type parameter-types]
+             (let [type-name (.getName type)]
+               (-with-hint type-name (-arg type-name)))))))
 
 #?(:clj
    (defn ^:no-doc -method-signatures
@@ -571,10 +572,10 @@ any
        ; protocol
        (let [methods (r/-protocol-methods env protocol)
              method (-find-first #(= method-sym (r/-protocol-method-name env %)) methods)
-             arglists (map -fix-arglist (r/-protocol-method-arglist env method))]
-         (map #(-> {:method-sym method-sym
-                    :arglist    %})
-              arglists))
+             arglists (map -arglist (r/-protocol-method-arglist env method))]
+         (for [arglist arglists]
+           {:method-sym method-sym
+            :arglist    arglist}))
 
        ; not a protocol
        (if (m/-cljs-env? env)
@@ -582,14 +583,15 @@ any
          (assert nil (str "Unknown protocol: " protocol-sym))
 
          ; Clojure - Object, Java interface or error
-         (let [interface (r/-reflect-interface-or-object env protocol-sym)
-               members (filter #(and (= method-sym (:name %))
-                                     (not (contains? (:flags %) :varargs)))
-                               (:members interface))]
-           (map (fn [{:keys [return-type parameter-types] :as _member}]
-                  {:method-sym (-with-hint return-type method-sym)
-                   :arglist    (-fix-arglist-with-hints protocol-sym (into ['this] parameter-types))})
-                members))))))
+         (let [all-methods (r/-interface-or-object-methods env protocol-sym)
+               methods (filter #(= (:name %) (str method-sym)) all-methods)
+               overloaded? (> (count methods) 1)]
+           (for [{:keys [return-type parameter-types]} methods]
+             (if overloaded?
+               {:method-sym (-with-hint (.getName return-type) method-sym)
+                :arglist    (-arglist-with-hints protocol-sym parameter-types)}
+               {:method-sym method-sym
+                :arglist    (-arglist (into ['this] parameter-types))})))))))
 
 #?(:clj
    (defn ^:no-doc -method-imp

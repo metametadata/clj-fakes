@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.0
+
+- (Clojure) Add support for Java variadic arguments, array arguments and array return values
+into `reify-fake` and `reify-nice-fake` (#4).
+
 ## 0.11.0
 - BREAKING CHANGE: `with-fakes` macro now asserts if dynamic bindings work correctly.
 Specifically, this prevents its usage in `core.async/go` blocks under ClojureScript because there's an unresolved issue

@@ -6,7 +6,9 @@
     [clj-fakes.context :as fc]
     [unit.fixtures.protocols :as p :refer [AnimalProtocol]])
   #?(:clj
-     (:import [interop InterfaceFixture])))
+     (:import [interop InterfaceFixture]
+              (java.util Arrays)
+              (java.net.http WebSocket))))
 
 (defprotocol LocalProtocol
   (bar [this]))
@@ -228,19 +230,45 @@
          (is (= expected2 (.append foo my-char-seq)))))))
 
 #?(:clj
+   (defn int-array?
+     [x]
+     (= (.getName (class x)) "[I")))
+
+#?(:clj
+   (defn integer-array?
+     [x]
+     (= (.getName (class x)) "[Ljava.lang.Integer;")))
+
+#?(:clj
+   (defn double-array?
+     [x]
+     (= (.getName (class x)) "[Ljava.lang.Double;")))
+
+#?(:clj
    (u/deftest+
-     "overloaded java interface method with different return types can be reified with optional fake"
+     "overloaded Java interface method with different return types can be reified with optional fake"
      (f/with-fakes
        (let [foo (f/reify-fake
                    interop.InterfaceFixture
-                   (overloadedMethodWithDifferentReturnTypes :optional-fake [[\a] 100
-                                                                             [\b] 200
-                                                                             [314] 300
-                                                                             [3.14] 400
-                                                                             ["bar"] "500"
-                                                                             [] "600"
-                                                                             [true] "700"
-                                                                             [100 200] true]))]
+                   (overloadedMethodWithDifferentReturnTypes
+                     :optional-fake
+                     [[\a] 100
+                      [\b] 200
+                      [314] 300
+                      [3.14] 400
+                      ["bar"] "500"
+                      [] "600"
+                      [true] "700"
+                      [100 200] true
+
+                      [(f/arg int-array?)] "int array arg"
+                      [(f/arg integer-array?)] "integer array arg"
+
+                      [100 200 300] (int-array [800])
+                      [3.14 100] (into-array [(int 314) (int 100)])
+
+                      [100 (f/arg integer-array?)] "integer vararg"
+                      [(f/arg double-array?)] "double vararg"]))]
          (is (= 100 (.overloadedMethodWithDifferentReturnTypes foo \a)))
          (is (= 200 (.overloadedMethodWithDifferentReturnTypes foo \b)))
          (is (= 300 (.overloadedMethodWithDifferentReturnTypes foo 314)))
@@ -248,11 +276,20 @@
          (is (= "500" (.overloadedMethodWithDifferentReturnTypes foo "bar")))
          (is (= "600" (.overloadedMethodWithDifferentReturnTypes foo)))
          (is (= "700" (.overloadedMethodWithDifferentReturnTypes foo true)))
-         (is (= true (.overloadedMethodWithDifferentReturnTypes foo 100 200)))))))
+         (is (= true (.overloadedMethodWithDifferentReturnTypes foo 100 200)))
+
+         (is (= "int array arg" (.overloadedMethodWithDifferentReturnTypes foo (int-array [100 200]))))
+         (is (= "integer array arg" (.overloadedMethodWithDifferentReturnTypes foo (into-array [(int 100) (int 200)]))))
+
+         (is (Arrays/equals (int-array [800]) (.overloadedMethodWithDifferentReturnTypes foo 100 200 300)))
+         (is (Arrays/equals (into-array [(int 314) (int 100)]) (.overloadedMethodWithDifferentReturnTypes foo 3.14 100)))
+
+         (is (= "integer vararg" (.overloadedMethodWithDifferentReturnTypes foo 100 (into-array [(int 200)]))))
+         (is (= "double vararg" (.overloadedMethodWithDifferentReturnTypes foo (into-array [3.14]))))))))
 
 ; TODO:
 ;#?(:clj
-;   (u/-deftest
+;   (u/deftest+
 ;     "java.lang.Appendable/append (overloaded method) can be reified with recorded fake"
 ;     (f/with-fakes
 ;       (let [foo (f/reify-fake
@@ -262,7 +299,7 @@
 
 #?(:clj
    (u/deftest+
-     "IFn/invoke can be reified with recordable fake"
+     "clojure.lang.IFn/invoke can be reified with recordable fake"
      (f/with-fakes
        (let [foo (f/reify-fake
                    clojure.lang.IFn
@@ -275,13 +312,14 @@
 
 #?(:cljs
    (u/deftest+
-     "IFn/invoke can be reified with recordable fake"
+     "IFn/-invoke can be reified with recordable fake"
      (f/with-fakes
        (let [foo (f/reify-fake
                    IFn
                    (-invoke :recorded-fake))]
          (foo 123)
          (foo 1 2 3)
+
          (is (f/method-was-called -invoke foo [123]))
          (is (f/method-was-called -invoke foo [1 2 3]))))))
 
@@ -425,3 +463,22 @@
       (is (= 503 (save service :--data--)))
       (is (= 200 (save service :--data--)))
       (is (= 503 (save service :--data--))))))
+
+#?(:clj
+   ; Extracted for prettier failure reports."
+   (defn array-arg
+     [expected-array]
+     (fc/arg* #(Arrays/equals % expected-array)
+              (str "<array " (pr-str (vec expected-array)) ">"))))
+
+#?(:clj
+   (u/deftest+
+     "interface method with varargs can be reified with recorded fake"
+     (f/with-fakes
+       (let [foo (f/reify-fake
+                   interop.InterfaceFixture
+                   ; Without explicit return value there'll be a casting error
+                   (methodWithVarargs :recorded-fake [f/any "fake return value"]))]
+         (.methodWithVarargs foo 100 (into-array ["bar" "baz"]))
+
+         (is (f/method-was-called-once "methodWithVarargs" foo [100 (array-arg (into-array ["bar" "baz"]))]))))))
